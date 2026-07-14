@@ -1,0 +1,37 @@
+# ── Secrets ──────────────────────────────────────────────────────────────────
+# Never commit the real environment file; only .env.example is tracked.
+.env
+.env.*
+!.env.example
+
+# ── Internal / private notes (do not publish) ────────────────────────────────
+AI Meta/
+**/AI Meta/
+Team-names.md
+**/Team-names.md
+assests/
+**/assests/
+
+# ── Build output & dependencies ──────────────────────────────────────────────
+node_modules/
+**/node_modules/
+target/
+**/target/
+build/
+**/build/
+dist/
+**/dist/
+
+# ── Sub-project repos (each is its own git repo, cloned alongside — not embedded) ──
+/website/
+/SkyOffice/
+/backend/
+
+# ── Local data / logs ────────────────────────────────────────────────────────
+*.log
+**/data/
+.DS_Store
+
+# ── Editor / tooling local config (never push) ──
+.claude/
+.vscode/

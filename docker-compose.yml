@@ -1,0 +1,412 @@
+# =============================================================================
+# Virtual Office — full-stack Docker Compose
+#
+#   datastores:    mysql · postgres · mongo · redis · rabbitmq
+#   backend:       gateway-api · user · workspace · chat · room ·
+#                  notifications · calendar · tasks   (Spring Boot)
+#   realtime:      skyoffice-server                    (Colyseus / Node)
+#   frontends:     web-client (React/nginx) · skyoffice-client (Vite/nginx)
+#   observability: loki · promtail · grafana
+#
+# Every build recipe lives in a real Dockerfile committed next to its source:
+#   backend/Dockerfile                (parameterized by the SERVICE build arg)
+#   SkyOffice/server/Dockerfile       (context: ./SkyOffice)
+#   SkyOffice/client/Dockerfile       (context: ./SkyOffice) + client/nginx.conf
+#   website/Dockerfile                (+ website/nginx.conf)
+#
+# Quick start:   cp .env.example .env   &&   docker compose up --build -d
+#
+# Entry points (host):
+#   Web client ......... http://localhost:3001
+#   SkyOffice office ... http://localhost:5000
+#   API gateway ........ http://localhost:8080
+#   RabbitMQ console ... http://localhost:15672
+#   Grafana ............ http://localhost:3005
+# =============================================================================
+
+name: virtual-office
+
+# ── Reusable anchors ─────────────────────────────────────────────────────────
+
+# One parameterized multi-stage build for every Spring Boot service. `SERVICE`
+# selects the Maven module; `-am` also builds the shared-library dependency.
+x-backend-build: &backend-build
+  context: ./backend
+  dockerfile: Dockerfile
+
+# Common Spring env: silence the in-container docker-compose auto-start feature.
+x-spring-common: &spring-common
+  SPRING_DOCKER_COMPOSE_ENABLED: "false"
+
+x-service-defaults: &service-defaults
+  restart: unless-stopped
+  networks: [vo]
+
+# Actuator-based healthcheck timings shared by the Spring services.
+x-spring-healthcheck: &spring-healthcheck
+  interval: 10s
+  timeout: 5s
+  retries: 30
+  start_period: 90s
+
+services:
+
+  # ===========================================================================
+  # Datastores
+  # ===========================================================================
+
+  mysql:
+    <<: *service-defaults
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports: ["3306:3306"]
+    volumes: [mysql-data:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  postgres:
+    <<: *service-defaults
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # Host 5433 to avoid clashing with a native Postgres on 5432; the container
+    # port stays 5432, so in-network services still reach it at postgres:5432.
+    ports: ["5433:5432"]
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  mongo:
+    <<: *service-defaults
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports: ["27017:27017"]
+    volumes: [mongo-data:/data/db]
+    # Require auth in the healthcheck so "healthy" means auth is truly enforced
+    # (an unauthenticated ping passes during Mongo's init window and releases too early).
+    healthcheck:
+      test: ["CMD", "mongosh", "-u", "${MONGO_ROOT_USERNAME}", "-p", "${MONGO_ROOT_PASSWORD}", "--authenticationDatabase", "admin", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  redis:
+    <<: *service-defaults
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  rabbitmq:
+    <<: *service-defaults
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports: ["5672:5672", "15672:15672"]
+    volumes: [rabbitmq-data:/var/lib/rabbitmq]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # ===========================================================================
+  # Backend services (Spring Boot)
+  # ===========================================================================
+
+  gateway-api:
+    <<: *service-defaults
+    build: {<<: *backend-build, args: {SERVICE: gateway-api}}
+    ports: ["8080:8080"]
+    environment:
+      <<: *spring-common
+      USER_SERVICE_URL: http://user-service:8091
+      WORKSPACE_SERVICE_URL: http://workspace-service:8087
+      CHAT_SERVICE_URL: http://chat-service:8084
+      ROOM_SERVICE_URL: http://room-service:8086
+      CALENDAR_SERVICE_URL: http://calendar-service:8083
+      TASKS_SERVICE_URL: http://tasks-service:8085
+      NOTIFICATIONS_SERVICE_URL: http://notifications-service:8082
+      JWT_SECRET: ${JWT_SECRET}
+      # Dev/demo CORS: the SkyOffice client (:5000) calls the gateway (:8080) cross-origin, and on
+      # the LAN that origin is http://<host-ip>:5000 — not localhost. "*" is an allowed-origin
+      # PATTERN here (CorsConfig uses setAllowedOriginPatterns), so with credentials it reflects the
+      # actual request origin. Override GATEWAY_CORS_ORIGINS in .env to lock this down for production.
+      GATEWAY_CORS_ORIGINS: ${GATEWAY_CORS_ORIGINS:-*}
+    depends_on:
+      user-service: {condition: service_healthy}
+      workspace-service: {condition: service_healthy}
+      chat-service: {condition: service_healthy}
+      room-service: {condition: service_healthy}
+    # gateway-api has no actuator endpoint (/actuator/health -> 404); a 404 still proves
+    # the reactive server is up and routing, so accept any HTTP response as "alive".
+    healthcheck:
+      <<: *spring-healthcheck
+      test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/actuator/health | grep -qE '200|401|403|404' || exit 1"]
+
+  user-service:
+    <<: *service-defaults
+    build: {<<: *backend-build, args: {SERVICE: user-service}}
+    ports: ["8091:8091"]
+    environment:
+      <<: *spring-common
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      mysql: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+    # user-service secures /actuator/health (returns 403), so accept any HTTP response
+    # from Tomcat as "alive" rather than requiring a 2xx.
+    healthcheck:
+      <<: *spring-healthcheck
+      test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://localhost:8091/actuator/health | grep -qE '200|401|403' || exit 1"]
+
+  workspace-service:
+    <<: *service-defaults
+    build: {<<: *backend-build, args: {SERVICE: workspace-service}}
+    ports: ["8087:8087"]
+    environment:
+      <<: *spring-common
+      WORKSPACE_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      WORKSPACE_DB_USER: ${POSTGRES_USER}
+      WORKSPACE_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+    depends_on:
+      postgres: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+    healthcheck:
+      <<: *spring-healthcheck
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8087/actuator/health || exit 1"]
+
+  chat-service:
+    <<: *service-defaults
+    build: {<<: *backend-build, args: {SERVICE: chat-service}}
+    ports: ["8084:8084"]
+    environment:
+      <<: *spring-common
+      SPRING_DATA_MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/chat_service?authSource=admin
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_RABBITMQ_HOST: rabbitmq
+      WORKSPACE_SERVICE_URL: http://workspace-service:8087
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+    depends_on:
+      mongo: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+      workspace-service: {condition: service_started}
+    healthcheck:
+      <<: *spring-healthcheck
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8084/actuator/health || exit 1"]
+
+  room-service:
+    <<: *service-defaults
+    build: {<<: *backend-build, args: {SERVICE: room-service}}
+    ports: ["8086:8086"]
+    environment:
+      <<: *spring-common
+      SPRING_DATA_MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/room_service?authSource=admin
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_RABBITMQ_HOST: rabbitmq
+      WORKSPACE_SERVICE_URL: http://workspace-service:8087
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+      ROOM_AGORA_APP_ID: ${AGORA_APP_ID}
+      ROOM_AGORA_APP_CERTIFICATE: ${AGORA_APP_CERTIFICATE}
+    depends_on:
+      mongo: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+      workspace-service: {condition: service_started}
+    healthcheck:
+      <<: *spring-healthcheck
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8086/actuator/health || exit 1"]
+
+  notifications-service:
+    <<: *service-defaults
+    build: {<<: *backend-build, args: {SERVICE: notifications-service}}
+    ports: ["8082:8082"]
+    environment:
+      <<: *spring-common
+      # notifications uses spring.mongodb.uri (not spring.data.mongodb.uri).
+      SPRING_MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/notifications?authSource=admin
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_RABBITMQ_HOST: rabbitmq
+    depends_on:
+      mongo: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+    healthcheck:
+      <<: *spring-healthcheck
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8082/actuator/health || exit 1"]
+
+  # Calendar / meetings (Postgres, own `calendar` schema in the shared DB).
+  calendar-service:
+    <<: *service-defaults
+    build: {<<: *backend-build, args: {SERVICE: calendar-service}}
+    ports: ["8083:8083"]
+    environment:
+      <<: *spring-common
+      CALENDAR_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      CALENDAR_DB_USER: ${POSTGRES_USER}
+      CALENDAR_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      WORKSPACE_SERVICE_URL: http://workspace-service:8087
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+      RABBITMQ_HOST: rabbitmq
+      APP_URL: http://localhost:3001
+    depends_on:
+      postgres: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+    healthcheck:
+      <<: *spring-healthcheck
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8083/actuator/health || exit 1"]
+
+  # Tasks / board (Postgres, own `tasks` schema in the shared DB).
+  tasks-service:
+    <<: *service-defaults
+    build: {<<: *backend-build, args: {SERVICE: tasks-service}}
+    ports: ["8085:8085"]
+    environment:
+      <<: *spring-common
+      TASKS_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      TASKS_DB_USER: ${POSTGRES_USER}
+      TASKS_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+      APP_URL: http://localhost:3001
+    depends_on:
+      postgres: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+    healthcheck:
+      <<: *spring-healthcheck
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8085/actuator/health || exit 1"]
+
+  # ===========================================================================
+  # Realtime office server (Colyseus / Node)
+  # ===========================================================================
+
+  skyoffice-server:
+    <<: *service-defaults
+    build:
+      context: ./SkyOffice
+      dockerfile: server/Dockerfile
+    ports: ["2567:2567"]
+    environment:
+      PORT: "2567"
+      JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
+      WORKSPACE_SERVICE_URL: http://workspace-service:8087
+      ROOM_SERVICE_URL: http://room-service:8086
+    depends_on:
+      workspace-service: {condition: service_started}
+      room-service: {condition: service_started}
+
+  # ===========================================================================
+  # Frontends (built static, served by nginx)
+  # ===========================================================================
+
+  # React web client. Calls the backend with same-origin relative paths, so its
+  # nginx reverse-proxies /api/* (REST + STOMP-over-WebSocket) to the gateway.
+  # The nginx config (WebSocket keep-alive + cache-control) is baked into the
+  # image from website/nginx.conf.
+  web-client:
+    <<: *service-defaults
+    build:
+      context: ./website
+      dockerfile: Dockerfile
+    # Host 3001 to avoid clashing with anything on 3000.
+    ports: ["3001:80"]
+    depends_on:
+      gateway-api: {condition: service_started}
+
+  # SkyOffice 2D office (Vite). Uses absolute URLs (host ports) baked at build
+  # time via the VITE_* args below; change the PUBLIC_* values in .env + rebuild.
+  skyoffice-client:
+    <<: *service-defaults
+    build:
+      context: ./SkyOffice
+      dockerfile: client/Dockerfile
+      args:
+        VITE_API_URL: ${PUBLIC_GATEWAY_URL}
+        VITE_SERVER_URL: ${PUBLIC_COLYSEUS_WS}
+        VITE_ROOM_WS_URL: ${PUBLIC_ROOM_WS}
+        VITE_AGORA_APP_ID: ${AGORA_APP_ID}
+    ports: ["5000:80"]
+    depends_on:
+      skyoffice-server: {condition: service_started}
+      gateway-api: {condition: service_started}
+
+  # ===========================================================================
+  # Observability (centralized logging: Loki + Promtail + Grafana)
+  # ===========================================================================
+
+  # Log aggregation store.
+  loki:
+    <<: *service-defaults
+    image: grafana/loki:2.9.8
+    command: -config.file=/etc/loki/config.yml
+    volumes:
+      - ./observability/loki-config.yml:/etc/loki/config.yml:ro
+      - loki-data:/loki
+    ports: ["3100:3100"]
+
+  # Ships every container's stdout/stderr to Loki (Docker service discovery).
+  promtail:
+    <<: *service-defaults
+    image: grafana/promtail:2.9.8
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./observability/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      loki: {condition: service_started}
+
+  # Dashboards / log explorer (Loki datasource auto-provisioned). Host 3005 to
+  # avoid clashing with any other Grafana on 3000.
+  grafana:
+    <<: *service-defaults
+    image: grafana/grafana:10.4.5
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    ports: ["3005:3000"]
+    depends_on:
+      loki: {condition: service_started}
+
+# ── Volumes & network ────────────────────────────────────────────────────────
+volumes:
+  mysql-data:
+  postgres-data:
+  mongo-data:
+  rabbitmq-data:
+  loki-data:
+  grafana-data:
+
+networks:
+  vo:
+    driver: bridge
