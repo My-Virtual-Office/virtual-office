@@ -410,6 +410,9 @@ services:
       SEED_PASSWORD: ${SEED_PASSWORD:-Northstar@2026}
       FORCE: ${SEED_FORCE:-0}
       SEED_OUT: /seedout
+      # Chat read cursors live in Redis; they must be dropped when seed-history
+      # replaces the messages they point at (a dangling cursor breaks unread).
+      REDIS_HOST: redis
       # desk.personalImageUrl has no write API — set directly in Postgres.
       PGHOST: postgres
       PGUSER: ${POSTGRES_USER}
@@ -423,6 +426,7 @@ services:
       room-service: {condition: service_healthy}
       tasks-service: {condition: service_healthy}
       postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
 
   # Loads the 3-month chat history (~1.8k messages / 88 threads) straight into
   # MongoDB. The REST API cannot backdate a message (createdAt is server-set) and

@@ -84,14 +84,29 @@ const TOOLS = [
     type: "function",
     function: {
       name: "read_channel",
-      description: "Read the most recent messages of one channel so you can summarise or answer questions about it. Returns newest-first with sender names and timestamps.",
+      description: "Read recent messages of one channel to summarise or answer questions about it. Returns newest-first with sender names and timestamps. Use `since` for time-bounded questions ('today', 'this week').",
       parameters: {
         type: "object",
         properties: {
           channel: { type: "string", description: "Channel name, without the leading # (e.g. 'engineering')." },
           limit: { type: "integer", description: "How many recent messages to read (default 60, max 100)." },
+          since: { type: "string", description: "Optional ISO-8601 instant; only return messages at or after it. Use for 'today'/'this week' style questions." },
         },
         required: ["channel"],
+        additionalProperties: false,
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "catch_up",
+      description: "Read ONLY the messages the user has not read yet in a channel, using their real read cursor. Use this for 'what did I miss', 'catch me up', 'anything I need to know'. Prefer this over read_channel when the user asks about what they missed. Reading does NOT mark anything as read.",
+      parameters: {
+        type: "object",
+        properties: {
+          channel: { type: "string", description: "Channel name without '#'. Omit to check every channel the user can see." },
+        },
         additionalProperties: false,
       },
     },
@@ -164,6 +179,29 @@ const TOOLS = [
   },
 ];
 
+// Resolve a channel name the user typed (with or without '#', possibly partial)
+// to a real channel, or an error listing what they can actually see.
+async function findChannel(token, workspaceId, nameish, ctx) {
+  const wanted = String(nameish || "").replace(/^#/, "").trim().toLowerCase();
+  const chans = ctx.channels || (ctx.channels = await channelsOf(token, workspaceId));
+  const ch =
+    chans.find((c) => c.name.toLowerCase() === wanted) ||
+    chans.find((c) => c.name.toLowerCase().includes(wanted));
+  if (!ch) return { error: `No channel named "${nameish}" that you can see. Available: ${chans.map((c) => c.name).join(", ")}` };
+  return ch;
+}
+
+// Raw message DTOs -> { at, from, text } with senders resolved to real names.
+async function renderMessages(token, workspaceId, raw, ctx) {
+  const members = ctx.members || (ctx.members = await membersOf(token, workspaceId));
+  const byId = new Map(members.map((m) => [Number(m.userId), m.name]));
+  return raw.filter(Boolean).map((m) => ({
+    at: m.createdAt,
+    from: byId.get(Number(m.senderId)) || `User ${m.senderId}`,
+    text: m.content,
+  }));
+}
+
 // ── tool implementations ─────────────────────────────────────────────────────
 async function runTool(name, args, ctx) {
   const { token, workspaceId, userId } = ctx;
@@ -183,20 +221,49 @@ async function runTool(name, args, ctx) {
       return (await channelsOf(token, workspaceId)).map((c) => c.name);
 
     case "read_channel": {
-      const wanted = String(args.channel || "").replace(/^#/, "").trim().toLowerCase();
-      const chans = await channelsOf(token, workspaceId);
-      const ch = chans.find((c) => c.name.toLowerCase() === wanted) || chans.find((c) => c.name.toLowerCase().includes(wanted));
-      if (!ch) return { error: `No channel named "${args.channel}". Available: ${chans.map((c) => c.name).join(", ")}` };
+      const ch = await findChannel(token, workspaceId, args.channel, ctx);
+      if (ch.error) return ch;
       const limit = Math.min(Math.max(Number(args.limit) || 60, 1), 100);
       const page = await api(token, "GET", `/api/chat/channels/${ch.id}/messages?page=1&limit=${limit}`);
-      const members = ctx.members || (ctx.members = await membersOf(token, workspaceId));
-      const byId = new Map(members.map((m) => [Number(m.userId), m.name]));
-      const msgs = (page?.content || []).map((m) => ({
-        at: m.createdAt,
-        from: byId.get(Number(m.senderId)) || `User ${m.senderId}`,
-        text: m.content,
-      }));
+      let msgs = await renderMessages(token, workspaceId, page?.content || [], ctx);
+      if (args.since) {
+        const cut = Date.parse(args.since);
+        if (!Number.isNaN(cut)) msgs = msgs.filter((m) => Date.parse(m.at) >= cut);
+      }
       return { channel: ch.name, count: msgs.length, messages: msgs };
+    }
+
+    case "catch_up": {
+      // Uses the user's real read cursor, so "what did I miss" means exactly
+      // that. Deliberately does NOT mark anything read — the assistant reading
+      // on your behalf shouldn't clear your unread badges.
+      const chans = await channelsOf(token, workspaceId);
+      let targets = chans;
+      if (args.channel) {
+        const ch = await findChannel(token, workspaceId, args.channel, ctx);
+        if (ch.error) return ch;
+        targets = [ch];
+      }
+      const out = [];
+      for (const ch of targets) {
+        let u;
+        try { u = await api(token, "GET", `/api/chat/channels/${ch.id}/unread`); } catch { continue; }
+        if (!u || !u.unreadCount) continue;
+        let raw = [];
+        try {
+          raw = u.lastReadMessageId
+            ? await api(token, "GET", `/api/chat/channels/${ch.id}/messages?after=${u.lastReadMessageId}&limit=100`)
+            : (await api(token, "GET", `/api/chat/channels/${ch.id}/messages?page=1&limit=50`))?.content || [];
+        } catch { continue; }
+        const msgs = await renderMessages(token, workspaceId, Array.isArray(raw) ? raw : [], ctx);
+        if (msgs.length) out.push({ channel: ch.name, unreadCount: u.unreadCount, mentionsYou: !!u.mentioned, messages: msgs });
+      }
+      if (out.length === 0) {
+        return { caughtUp: true, note: args.channel
+          ? `Nothing unread in #${args.channel}.`
+          : "Nothing unread anywhere — the user is fully caught up." };
+      }
+      return { caughtUp: false, channels: out };
     }
 
     case "get_my_tasks": {
@@ -285,8 +352,10 @@ app.post("/api/ai/chat", async (req, res) => {
         `The current date and time is ${now.toISOString()} (UTC). The user's workspace id is ${workspaceId}.`,
         "",
         "Use the tools to get real data — never invent messages, tasks, events or people. If a tool returns an error, tell the user plainly what went wrong.",
-        "When the user mentions a channel like #engineering, use read_channel with that name.",
-        "When asked to summarise a channel: read it, then give a short digest — the main threads of discussion, decisions, and anything that looks like it needs the user's attention. Lead with what matters; skip pleasantries.",
+        "When the user mentions a channel like #engineering, use that name.",
+        "'What did I miss', 'catch me up', 'anything I need to know' -> catch_up (it uses their real unread cursor). Only fall back to read_channel if they want a general summary rather than what's new. If catch_up reports caughtUp, say so plainly instead of summarising old messages.",
+        "For time-bounded questions ('today', 'this week') pass `since` to read_channel rather than reading everything.",
+        "When summarising: lead with what actually matters — decisions made, blockers, and anything addressed to the user or needing their action. Group by topic, not by person. Skip pleasantries and don't pad. If someone asked the user a direct question, surface that first.",
         "Resolve relative dates ('tomorrow at 3', 'next Sunday') against the current time above and pass full ISO-8601 instants to the tools.",
         "Before creating a task or event, make sure you have a clear title and (for events) a start and end. If something essential is genuinely ambiguous, ask one short question instead of guessing. Otherwise just do it and confirm what you created.",
         "",

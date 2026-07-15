@@ -383,6 +383,19 @@ if [ -f "$SCRIPT_DIR/conversations.json" ] && [ -f "$SCRIPT_DIR/load-history.js"
       printf ';\n'
       cat "$SCRIPT_DIR/load-history.js"
     } > "$outdir/history-run.js"
+    # seed-history wipes and reinserts each channel's messages, which invalidates
+    # every read cursor pointing into them. A cursor left pointing at a deleted
+    # message silently breaks unread for good: unread counts `_id > cursor`, and
+    # the old ids can sort above everything reinserted. Drop them here.
+    if command -v redis-cli >/dev/null && [ -n "${REDIS_HOST:-}" ]; then
+      dropped=0
+      for ref in "${!CHAN_ID[@]}"; do
+        for k in $(redis-cli -h "$REDIS_HOST" --scan --pattern "read:${CHAN_ID[$ref]}:*" 2>/dev/null); do
+          redis-cli -h "$REDIS_HOST" DEL "$k" >/dev/null 2>&1 && dropped=$((dropped+1))
+        done
+      done
+      ok "dropped $dropped stale read cursor(s)"
+    fi
     n_hist=$(jq '[.[].messages|length] as $m | [.[]|.threads[]|1+(.replies|length)] as $t | ($m|add) + ($t|add)' "$SCRIPT_DIR/conversations.json")
     ok "chat history script ready ($n_hist messages) -> $outdir/history-run.js"
   else

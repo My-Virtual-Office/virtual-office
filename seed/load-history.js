@@ -25,10 +25,26 @@
     const seqHex = seq.toString(16).padStart(16, "0");
     return new ObjectId(tsHex + seqHex);
   }
+  // Nothing may be stamped in the future. Messages are written across a whole
+  // working day, so if the seed runs at 05:00 a "17:00 today" message would land
+  // hours ahead of now — which breaks unread (it counts `_id > lastReadId`, and
+  // a future message pins the cursor above anything real you send afterwards)
+  // and makes new messages sort *below* seeded ones.
+  const MAX_TS = Math.floor(Date.now() / 1000) - 90;
+
   function tsOf(day, hm) {
     const p = String(hm).split(":");
     const h = parseInt(p[0], 10) || 0, m = parseInt(p[1], 10) || 0;
-    return Math.floor((BASE - day * 86400000 + (h * 3600 + m * 60) * 1000) / 1000);
+    const dayStart = Math.floor((BASE - day * 86400000) / 1000);
+    let t = dayStart + h * 3600 + m * 60;
+    if (t > MAX_TS) {
+      // Compress the intended time-of-day into the part of the day that has
+      // actually elapsed, so "today" still reads as a full day of chatter
+      // instead of everything collapsing onto one timestamp.
+      const elapsed = Math.max(MAX_TS - dayStart, 0);
+      t = dayStart + Math.floor(((h * 3600 + m * 60) / 86400) * elapsed);
+    }
+    return t;
   }
   function reactMap(arr) {
     const out = {};
