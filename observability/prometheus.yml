@@ -1,0 +1,41 @@
+# Prometheus scrape config for the Virtual Office stack.
+#
+# Every Spring service exposes Micrometer metrics at /actuator/prometheus. Targets are container
+# names on the compose network — never host ports — so scraping keeps working regardless of what is
+# published. The `service` label is what the Grafana dashboard groups by, so it must be set on every
+# target; the default `job`/`instance` labels would otherwise read as "gateway-api:8080".
+#
+# NOTE: gateway-api is scraped on :9080, its dedicated management port. Its actuator is deliberately
+# not on :8080 — that port is JWT-guarded and host-published (see gateway-api/application.yml).
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    stack: virtual-office
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: [localhost:9090]
+        labels: { service: prometheus }
+
+  - job_name: spring-services
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [gateway-api:9080]
+        labels: { service: gateway-api }
+      - targets: [user-service:8091]
+        labels: { service: user-service }
+      - targets: [workspace-service:8087]
+        labels: { service: workspace-service }
+      - targets: [chat-service:8084]
+        labels: { service: chat-service }
+      - targets: [room-service:8086]
+        labels: { service: room-service }
+      - targets: [notifications-service:8082]
+        labels: { service: notifications-service }
+      - targets: [calendar-service:8083]
+        labels: { service: calendar-service }
+      - targets: [tasks-service:8085]
+        labels: { service: tasks-service }

@@ -1,0 +1,15 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    # Pinned for the same reason as the Loki uid: provisioned dashboards reference the datasource
+    # by uid, and a generated one makes every panel come up as "datasource not found".
+    uid: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    # Loki stays the default datasource so the existing logs dashboard is unaffected.
+    isDefault: false
+    jsonData:
+      # Must be >= the scrape_interval in observability/prometheus.yml, or Grafana asks for a
+      # finer step than the data actually has and rate() windows come back empty.
+      timeInterval: 15s
