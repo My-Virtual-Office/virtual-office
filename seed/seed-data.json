@@ -1733,5 +1733,67 @@
         "omar"
       ]
     }
-  ]
+  ],
+  "channelCategories": {
+    "Company-wide": [
+      "announcements",
+      "general",
+      "random",
+      "wins",
+      "help"
+    ],
+    "Engineering": [
+      "engineering",
+      "backend-platform",
+      "frontend",
+      "devops",
+      "developer-experience",
+      "bugs",
+      "incident-response"
+    ],
+    "Product & Design": [
+      "product",
+      "design-review",
+      "data-insights",
+      "customer-voice"
+    ],
+    "Go-to-Market": [
+      "sales",
+      "customer-onboarding",
+      "revenue-operations"
+    ],
+    "Releases & Projects": [
+      "release-2-9",
+      "calendar-sync",
+      "enterprise-security"
+    ],
+    "People & Leadership": [
+      "people-ops",
+      "hiring-panel",
+      "leadership-private"
+    ]
+  },
+  "roomCategories": {
+    "Company-wide": [
+      "Daily Standup",
+      "Coffee Lounge",
+      "Focus Room"
+    ],
+    "Engineering": [
+      "Backend Pairing Room",
+      "Frontend Pairing Room",
+      "Testing Lab",
+      "Incident War Room"
+    ],
+    "Product & Design": [
+      "Product Planning Room",
+      "Design Review Room"
+    ],
+    "Go-to-Market": [
+      "Customer Demo Room"
+    ],
+    "People & Leadership": [
+      "Leadership Room"
+    ]
+  }
 }
