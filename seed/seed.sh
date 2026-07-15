@@ -245,6 +245,11 @@ while IFS= read -r s; do
   if [ -n "$id" ] && [ "$id" != null ]; then SPACE_ID[$ref]="$id"; n_spaces=$((n_spaces+1)); ok "$name (id=$id)"; else warn "space $name failed (HTTP $RESP_CODE)"; fi
 done < <(jq -c '.spaces[]' "$DATA")
 
+# Local calendar day + UTC offset, used to turn every relative date in the
+# dataset into an absolute instant. Computed once, here, because both the task
+# and the event phases need them.
+DAY_LOCAL=$(date +%F); TZOFF=$(date +%:z)
+
 # =============================================================================
 # 8. Tasks (one-shot: skipped if already seeded unless FORCE=1)
 # =============================================================================
@@ -256,8 +261,18 @@ else
     spRef=$(jq -r '.space' <<<"$t"); asgRef=$(jq -r '.assignee' <<<"$t")
     spId="${SPACE_ID[$spRef]:-}"; asgId="${UID_[$asgRef]:-}"
     [ -n "$spId" ] || { warn "task '$(jq -r .title <<<"$t")' — unknown space $spRef"; continue; }
-    body=$(jq -c --argjson ws "$WS_ID" --argjson sp "$spId" --argjson as "${asgId:-null}" \
-      '{workspaceId:$ws, spaceId:$sp, title:.title, description:.description, status:.status, priority:.priority, dueDate:.due, assigneeUserId:$as}' <<<"$t")
+    # Due dates are stored relative to the seed run (dueDay: -14 = two weeks ago,
+    # +7 = a week out) so the board always straddles "now" whenever it is seeded,
+    # instead of being pinned to the day the dataset was written.
+    dday=$(jq -r '.dueDay // empty' <<<"$t"); dtime=$(jq -r '.dueTime // "17:00"' <<<"$t")
+    if [ -n "$dday" ]; then
+      dueIso="$(date -d "$DAY_LOCAL ${dday} days" +%F)T${dtime}:00${TZOFF}"
+    else
+      dueIso=$(jq -r '.due // empty' <<<"$t")
+    fi
+    body=$(jq -c --argjson ws "$WS_ID" --argjson sp "$spId" --argjson as "${asgId:-null}" --arg due "${dueIso:-}" \
+      '{workspaceId:$ws, spaceId:$sp, title:.title, description:.description, status:.status, priority:.priority,
+        dueDate:(if $due=="" then null else $due end), assigneeUserId:$as}' <<<"$t")
     api POST /api/tasks "$OWNER_TOKEN" "$body"
     if is2xx; then n_tasks=$((n_tasks+1)); else warn "task '$(jq -r .title <<<"$t")' failed (HTTP $RESP_CODE)"; fi
   done < <(jq -c '.tasks[]' "$DATA")
@@ -275,51 +290,95 @@ while IFS= read -r r; do
 done < <(jq -c '.rooms[]' "$DATA")
 
 # =============================================================================
-# 9b. Today's calendar events (date-relative; idempotent per owner per day)
+# 9b. Calendar — the last two weeks through the next two
 #
-# Times in seed-data.json are UTC times-of-day, stamped onto TODAY so the desk's
-# "Today's Agenda" is always populated. Events are owner-scoped, so each one is
-# created with its owner's token and shows on that person's desk.
+# Everything is stamped relative to the seed run, so the calendar always
+# straddles "now": `recurringEvents` are expanded across working days (Sun-Thu,
+# Egypt) and `events` are one-offs at a `day` offset. Times are LOCAL wall-clock
+# with the local UTC offset, so they land on the day the browser thinks they
+# should (the desk agenda filters by the viewer's local day).
 # =============================================================================
-log "Creating today's calendar events…"
-# Stamp events onto the LOCAL calendar day at their local times (with the local
-# UTC offset), so they land inside the browser's local "today" window — the desk
-# agenda filters by the viewer's local day, which can differ from the UTC day.
-# (The seed container shares the host timezone via an /etc/localtime bind-mount.)
-DAY_LOCAL=$(date +%F); TZOFF=$(date +%:z)
-# Query bounds in Z-form UTC: a literal '+' offset in a URL query is decoded as a
-# space and 500s, so convert the local-day bounds to UTC for the GET.
-day_from=$(date -u -d "${DAY_LOCAL}T00:00:00${TZOFF}" +%Y-%m-%dT%H:%M:%SZ)
-day_to=$(date -u -d "${DAY_LOCAL}T23:59:59${TZOFF}" +%Y-%m-%dT%H:%M:%SZ)
-# The calendar list endpoint is a SHARED team calendar (returns every workspace
-# event in the window), so idempotency is a single workspace-level check.
-api GET "/api/calendar/events?workspaceId=$WS_ID&from=$day_from&to=$day_to" "$OWNER_TOKEN"
-# Only trust the count on a 2xx that returned a JSON array; anything else -> assume
-# empty and proceed (a non-array error body must never be mistaken for events).
+log "Creating calendar events…"
+EV_FROM=${EVENTS_FROM:--15}   # days back
+EV_TO=${EVENTS_TO:-14}        # days forward
+
+# Query bounds in Z-form UTC: a literal '+' offset in a URL query decodes to a
+# space and 500s, so convert the window's edges to UTC for the GET.
+win_from=$(date -u -d "$(date -d "$DAY_LOCAL ${EV_FROM} days" +%F)T00:00:00${TZOFF}" +%Y-%m-%dT%H:%M:%SZ)
+win_to=$(date -u -d "$(date -d "$DAY_LOCAL ${EV_TO} days" +%F)T23:59:59${TZOFF}" +%Y-%m-%dT%H:%M:%SZ)
+
+# The calendar list endpoint is a SHARED team calendar (every workspace event in
+# the window), so idempotency is one workspace-level check over the whole span.
+api GET "/api/calendar/events?workspaceId=$WS_ID&from=$win_from&to=$win_to" "$OWNER_TOKEN"
 if is2xx && [ "$(jqb 'type')" = array ]; then existing_ev=$(jqb 'length'); else existing_ev=0; fi
 [[ "$existing_ev" =~ ^[0-9]+$ ]] || existing_ev=0
+
 if [ "$existing_ev" -gt 0 ] && [ "$FORCE" != 1 ]; then
-  warn "workspace already has $existing_ev event(s) for today — skipping (FORCE=1 to add anyway)"
+  warn "workspace already has $existing_ev event(s) in this window — skipping (FORCE=1 to add anyway)"
 else
-  while IFS= read -r ev; do
-    owner=$(jq -r '.owner' <<<"$ev"); ownerTok="${TOKEN[$owner]:-}"
-    [ -n "$ownerTok" ] || continue
-    # resolve attendee refs -> [{userId,email}]
-    att_json='[]'
+  # refs -> [{userId,email}] for the attendee list
+  attendees_json() {
+    local out='[]'
     while IFS= read -r ar; do
       [ -n "${UID_[$ar]:-}" ] || continue
-      att_json=$(jq -c --argjson a "$att_json" --argjson id "${UID_[$ar]}" --arg em "${EMAIL_[$ar]:-}" '$a + [{userId:$id,email:$em}]' <<<'null')
-    done < <(jq -r '.attendees[]?' <<<"$ev")
-    body=$(jq -c --argjson ws "$WS_ID" --arg st "${DAY_LOCAL}T$(jq -r '.start' <<<"$ev")${TZOFF}" --arg en "${DAY_LOCAL}T$(jq -r '.end' <<<"$ev")${TZOFF}" --argjson at "$att_json" \
-      '{workspaceId:$ws, title:.title, description:.description, startTime:$st, endTime:$en, busy:true, attendees:$at}' <<<"$ev")
-    api POST /api/calendar/events "$ownerTok" "$body"
-    if is2xx; then n_events=$((n_events+1)); ok "📅 $(printf '%-8s' "$owner") $(jq -r '.title' <<<"$ev")"; else warn "event '$(jq -r '.title' <<<"$ev")' failed (HTTP $RESP_CODE)"; fi
-  done < <(jq -c '.events[]' "$DATA")
+      out=$(jq -c --argjson a "$out" --argjson id "${UID_[$ar]}" --arg em "${EMAIL_[$ar]:-}" '$a + [{userId:$id,email:$em}]' <<<'null')
+    done < <(jq -r '.attendees[]?' <<<"$1")
+    printf '%s' "$out"
+  }
+  # Create one event for `owner` on the date `DAY_LOCAL + off`.
+  make_event() {
+    local ev="$1" off="$2"
+    local owner tok date_on att body
+    owner=$(jq -r '.owner' <<<"$ev"); tok="${TOKEN[$owner]:-}"
+    [ -n "$tok" ] || return 0
+    date_on=$(date -d "$DAY_LOCAL ${off} days" +%F)
+    att=$(attendees_json "$ev")
+    body=$(jq -c --argjson ws "$WS_ID" \
+      --arg st "${date_on}T$(jq -r '.start' <<<"$ev"):00${TZOFF}" \
+      --arg en "${date_on}T$(jq -r '.end' <<<"$ev"):00${TZOFF}" \
+      --argjson at "$att" \
+      '{workspaceId:$ws, title:.title, description:(.description // ""), startTime:$st, endTime:$en, busy:true, attendees:$at}' <<<"$ev")
+    api POST /api/calendar/events "$tok" "$body"
+    if is2xx; then n_events=$((n_events+1)); else warn "event '$(jq -r '.title' <<<"$ev")' (day $off) failed (HTTP $RESP_CODE)"; fi
+  }
+
+  # Recurring ceremonies across working days only — a standup on the weekend
+  # would give the whole thing away.
+  while IFS= read -r r; do
+    days=$(jq -r '[.days[]] | join(",")' <<<"$r")
+    for ((off=EV_FROM; off<=EV_TO; off++)); do
+      # date +%u: 1=Mon .. 7=Sun. Egypt works Sun-Thu; Fri/Sat are the weekend.
+      case "$(date -d "$DAY_LOCAL ${off} days" +%u)" in
+        7) dow=sun ;; 1) dow=mon ;; 2) dow=tue ;; 3) dow=wed ;; 4) dow=thu ;; 5) dow=fri ;; *) dow=sat ;;
+      esac
+      [[ ",$days," == *",$dow,"* ]] || continue
+      make_event "$r" "$off"
+    done
+  done < <(jq -c '.recurringEvents[]?' "$DATA")
+
+  # One-offs at their own day offset, snapped onto a working day — a raw offset
+  # happily lands a board meeting on a Saturday, which gives the demo away in a
+  # Sun-Thu country. Day 0 is never moved: today is today.
+  snap_workday() {
+    local off="$1"
+    for _ in 1 2; do
+      case "$(date -d "$DAY_LOCAL ${off} days" +%u)" in
+        5) off=$((off + 2)) ;;   # Fri -> Sun
+        6) off=$((off + 1)) ;;   # Sat -> Sun
+        *) break ;;
+      esac
+    done
+    printf '%s' "$off"
+  }
+  while IFS= read -r ev; do
+    off=$(jq -r '.day // 0' <<<"$ev")
+    [ "$off" -ge "$EV_FROM" ] && [ "$off" -le "$EV_TO" ] || continue
+    [ "$off" -ne 0 ] && off=$(snap_workday "$off")
+    make_event "$ev" "$off"
+  done < <(jq -c '.events[]?' "$DATA")
+  ok "$n_events calendar events created (day $EV_FROM .. +$EV_TO)"
 fi
 
-# =============================================================================
-# 10. Messages + one threaded conversation (one-shot)
-# =============================================================================
 # =============================================================================
 # 10. Profile pictures
 #

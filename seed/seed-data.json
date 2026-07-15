@@ -610,8 +610,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-01T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -14,
+      "dueTime": "17:00"
     },
     {
       "title": "Investigate duplicate notification reports",
@@ -619,8 +620,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-01T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -14,
+      "dueTime": "17:00"
     },
     {
       "title": "Prepare mobile navigation prototype",
@@ -628,8 +630,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-01T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -14,
+      "dueTime": "17:00"
     },
     {
       "title": "Add idempotency key to calendar webhook handler",
@@ -637,8 +640,9 @@
       "space": "prj2",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-02T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -13,
+      "dueTime": "17:00"
     },
     {
       "title": "Review mobile sidebar design",
@@ -646,8 +650,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-02T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -13,
+      "dueTime": "17:00"
     },
     {
       "title": "Create analytics event naming document",
@@ -655,8 +660,9 @@
       "space": "prj3",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-02T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -13,
+      "dueTime": "17:00"
     },
     {
       "title": "Add thread-notification preference API",
@@ -664,8 +670,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-03T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -12,
+      "dueTime": "17:00"
     },
     {
       "title": "Implement notification settings layout",
@@ -673,8 +680,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-03T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -12,
+      "dueTime": "17:00"
     },
     {
       "title": "Prepare regression test plan for version 2.9",
@@ -682,8 +690,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-03T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -12,
+      "dueTime": "17:00"
     },
     {
       "title": "Reduce Docker development image size",
@@ -691,8 +700,9 @@
       "space": "prj6",
       "status": "COMPLETE",
       "priority": "LOW",
-      "due": "2026-07-04T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -11,
+      "dueTime": "17:00"
     },
     {
       "title": "Document local PostgreSQL setup",
@@ -700,8 +710,9 @@
       "space": "prj6",
       "status": "COMPLETE",
       "priority": "LOW",
-      "due": "2026-07-04T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -11,
+      "dueTime": "17:00"
     },
     {
       "title": "Fix mobile channel-list scrolling",
@@ -709,8 +720,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-05T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -10,
+      "dueTime": "17:00"
     },
     {
       "title": "Validate calendar duplicate-event fix",
@@ -718,8 +730,9 @@
       "space": "prj2",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-05T15:00:00Z",
-      "description": "Reopened: duplicate events still appeared when two webhook requests arrived within the same second."
+      "description": "Reopened: duplicate events still appeared when two webhook requests arrived within the same second.",
+      "dueDay": -10,
+      "dueTime": "17:00"
     },
     {
       "title": "Contact BetaWorks about onboarding schedule",
@@ -727,8 +740,9 @@
       "space": "prj5",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-05T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -10,
+      "dueTime": "17:00"
     },
     {
       "title": "Add database constraint for external calendar ID",
@@ -736,8 +750,9 @@
       "space": "prj2",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-06T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -9,
+      "dueTime": "17:00"
     },
     {
       "title": "Design empty state for analytics dashboard",
@@ -745,8 +760,9 @@
       "space": "prj3",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-06T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -9,
+      "dueTime": "17:00"
     },
     {
       "title": "Prepare enterprise feature comparison sheet",
@@ -754,8 +770,9 @@
       "space": "prj4",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-06T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -9,
+      "dueTime": "17:00"
     },
     {
       "title": "Optimize thread reply query",
@@ -763,8 +780,9 @@
       "space": "prj1",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-07T15:00:00Z",
-      "description": "In review."
+      "description": "In review.",
+      "dueDay": -8,
+      "dueTime": "17:00"
     },
     {
       "title": "Add active-user chart component",
@@ -772,8 +790,9 @@
       "space": "prj3",
       "status": "IN_PROGRESS",
       "priority": "NORMAL",
-      "due": "2026-07-07T15:00:00Z",
-      "description": "In review."
+      "description": "In review.",
+      "dueDay": -8,
+      "dueTime": "17:00"
     },
     {
       "title": "Run accessibility audit on settings pages",
@@ -781,8 +800,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-07T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -8,
+      "dueTime": "17:00"
     },
     {
       "title": "Add API tests for notification preferences",
@@ -790,8 +810,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-08T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -7,
+      "dueTime": "17:00"
     },
     {
       "title": "Create release monitoring dashboard",
@@ -799,8 +820,9 @@
       "space": "prj1",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-08T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -7,
+      "dueTime": "17:00"
     },
     {
       "title": "Review customer onboarding email sequence",
@@ -808,8 +830,9 @@
       "space": "prj5",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-08T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -7,
+      "dueTime": "17:00"
     },
     {
       "title": "Investigate delayed analytics events",
@@ -817,8 +840,9 @@
       "space": "prj3",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-09T15:00:00Z",
-      "description": "Blocked: the production event queue does not include the required workspace identifier for older events."
+      "description": "Blocked: the production event queue does not include the required workspace identifier for older events.",
+      "dueDay": -6,
+      "dueTime": "17:00"
     },
     {
       "title": "Add browser test for mobile navigation",
@@ -826,8 +850,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-09T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -6,
+      "dueTime": "17:00"
     },
     {
       "title": "Update employee onboarding checklist",
@@ -835,8 +860,9 @@
       "space": "internal",
       "status": "COMPLETE",
       "priority": "LOW",
-      "due": "2026-07-09T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -6,
+      "dueTime": "17:00"
     },
     {
       "title": "Add workspace ID to analytics events",
@@ -844,8 +870,9 @@
       "space": "prj3",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-10T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -5,
+      "dueTime": "17:00"
     },
     {
       "title": "Prepare PulseDesk 2.9 release announcement",
@@ -853,8 +880,9 @@
       "space": "prj1",
       "status": "TODO",
       "priority": "NORMAL",
-      "due": "2026-07-10T15:00:00Z",
-      "description": "Draft."
+      "description": "Draft.",
+      "dueDay": -5,
+      "dueTime": "17:00"
     },
     {
       "title": "Complete SAML provider technical research",
@@ -862,8 +890,9 @@
       "space": "prj4",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-10T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -5,
+      "dueTime": "17:00"
     },
     {
       "title": "Add retry metrics for calendar webhooks",
@@ -871,8 +900,9 @@
       "space": "prj2",
       "status": "IN_PROGRESS",
       "priority": "NORMAL",
-      "due": "2026-07-11T15:00:00Z",
-      "description": "In review."
+      "description": "In review.",
+      "dueDay": -4,
+      "dueTime": "17:00"
     },
     {
       "title": "Update mobile navigation based on QA feedback",
@@ -880,8 +910,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-11T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -4,
+      "dueTime": "17:00"
     },
     {
       "title": "Prepare customer training presentation",
@@ -889,8 +920,9 @@
       "space": "prj5",
       "status": "IN_PROGRESS",
       "priority": "NORMAL",
-      "due": "2026-07-11T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -4,
+      "dueTime": "17:00"
     },
     {
       "title": "Upgrade staging Kubernetes cluster",
@@ -898,8 +930,9 @@
       "space": "prj6",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-12T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -3,
+      "dueTime": "17:00"
     },
     {
       "title": "Fix incorrect guest settings button",
@@ -907,8 +940,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-12T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -3,
+      "dueTime": "17:00"
     },
     {
       "title": "Review security copy for SSO settings",
@@ -916,8 +950,9 @@
       "space": "prj4",
       "status": "IN_PROGRESS",
       "priority": "LOW",
-      "due": "2026-07-12T15:00:00Z",
-      "description": "In review."
+      "description": "In review.",
+      "dueDay": -3,
+      "dueTime": "17:00"
     },
     {
       "title": "Run full version 2.9 regression suite",
@@ -925,8 +960,9 @@
       "space": "prj1",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-13T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -2,
+      "dueTime": "17:00"
     },
     {
       "title": "Add channel engagement aggregation job",
@@ -934,8 +970,9 @@
       "space": "prj3",
       "status": "IN_PROGRESS",
       "priority": "NORMAL",
-      "due": "2026-07-13T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -2,
+      "dueTime": "17:00"
     },
     {
       "title": "Fix search result timestamp formatting",
@@ -943,8 +980,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "LOW",
-      "due": "2026-07-13T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -2,
+      "dueTime": "17:00"
     },
     {
       "title": "Review release readiness report",
@@ -952,8 +990,9 @@
       "space": "prj1",
       "status": "COMPLETE",
       "priority": "HIGH",
-      "due": "2026-07-14T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -1,
+      "dueTime": "17:00"
     },
     {
       "title": "Confirm BetaWorks onboarding participants",
@@ -961,8 +1000,9 @@
       "space": "prj5",
       "status": "COMPLETE",
       "priority": "NORMAL",
-      "due": "2026-07-14T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -1,
+      "dueTime": "17:00"
     },
     {
       "title": "Prepare pricing proposal for NovaTech",
@@ -970,8 +1010,9 @@
       "space": "prj4",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-14T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -1,
+      "dueTime": "17:00"
     },
     {
       "title": "Organize monthly team social event",
@@ -979,8 +1020,9 @@
       "space": "internal",
       "status": "IN_PROGRESS",
       "priority": "LOW",
-      "due": "2026-07-14T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": -1,
+      "dueTime": "17:00"
     },
     {
       "title": "Resolve remaining critical release bugs",
@@ -988,8 +1030,9 @@
       "space": "prj1",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-15T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": 0,
+      "dueTime": "17:00"
     },
     {
       "title": "Validate analytics data against production samples",
@@ -997,8 +1040,9 @@
       "space": "prj3",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-15T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": 0,
+      "dueTime": "17:00"
     },
     {
       "title": "Complete version 2.9 release notes",
@@ -1006,8 +1050,9 @@
       "space": "prj1",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-15T15:00:00Z",
-      "description": "In review."
+      "description": "In review.",
+      "dueDay": 0,
+      "dueTime": "17:00"
     },
     {
       "title": "Run calendar synchronization load test",
@@ -1015,8 +1060,9 @@
       "space": "prj2",
       "status": "IN_PROGRESS",
       "priority": "HIGH",
-      "due": "2026-07-15T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": 0,
+      "dueTime": "17:00"
     },
     {
       "title": "Review junior engineer pull request",
@@ -1024,8 +1070,9 @@
       "space": "prj1",
       "status": "TODO",
       "priority": "NORMAL",
-      "due": "2026-07-15T15:00:00Z",
-      "description": ""
+      "description": "",
+      "dueDay": 0,
+      "dueTime": "17:00"
     },
     {
       "title": "Prepare staging release candidate",
@@ -1033,17 +1080,574 @@
       "space": "prj1",
       "status": "TODO",
       "priority": "HIGH",
-      "due": "2026-07-15T15:00:00Z",
+      "description": "",
+      "dueDay": 0,
+      "dueTime": "17:00"
+    },
+    {
+      "title": "Cut RC2 and deploy to staging",
+      "assignee": "youssef",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "HIGH",
+      "dueDay": 1,
+      "dueTime": "17:00",
+      "description": "Second release candidate for 2.9."
+    },
+    {
+      "title": "Final regression pass on RC2",
+      "assignee": "mariam",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "HIGH",
+      "dueDay": 2,
+      "dueTime": "17:00",
+      "description": "Full suite before code freeze."
+    },
+    {
+      "title": "Publish PulseDesk 2.9 release notes",
+      "assignee": "lina",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "HIGH",
+      "dueDay": 2,
+      "dueTime": "17:00",
       "description": ""
+    },
+    {
+      "title": "Prepare launch-day runbook",
+      "assignee": "youssef",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "HIGH",
+      "dueDay": 3,
+      "dueTime": "17:00",
+      "description": "Rollout steps, checks, rollback plan."
+    },
+    {
+      "title": "Brief support on 2.9 changes",
+      "assignee": "sara",
+      "space": "prj5",
+      "status": "TODO",
+      "priority": "NORMAL",
+      "dueDay": 3,
+      "dueTime": "17:00",
+      "description": ""
+    },
+    {
+      "title": "Finalise NovaTech pricing proposal",
+      "assignee": "adam",
+      "space": "prj4",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "dueDay": 4,
+      "dueTime": "17:00",
+      "description": ""
+    },
+    {
+      "title": "Draft SAML integration spec",
+      "assignee": "omar",
+      "space": "prj4",
+      "status": "TODO",
+      "priority": "HIGH",
+      "dueDay": 5,
+      "dueTime": "17:00",
+      "description": "Enterprise SSO for the 3.0 cycle."
+    },
+    {
+      "title": "Analytics V2 department filters",
+      "assignee": "daniel",
+      "space": "prj3",
+      "status": "IN_PROGRESS",
+      "priority": "NORMAL",
+      "dueDay": 5,
+      "dueTime": "17:00",
+      "description": "Depends on the org-structure import."
+    },
+    {
+      "title": "Ship PulseDesk 2.9 to production",
+      "assignee": "omar",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "HIGH",
+      "dueDay": 6,
+      "dueTime": "17:00",
+      "description": "Launch day — canary then full rollout."
+    },
+    {
+      "title": "Send 2.9 release announcement to customers",
+      "assignee": "maya",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "NORMAL",
+      "dueDay": 6,
+      "dueTime": "17:00",
+      "description": ""
+    },
+    {
+      "title": "Monitor error rates for 24h post-launch",
+      "assignee": "youssef",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "HIGH",
+      "dueDay": 6,
+      "dueTime": "17:00",
+      "description": ""
+    },
+    {
+      "title": "Run the 2.9 release retro",
+      "assignee": "lina",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "NORMAL",
+      "dueDay": 7,
+      "dueTime": "17:00",
+      "description": ""
+    },
+    {
+      "title": "Scope onboarding automation phase 2",
+      "assignee": "sara",
+      "space": "prj5",
+      "status": "TODO",
+      "priority": "LOW",
+      "dueDay": 7,
+      "dueTime": "17:00",
+      "description": "Moved out of 2.9."
     }
   ],
-  "comment_events": "A shared TEAM calendar for TODAY — the calendar list endpoint returns every workspace event in the day window, so these appear on everyone's 'Today's Agenda'. Times are LOCAL wall-clock (HH:MM:SS); the seeder stamps them onto the current LOCAL date with the local UTC offset so the agenda is always populated for the viewer's day. One distinct event per meeting (no per-person duplicates).",
+  "comment_events": "Calendar spans the last 15 days through the next 14, stamped relative to the seed date. `recurringEvents` are expanded across working days (Sun-Thu, Egypt); `events` are one-offs at a `day` offset (negative = past, 0 = today, positive = upcoming). Times are LOCAL wall-clock. The calendar list endpoint is a shared team calendar, so everything here shows on everyone's agenda.",
   "events": [
+    {
+      "day": -14,
+      "owner": "salma",
+      "title": "Calendar sync postmortem",
+      "start": "11:00",
+      "end": "12:00",
+      "description": "Why duplicate events reached production",
+      "attendees": [
+        "karim",
+        "youssef",
+        "omar"
+      ]
+    },
+    {
+      "day": -12,
+      "owner": "sara",
+      "title": "BetaWorks onboarding kickoff",
+      "start": "12:00",
+      "end": "13:00",
+      "description": "200 seats, annual plan",
+      "attendees": [
+        "reem"
+      ]
+    },
+    {
+      "day": -11,
+      "owner": "lina",
+      "title": "PulseDesk 2.9 scope lock",
+      "start": "11:00",
+      "end": "12:00",
+      "description": "What's in, what slips to 3.0",
+      "attendees": [
+        "omar",
+        "maya",
+        "hana"
+      ]
+    },
+    {
+      "day": -9,
+      "owner": "adam",
+      "title": "NovaTech security review call",
+      "start": "13:00",
+      "end": "14:00",
+      "description": "SSO and audit-log requirements",
+      "attendees": [
+        "omar",
+        "mariam"
+      ]
+    },
+    {
+      "day": -8,
+      "owner": "reem",
+      "title": "All-hands",
+      "start": "12:00",
+      "end": "13:00",
+      "description": "Q2 results and the hiring plan"
+    },
+    {
+      "day": -7,
+      "owner": "hana",
+      "title": "Mobile nav design crit",
+      "start": "14:00",
+      "end": "15:00",
+      "description": "Bottom bar and thread view",
+      "attendees": [
+        "ahmed",
+        "nour",
+        "lina"
+      ]
+    },
+    {
+      "day": -5,
+      "owner": "daniel",
+      "title": "Analytics V2 demo",
+      "start": "11:00",
+      "end": "12:00",
+      "description": "DAU, engagement, task completion",
+      "attendees": [
+        "lina",
+        "maya"
+      ]
+    },
+    {
+      "day": -4,
+      "owner": "youssef",
+      "title": "CI performance review",
+      "start": "15:00",
+      "end": "16:00",
+      "description": "18min -> 11min after layer caching",
+      "attendees": [
+        "karim",
+        "ziad"
+      ]
+    },
+    {
+      "day": -3,
+      "owner": "omar",
+      "title": "RC1 go/no-go",
+      "start": "11:00",
+      "end": "12:00",
+      "description": "Three blockers outstanding",
+      "attendees": [
+        "lina",
+        "mariam",
+        "youssef"
+      ]
+    },
+    {
+      "day": -2,
+      "owner": "mariam",
+      "title": "Regression triage",
+      "start": "10:00",
+      "end": "11:00",
+      "description": "Walking the RC1 failures",
+      "attendees": [
+        "karim",
+        "ahmed"
+      ]
+    },
+    {
+      "day": -1,
+      "owner": "maya",
+      "title": "Board prep",
+      "start": "15:00",
+      "end": "16:00",
+      "description": "Quarterly deck review",
+      "attendees": [
+        "omar",
+        "lina"
+      ]
+    },
+    {
+      "day": 0,
+      "owner": "karim",
+      "title": "Thread-query pairing",
+      "start": "10:00",
+      "end": "11:00",
+      "description": "Optimise the thread reply query",
+      "attendees": [
+        "salma"
+      ]
+    },
+    {
+      "day": 0,
+      "owner": "omar",
+      "title": "Release readiness review",
+      "start": "11:00",
+      "end": "12:00",
+      "description": "Go/no-go for PulseDesk 2.9",
+      "attendees": [
+        "lina",
+        "mariam",
+        "youssef"
+      ]
+    },
+    {
+      "day": 0,
+      "owner": "sara",
+      "title": "Customer call — BetaWorks",
+      "start": "12:00",
+      "end": "12:30",
+      "description": "Onboarding check-in"
+    },
+    {
+      "day": 0,
+      "owner": "ahmed",
+      "title": "Mobile nav review",
+      "start": "12:30",
+      "end": "13:15",
+      "description": "Walk through QA feedback",
+      "attendees": [
+        "nour",
+        "hana",
+        "mariam"
+      ]
+    },
+    {
+      "day": 0,
+      "owner": "salma",
+      "title": "Calendar sync load test",
+      "start": "13:00",
+      "end": "14:00",
+      "description": "Run the synchronization load test",
+      "attendees": [
+        "mariam"
+      ]
+    },
+    {
+      "day": 0,
+      "owner": "lina",
+      "title": "2.9 release notes review",
+      "start": "14:00",
+      "end": "14:45",
+      "description": "Final pass on the release notes",
+      "attendees": [
+        "maya"
+      ]
+    },
+    {
+      "day": 0,
+      "owner": "sara",
+      "title": "Onboarding training",
+      "start": "14:00",
+      "end": "15:00",
+      "description": "Customer training session",
+      "attendees": [
+        "reem"
+      ]
+    },
+    {
+      "day": 0,
+      "owner": "youssef",
+      "title": "Cut staging release candidate",
+      "start": "15:00",
+      "end": "16:00",
+      "description": "Prepare the 2.9 RC on staging",
+      "attendees": [
+        "omar"
+      ]
+    },
+    {
+      "day": 0,
+      "owner": "ahmed",
+      "title": "Junior PR review",
+      "start": "16:00",
+      "end": "16:30",
+      "description": "Review Ziad's pull request",
+      "attendees": [
+        "ziad"
+      ]
+    },
+    {
+      "day": 0,
+      "owner": "daniel",
+      "title": "Analytics data validation",
+      "start": "16:30",
+      "end": "17:15",
+      "description": "Validate V2 metrics vs production"
+    },
+    {
+      "day": 0,
+      "owner": "maya",
+      "title": "Board update prep",
+      "start": "17:00",
+      "end": "18:00",
+      "description": "Prep the quarterly board deck"
+    },
+    {
+      "day": 1,
+      "owner": "youssef",
+      "title": "Cut RC2",
+      "start": "11:00",
+      "end": "12:00",
+      "description": "Second release candidate",
+      "attendees": [
+        "omar",
+        "mariam"
+      ]
+    },
+    {
+      "day": 2,
+      "owner": "mariam",
+      "title": "Final regression review",
+      "start": "11:00",
+      "end": "12:00",
+      "description": "Sign-off on RC2",
+      "attendees": [
+        "lina",
+        "omar"
+      ]
+    },
+    {
+      "day": 3,
+      "owner": "omar",
+      "title": "Code freeze checkpoint",
+      "start": "11:00",
+      "end": "11:30",
+      "description": "Bug fixes only from here",
+      "attendees": [
+        "lina"
+      ]
+    },
+    {
+      "day": 4,
+      "owner": "youssef",
+      "title": "Launch runbook walkthrough",
+      "start": "14:00",
+      "end": "15:00",
+      "description": "Rollout, checks, rollback",
+      "attendees": [
+        "omar",
+        "mariam",
+        "karim"
+      ]
+    },
+    {
+      "day": 5,
+      "owner": "sara",
+      "title": "Customer comms review",
+      "start": "11:00",
+      "end": "11:45",
+      "description": "Announcement and support brief",
+      "attendees": [
+        "maya",
+        "adam"
+      ]
+    },
+    {
+      "day": 6,
+      "owner": "omar",
+      "title": "🚀 PulseDesk 2.9 — Launch",
+      "start": "10:00",
+      "end": "11:00",
+      "description": "Canary at 10%, full rollout if clean",
+      "attendees": [
+        "maya",
+        "lina",
+        "karim",
+        "salma",
+        "ahmed",
+        "nour",
+        "hana",
+        "youssef",
+        "mariam",
+        "daniel",
+        "ziad"
+      ]
+    },
+    {
+      "day": 6,
+      "owner": "youssef",
+      "title": "Launch war room",
+      "start": "11:00",
+      "end": "17:00",
+      "description": "Monitoring the rollout",
+      "attendees": [
+        "omar",
+        "karim",
+        "mariam",
+        "maya"
+      ]
+    },
+    {
+      "day": 7,
+      "owner": "reem",
+      "title": "Team lunch — 2.9 celebration 🎉",
+      "start": "13:00",
+      "end": "15:00",
+      "description": "In-office and remote both"
+    },
+    {
+      "day": 8,
+      "owner": "lina",
+      "title": "2.9 release retro",
+      "start": "11:00",
+      "end": "12:00",
+      "description": "What went well, what didn't",
+      "attendees": [
+        "omar",
+        "karim",
+        "salma",
+        "ahmed",
+        "nour",
+        "hana",
+        "youssef",
+        "mariam",
+        "daniel",
+        "ziad"
+      ]
+    },
+    {
+      "day": 9,
+      "owner": "lina",
+      "title": "3.0 roadmap kickoff",
+      "start": "11:00",
+      "end": "12:30",
+      "description": "Enterprise SSO, onboarding phase 2",
+      "attendees": [
+        "maya",
+        "omar",
+        "hana"
+      ]
+    },
+    {
+      "day": 10,
+      "owner": "maya",
+      "title": "Board meeting",
+      "start": "14:00",
+      "end": "16:00",
+      "description": "Quarterly review",
+      "attendees": [
+        "omar",
+        "lina"
+      ]
+    },
+    {
+      "day": 12,
+      "owner": "omar",
+      "title": "NovaTech SSO scoping",
+      "start": "13:00",
+      "end": "14:00",
+      "description": "SAML by end of August",
+      "attendees": [
+        "karim",
+        "adam"
+      ]
+    },
+    {
+      "day": 13,
+      "owner": "reem",
+      "title": "Hiring panel — backend candidate",
+      "start": "11:00",
+      "end": "12:00",
+      "description": "Debrief after the loop",
+      "attendees": [
+        "maya",
+        "omar",
+        "karim"
+      ]
+    }
+  ],
+  "comment_chat": "Chat history lives in conversations.json (1804 messages / 88 threads over 3 months) and is loaded straight into MongoDB by load-history.js with backdated ObjectIds — the REST API cannot backdate a message.",
+  "recurringEvents": [
     {
       "owner": "maya",
       "title": "Leadership sync",
-      "start": "09:00:00",
-      "end": "09:30:00",
+      "start": "09:00",
+      "end": "09:30",
+      "days": [
+        "sun"
+      ],
       "description": "Weekly leadership standup",
       "attendees": [
         "omar",
@@ -1053,8 +1657,15 @@
     {
       "owner": "karim",
       "title": "Backend standup",
-      "start": "09:30:00",
-      "end": "09:45:00",
+      "start": "09:30",
+      "end": "09:45",
+      "days": [
+        "sun",
+        "mon",
+        "tue",
+        "wed",
+        "thu"
+      ],
       "description": "Daily backend & platform sync",
       "attendees": [
         "salma",
@@ -1065,8 +1676,15 @@
     {
       "owner": "ahmed",
       "title": "Frontend standup",
-      "start": "09:30:00",
-      "end": "09:45:00",
+      "start": "09:30",
+      "end": "09:45",
+      "days": [
+        "sun",
+        "mon",
+        "tue",
+        "wed",
+        "thu"
+      ],
       "description": "Daily frontend sync",
       "attendees": [
         "nour",
@@ -1075,117 +1693,45 @@
       ]
     },
     {
-      "owner": "karim",
-      "title": "Thread-query pairing",
-      "start": "10:00:00",
-      "end": "11:00:00",
-      "description": "Optimize the thread reply query",
+      "owner": "lina",
+      "title": "Product / QA sync",
+      "start": "14:00",
+      "end": "14:30",
+      "days": [
+        "tue"
+      ],
+      "description": "Roadmap and release quality",
       "attendees": [
-        "salma"
-      ]
-    },
-    {
-      "owner": "omar",
-      "title": "Release readiness review",
-      "start": "11:00:00",
-      "end": "12:00:00",
-      "description": "Go/no-go for PulseDesk 2.9",
-      "attendees": [
-        "lina",
-        "mariam",
-        "youssef"
-      ]
-    },
-    {
-      "owner": "sara",
-      "title": "Customer call — BetaWorks",
-      "start": "12:00:00",
-      "end": "12:30:00",
-      "description": "Onboarding check-in"
-    },
-    {
-      "owner": "ahmed",
-      "title": "Mobile nav review",
-      "start": "12:30:00",
-      "end": "13:15:00",
-      "description": "Walk through QA feedback",
-      "attendees": [
-        "nour",
         "hana",
         "mariam"
       ]
     },
     {
-      "owner": "salma",
-      "title": "Calendar sync load test",
-      "start": "13:00:00",
-      "end": "14:00:00",
-      "description": "Run the synchronization load test",
-      "attendees": [
-        "mariam"
-      ]
-    },
-    {
-      "owner": "lina",
-      "title": "2.9 release notes review",
-      "start": "14:00:00",
-      "end": "14:45:00",
-      "description": "Final pass on the release notes",
-      "attendees": [
-        "maya"
-      ]
-    },
-    {
-      "owner": "sara",
-      "title": "Onboarding training",
-      "start": "14:00:00",
-      "end": "15:00:00",
-      "description": "Customer training session",
-      "attendees": [
-        "reem"
-      ]
-    },
-    {
       "owner": "hana",
       "title": "Design review",
-      "start": "15:00:00",
-      "end": "15:45:00",
-      "description": "Analytics dashboard empty states"
+      "start": "15:00",
+      "end": "15:45",
+      "days": [
+        "wed"
+      ],
+      "description": "Figma walkthrough and UX feedback",
+      "attendees": [
+        "lina",
+        "nour"
+      ]
     },
     {
       "owner": "youssef",
-      "title": "Cut staging release candidate",
-      "start": "15:00:00",
-      "end": "16:00:00",
-      "description": "Prepare the 2.9 RC on staging",
+      "title": "Deploy window",
+      "start": "16:00",
+      "end": "16:30",
+      "days": [
+        "thu"
+      ],
+      "description": "Weekly staging → production deploy",
       "attendees": [
         "omar"
       ]
-    },
-    {
-      "owner": "ahmed",
-      "title": "Junior PR review",
-      "start": "16:00:00",
-      "end": "16:30:00",
-      "description": "Review Ziad's pull request",
-      "attendees": [
-        "ziad"
-      ]
-    },
-    {
-      "owner": "daniel",
-      "title": "Analytics data validation",
-      "start": "16:30:00",
-      "end": "17:15:00",
-      "description": "Validate V2 metrics vs production"
-    },
-    {
-      "owner": "maya",
-      "title": "Board update prep",
-      "start": "17:00:00",
-      "end": "18:00:00",
-      "description": "Prep the quarterly board deck"
     }
-  ],
-  "comment_chat": "Chat history lives in conversations.json (1804 messages / 88 threads over 3 months) and is loaded straight into MongoDB by load-history.js with backdated ObjectIds — the REST API cannot backdate a message."
+  ]
 }
