@@ -1,0 +1,5 @@
+# Screenshots are large and personal to each run — keep the brief, not the pixels.
+*.png
+*.jpg
+*.jpeg
+!.gitignore
