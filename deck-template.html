@@ -240,6 +240,12 @@ tbody tr:last-child th,tbody tr:last-child td{background:#1164a30d;font-weight:7
 .dg-bands .dg-band.td{border-color:#1164a344;background:#1164a30a;color:var(--blue)}
 .dg-bands .dg-band.up{color:var(--muted)}
 
+/* a dense graph gets most of the slide; the bullets shrink to fit around it */
+.slide[data-wide] .body{grid-template-columns:minmax(0,.46fr) minmax(0,1.54fr);align-content:center}
+.slide[data-wide] li{font-size:.95em;max-width:26ch}
+.slide[data-wide] h1{font-size:clamp(1.4em,2.5vw,2.1em)}
+.slide[data-wide] .dg-graph svg{max-height:78vh}
+
 /* rendered mermaid graphs — let them fill the slot, keep the text crisp */
 .dg.dg-graph{width:100%;gap:.5em}
 .dg-graph svg{width:100%;height:auto;max-height:74vh;display:block}
@@ -487,7 +493,7 @@ function tableHTML(t){
 function render(){
   slidesEl.innerHTML = SLIDES.map((s,idx)=>{
     const v = s.visual;
-    return `<section class="slide" data-i="${idx}"${s.bullets.length>6?' data-dense':''}>
+    return `<section class="slide" data-i="${idx}"${s.bullets.length>6?' data-dense':''}${s.wide?' data-wide':''}>
       ${s.mark ? `<div class="mark">${s.mark.path
         ? `<svg viewBox="0 0 24 24"><path d="${s.mark.path}" fill="${s.mark.hex}"/></svg>`
         : (BRAND[s.mark.key.toLowerCase()] || '')}</div>` : ''}

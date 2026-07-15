@@ -65,6 +65,10 @@ TECH_COLOR = {
     "awesome_notifications": "#02569B", "Flyway": "#CC0200",
 }
 # A big brand mark, rotated, ghosted into the corner — the slide's "signature".
+# Dense graphs need the room: these slides give the visual most of the width
+# and squeeze the bullets, instead of fitting a 5-rank graph into half a slide.
+WIDE = {13, 16}
+
 MARKS = {5: "Figma", 10: "Figma", 11: "React", 12: "Agora", 13: "Spring Boot", 14: "JWT",
          15: "Spring Boot", 16: "MongoDB", 17: "Node.js", 18: "Phaser", 19: "Grafana",
          20: "Flutter", 21: "Flutter", 22: "Flutter", 23: "Flutter"}
@@ -528,6 +532,7 @@ def build():
                       "color": LOGOS.get(t, {}).get("hex") or TECH_COLOR.get(t, "#7A7A7A"),
                       "path": LOGOS.get(t, {}).get("path")} for t in TECH.get(n, [])],
             "mark": ({"key": MARKS[n], **LOGOS.get(MARKS[n], {})} if n in MARKS else None),
+            "wide": n in WIDE,
             "visual": {"kind": kind, "desc": desc, "ratio": ratio, "table": TABLES.get(n),
                        "html": DIAGRAMS.get(n)},
             "next": None if not nxt or nxt == sl["who"] else {
