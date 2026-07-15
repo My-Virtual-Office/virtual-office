@@ -174,6 +174,8 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
     depends_on:
       mysql: {condition: service_healthy}
@@ -194,6 +196,8 @@ services:
       WORKSPACE_DB_USER: ${POSTGRES_USER}
       WORKSPACE_DB_PASSWORD: ${POSTGRES_PASSWORD}
       RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
     depends_on:
       postgres: {condition: service_healthy}
@@ -211,6 +215,8 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/chat_service?authSource=admin
       SPRING_DATA_REDIS_HOST: redis
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       WORKSPACE_SERVICE_URL: http://workspace-service:8087
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
     depends_on:
@@ -231,6 +237,8 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/room_service?authSource=admin
       SPRING_DATA_REDIS_HOST: redis
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       WORKSPACE_SERVICE_URL: http://workspace-service:8087
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
       ROOM_AGORA_APP_ID: ${AGORA_APP_ID}
@@ -254,6 +262,8 @@ services:
       SPRING_MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/notifications?authSource=admin
       SPRING_DATA_REDIS_HOST: redis
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
     depends_on:
       mongo: {condition: service_healthy}
       redis: {condition: service_healthy}
@@ -275,6 +285,8 @@ services:
       WORKSPACE_SERVICE_URL: http://workspace-service:8087
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN}
       RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       APP_URL: http://localhost:3001
     depends_on:
       postgres: {condition: service_healthy}
@@ -294,6 +306,8 @@ services:
       TASKS_DB_USER: ${POSTGRES_USER}
       TASKS_DB_PASSWORD: ${POSTGRES_PASSWORD}
       RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       APP_URL: http://localhost:3001
     depends_on:
       postgres: {condition: service_healthy}
