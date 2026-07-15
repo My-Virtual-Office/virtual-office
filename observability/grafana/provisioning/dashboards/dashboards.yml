@@ -1,0 +1,16 @@
+# Auto-load every dashboard JSON in /var/lib/grafana/dashboards (mounted from
+# observability/grafana/dashboards). Without this, only the Loki datasource is
+# provisioned and Grafana starts with no dashboards at all.
+apiVersion: 1
+
+providers:
+  - name: virtual-office
+    orgId: 1
+    folder: Virtual Office
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false
