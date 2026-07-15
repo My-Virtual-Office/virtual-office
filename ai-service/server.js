@@ -89,7 +89,7 @@ const TOOLS = [
         type: "object",
         properties: {
           channel: { type: "string", description: "Channel name, without the leading # (e.g. 'engineering')." },
-          limit: { type: "integer", description: "How many recent messages to read (default 60, max 100)." },
+          limit: { type: "integer", description: "How many recent messages to read (default 25, max 50). Keep it small unless the user asks for depth." },
           since: { type: "string", description: "Optional ISO-8601 instant; only return messages at or after it. Use for 'today'/'this week' style questions." },
         },
         required: ["channel"],
@@ -198,7 +198,10 @@ async function renderMessages(token, workspaceId, raw, ctx) {
   return raw.filter(Boolean).map((m) => ({
     at: m.createdAt,
     from: byId.get(Number(m.senderId)) || `User ${m.senderId}`,
-    text: m.content,
+    // Truncated deliberately: a summary doesn't need every word, and free model
+    // tiers bill per token (Groq's is 100k/day — a few unbounded channel reads
+    // exhaust it).
+    text: String(m.content || "").slice(0, 280),
   }));
 }
 
@@ -223,7 +226,7 @@ async function runTool(name, args, ctx) {
     case "read_channel": {
       const ch = await findChannel(token, workspaceId, args.channel, ctx);
       if (ch.error) return ch;
-      const limit = Math.min(Math.max(Number(args.limit) || 60, 1), 100);
+      const limit = Math.min(Math.max(Number(args.limit) || 25, 1), 50);
       const page = await api(token, "GET", `/api/chat/channels/${ch.id}/messages?page=1&limit=${limit}`);
       let msgs = await renderMessages(token, workspaceId, page?.content || [], ctx);
       if (args.since) {
@@ -252,8 +255,8 @@ async function runTool(name, args, ctx) {
         let raw = [];
         try {
           raw = u.lastReadMessageId
-            ? await api(token, "GET", `/api/chat/channels/${ch.id}/messages?after=${u.lastReadMessageId}&limit=100`)
-            : (await api(token, "GET", `/api/chat/channels/${ch.id}/messages?page=1&limit=50`))?.content || [];
+            ? await api(token, "GET", `/api/chat/channels/${ch.id}/messages?after=${u.lastReadMessageId}&limit=40`)
+            : (await api(token, "GET", `/api/chat/channels/${ch.id}/messages?page=1&limit=25`))?.content || [];
         } catch { continue; }
         const msgs = await renderMessages(token, workspaceId, Array.isArray(raw) ? raw : [], ctx);
         if (msgs.length) out.push({ channel: ch.name, unreadCount: u.unreadCount, mentionsYou: !!u.mentioned, messages: msgs });
@@ -370,14 +373,32 @@ app.post("/api/ai/chat", async (req, res) => {
   const used = [];
   try {
     for (let step = 0; step < MAX_STEPS; step++) {
-      const completion = await openai.chat.completions.create({
-        model: MODEL,
-        messages: convo,
-        tools: TOOLS,
-        // On the last step force a prose answer rather than another tool call.
-        tool_choice: step === MAX_STEPS - 1 ? "none" : "auto",
-        temperature: 0.2,
-      });
+      let completion;
+      try {
+        completion = await openai.chat.completions.create({
+          model: MODEL,
+          messages: convo,
+          tools: TOOLS,
+          // On the last step force a prose answer rather than another tool call.
+          tool_choice: step === MAX_STEPS - 1 ? "none" : "auto",
+          temperature: 0.2,
+        });
+      } catch (e) {
+        // Some open models occasionally emit the function NAME with its JSON
+        // arguments concatenated onto it; the provider then rejects the call as
+        // "not in request.tools". Retrying usually produces a well-formed call;
+        // if it doesn't, answer from what we already have instead of erroring.
+        if (e?.code === "tool_use_failed" || /tool call validation failed/i.test(e?.message || "")) {
+          console.warn("[ai-service] malformed tool call from model — retrying once");
+          completion = await openai.chat.completions.create({
+            model: MODEL,
+            messages: convo,
+            tools: TOOLS,
+            tool_choice: "none",
+            temperature: 0.2,
+          });
+        } else throw e;
+      }
       const msg = completion.choices[0].message;
       convo.push(msg);
 
@@ -415,8 +436,20 @@ app.post("/api/ai/chat", async (req, res) => {
       return res.status(402).json({ error: "The OpenAI account attached to this key has no remaining quota. Add billing/credits at platform.openai.com, then try again.", code });
     if (status === 401 || code === "invalid_api_key")
       return res.status(401).json({ error: "The OpenAI key is invalid or has been revoked. Update OPENAI_API_KEY in .env and restart ai-service.", code: code || "invalid_api_key" });
-    if (status === 429)
-      return res.status(429).json({ error: "OpenAI is rate-limiting this key. Wait a moment and try again.", code: code || "rate_limit" });
+    if (status === 429) {
+      // Groq's free tier is a daily TOKEN budget, not just a per-minute rate —
+      // the message carries the reset time, so pass it through rather than
+      // saying "try again" when the answer might be "tomorrow".
+      const detail = String(e?.message || "");
+      const daily = /tokens per day|TPD/i.test(detail);
+      const wait = detail.match(/try again in ([\dhms.]+)/i)?.[1];
+      return res.status(429).json({
+        error: daily
+          ? `The AI provider's free daily token limit is used up${wait ? ` — resets in ${wait}` : ""}. Summarising long channels is token-heavy; try again later or add billing/another provider.`
+          : `The AI provider is rate-limiting this key${wait ? ` — try again in ${wait}` : " — try again in a moment"}.`,
+        code: code || "rate_limit",
+      });
+    }
     return res.status(502).json({ error: "The assistant failed to answer.", detail: String(e?.message || e) });
   }
 });
