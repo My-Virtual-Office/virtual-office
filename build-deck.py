@@ -257,6 +257,68 @@ DIAGRAMS[19] = '''<div class="dg dg-obs">
     <figcaption><b>Prometheus</b> — metrics: <i>how often, how slow</i></figcaption></figure>
 </div>'''
 
+# ── 5 · research became requirements, requirements became features ───────────
+# No invented user stories here: the pains are the five from the problem slide
+# (their own research), the features are ones that actually shipped.
+DIAGRAMS[5] = f'''<div class="dg dg-pipe">
+  <div class="dg-stage"><span class="dg-stage-l">studied</span>
+    <div class="dg-row">{box("Slack", C['slack'])}{box("Teams", C['teams'])}{box("Discord", C['discord'])}</div></div>
+  <i class="dg-v">↓</i>
+  <div class="dg-stage"><span class="dg-stage-l">named the pain</span>
+    <div class="dg-pains"><span>can't see who's free</span><span>context switching</span>
+      <span>no spontaneous talk</span><span>nothing is one place</span></div></div>
+  <i class="dg-v">↓</i>
+  <div class="dg-stage"><span class="dg-stage-l">wrote user stories</span>
+    <div class="dg-story">“As a remote employee I want to <b>see who is available</b>
+      so I can ask a quick question without booking a meeting.”</div></div>
+  <i class="dg-v">↓</i>
+  <div class="dg-stage"><span class="dg-stage-l">built</span>
+    <div class="dg-row">{box("Presence", C['spring'])}{box("2D floor", C['phaser'])}
+      {box("Tasks", C['spring'])}{box("Assistant", C['ai'])}</div></div>
+  <div class="dg-cap">Every feature traces back to a pain. Nothing is here because it looked nice.</div>
+</div>'''
+
+# ── 7 · the assistant, answering for real ────────────────────────────────────
+# Verbatim from the running assistant (workspace 49, as Maya). Drawn, not a
+# screenshot — but the words are the model's, not ours.
+DIAGRAMS[7] = '''<div class="dg dg-ai">
+  <div class="ai-q">Summarise what I missed in #general today.</div>
+  <div class="ai-a">
+    <div class="ai-a-h"><span class="ai-dot"></span>Assistant</div>
+    <ul>
+      <li>Karim: the analytics <b>timezone bug is back</b> on staging.</li>
+      <li>Karim asked <b>@maya to approve the RC cut</b> for tomorrow morning.</li>
+      <li>Karim off Thursday — Salma covers the calendar-sync load test.</li>
+      <li>Lina: launch-day runbook is pinned, everyone knows their role.</li>
+    </ul>
+  </div>
+  <div class="ai-foot"><code>tools used: read_channel</code>
+    <span>Real answer, real data — your cursor, your permissions.</span></div>
+</div>'''
+
+# ── 17 · function calling: the assistant borrows YOUR token ──────────────────
+DIAGRAMS[17] = f'''<div class="dg dg-fc">
+  <div class="dg-row">{box("You", C['react'])}<i class="dg-a">“create a high-priority task for Karim” →</i></div>
+  <div class="dg-row">{box("AI Service", C['node'], port="8089")}<i class="dg-a">↔ tool call ↔</i>{box("Model", C['ai'])}</div>
+  <div class="dg-row">{box("Gateway", C['spring'], port="8080")}<i class="dg-a">← your bearer token, forwarded</i></div>
+  <div class="dg-row">{box("Tasks", C['spring'], port="8085")}{box("Calendar", C['spring'], port="8083")}
+    {box("Chat", C['spring'], port="8084")}{box("Workspace", C['spring'], port="8087")}</div>
+  <div class="dg-cap"><b>No service account.</b> The assistant can only see and do
+    what you could do yourself — same APIs, same permissions.</div>
+</div>'''
+
+# ── 24 · the run sheet, so nobody freezes ────────────────────────────────────
+DIAGRAMS[24] = '''<div class="dg dg-run">
+  <ol class="run">
+    <li><b>Log in</b> — the workspace is already alive. 15 people, real history.</li>
+    <li><b>Chat + thread</b> — open #general, open a thread, send one message.</li>
+    <li><b>“Catch me up”</b> — the assistant answers from the real cursor.</li>
+    <li><b>Create a task from a sentence</b> — watch it land on the board.</li>
+    <li><b>Walk into the 2D office</b> — end here. Always end here.</li>
+  </ol>
+  <div class="dg-cap">Backup video ready. If a step stalls, move on — never debug on stage.</div>
+</div>'''
+
 # Two slides carry a table as their actual argument — render it, don't ask for a
 # screenshot of one. (Slide 13's table was being dropped by the parser entirely.)
 TABLES = {
@@ -358,7 +420,7 @@ VISUAL = {
  7:  ("shot", "The Assistant answering 'Catch me up — what did I miss?', with the 'Based on live data' caption visible in frame.", "16/10"),
  8:  ("shot", "My Desk — Today's Agenda with real meetings, tasks, sticky notes, whiteboard. Seed first; an empty desk proves the opposite of your point.", "16/10"),
  9:  ("live", "THE 2D OFFICE — go live. Several avatars, a meeting room, someone's status. Walk across the floor. Fallback screenshot: 1600×900.", "16/9"),
- 10: ("shot", "Figma board: wireframe and the shipped screen side by side. The before → after is the whole story.", "16/10"),
+ 10: ("shot", "The Figma file itself: the design system and component tree on the left, the shipped screen in the frame.", "16/10"),
  11: ("diagram", "Component tree or the reusable-components folder + one small Axios interceptor snippet (the auth token). Keep the code readable from the back row.", "4/3"),
  12: ("diagram", "Browser ⇄ WebSocket/STOMP ⇄ Gateway ⇄ Chat Service, with a second line for Agora. Or: two browsers, a message landing instantly.", "16/9"),
  18: ("shot", "The OfficeState schema — ten lines of @type decorators — beside the office. Say: 'this is the entire network protocol.'", "4/3"),

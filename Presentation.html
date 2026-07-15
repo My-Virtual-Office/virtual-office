@@ -240,6 +240,44 @@ tbody tr:last-child th,tbody tr:last-child td{background:#1164a30d;font-weight:7
 .dg-bands .dg-band.td{border-color:#1164a344;background:#1164a30a;color:var(--blue)}
 .dg-bands .dg-band.up{color:var(--muted)}
 
+/* 5 · research pipeline */
+.dg.dg-pipe{gap:.3em;width:100%}
+.dg-stage{width:100%;border:1px solid var(--rule);border-radius:6px;background:var(--wash);padding:.5em .6em;
+  display:flex;flex-direction:column;align-items:center;gap:.4em}
+.dg-stage-l{font:700 .6em/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.dg-pains{display:flex;flex-wrap:wrap;gap:.3em;justify-content:center}
+.dg-pains span{font:600 .78em/1 var(--mono);color:#e01e5a;background:#e01e5a0d;border:1px solid #e01e5a33;
+  border-radius:99px;padding:.3em .6em}
+.dg-story{font-size:.86em;font-style:italic;color:var(--ink);text-align:center;max-width:46ch;line-height:1.35}
+.dg-story b{font-style:normal}
+
+/* 7 · the assistant, answering */
+.dg.dg-ai{gap:.5em;width:100%;align-items:stretch}
+.ai-q{align-self:flex-end;background:var(--blue);color:#fff;border-radius:10px 10px 2px 10px;
+  padding:.5em .8em;font-size:.88em;font-weight:600;max-width:78%}
+.ai-a{background:var(--wash);border:1px solid var(--rule);border-left:3px solid var(--aubergine);
+  border-radius:2px 10px 10px 10px;padding:.6em .8em}
+.ai-a-h{display:flex;align-items:center;gap:.4em;font:700 .64em/1 var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--aubergine);margin-bottom:.45em}
+.ai-dot{width:.5em;height:.5em;border-radius:50%;background:#2bac76}
+.ai-a ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.3em}
+.ai-a li{font-size:.84em;line-height:1.3;color:var(--ink);padding-left:.9em;position:relative;max-width:none}
+.ai-a li::before{content:"";position:absolute;left:0;top:.5em;width:4px;height:4px;border-radius:1px;
+  background:var(--aubergine)}
+.ai-foot{display:flex;align-items:center;gap:.6em;flex-wrap:wrap}
+.ai-foot code{font:600 .7em/1 var(--mono);color:#2bac76;background:#2bac760d;border:1px solid #2bac7633;
+  border-radius:4px;padding:.25em .5em}
+.ai-foot span{font-size:.76em;color:var(--muted)}
+
+/* 17 · function calling */
+.dg.dg-fc{gap:.45em;width:100%}
+
+/* 24 · the run sheet */
+.dg.dg-run{width:100%}
+.run{margin:0;padding:0 0 0 1.4em;display:flex;flex-direction:column;gap:.45em}
+.run li{font-size:.88em;line-height:1.35;color:var(--ink);max-width:none}
+.run li::marker{font:700 .9em var(--mono);color:var(--aubergine)}
+
 /* observability — two real dashboards, stacked */
 .obs-shot{margin:0;width:100%;border:1px solid var(--rule);border-radius:6px;overflow:hidden;
   display:block;padding:0;aspect-ratio:auto;max-height:none;background:var(--wash);box-shadow:0 4px 18px #1d1c1d14}
@@ -613,11 +651,11 @@ const SLIDES = [
    "path": "M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"
   },
   "visual": {
-   "kind": "shot",
+   "kind": "diagram-built",
    "desc": "3–4 real user-story cards + the arrow Research → User Stories → Features. From Figma if you have it.",
    "ratio": "4/3",
    "table": null,
-   "html": null
+   "html": "<div class=\"dg dg-pipe\">\n  <div class=\"dg-stage\"><span class=\"dg-stage-l\">studied</span>\n    <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#4A154B\"></i><span>Slack</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6264A7\"></i><span>Teams</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#5865F2\"></i><span>Discord</span></div></div></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-stage\"><span class=\"dg-stage-l\">named the pain</span>\n    <div class=\"dg-pains\"><span>can't see who's free</span><span>context switching</span>\n      <span>no spontaneous talk</span><span>nothing is one place</span></div></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-stage\"><span class=\"dg-stage-l\">wrote user stories</span>\n    <div class=\"dg-story\">“As a remote employee I want to <b>see who is available</b>\n      so I can ask a quick question without booking a meeting.”</div></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-stage\"><span class=\"dg-stage-l\">built</span>\n    <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Presence</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#CC3333\"></i><span>2D floor</span></div>\n      <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Tasks</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#10A37F\"></i><span>Assistant</span></div></div></div>\n  <div class=\"dg-cap\">Every feature traces back to a pain. Nothing is here because it looked nice.</div>\n</div>"
   },
   "next": null
  },
@@ -645,7 +683,7 @@ const SLIDES = [
   "visual": {
    "kind": "shot",
    "desc": "The chat UI: a channel with a thread open, real names and avatars. Use the Northstar demo — never an empty workspace.",
-   "ratio": "1597/636",
+   "ratio": "1597/654",
    "table": null,
    "html": null
   },
@@ -696,11 +734,11 @@ const SLIDES = [
   ],
   "mark": null,
   "visual": {
-   "kind": "shot",
+   "kind": "diagram-built",
    "desc": "The Assistant answering 'Catch me up — what did I miss?', with the 'Based on live data' caption visible in frame.",
    "ratio": "16/10",
    "table": null,
-   "html": null
+   "html": "<div class=\"dg dg-ai\">\n  <div class=\"ai-q\">Summarise what I missed in #general today.</div>\n  <div class=\"ai-a\">\n    <div class=\"ai-a-h\"><span class=\"ai-dot\"></span>Assistant</div>\n    <ul>\n      <li>Karim: the analytics <b>timezone bug is back</b> on staging.</li>\n      <li>Karim asked <b>@maya to approve the RC cut</b> for tomorrow morning.</li>\n      <li>Karim off Thursday — Salma covers the calendar-sync load test.</li>\n      <li>Lina: launch-day runbook is pinned, everyone knows their role.</li>\n    </ul>\n  </div>\n  <div class=\"ai-foot\"><code>tools used: read_channel</code>\n    <span>Real answer, real data — your cursor, your permissions.</span></div>\n</div>"
   },
   "next": null
  },
@@ -777,7 +815,7 @@ const SLIDES = [
   "visual": {
    "kind": "live",
    "desc": "THE 2D OFFICE — go live. Several avatars, a meeting room, someone's status. Walk across the floor. Fallback screenshot: 1600×900.",
-   "ratio": "1599/812",
+   "ratio": "1600/1238",
    "table": null,
    "html": null
   },
@@ -822,8 +860,8 @@ const SLIDES = [
   },
   "visual": {
    "kind": "shot",
-   "desc": "Figma board: wireframe and the shipped screen side by side. The before → after is the whole story.",
-   "ratio": "16/10",
+   "desc": "The Figma file itself: the design system and component tree on the left, the shipped screen in the frame.",
+   "ratio": "1498/814",
    "table": null,
    "html": null
   },
@@ -1298,11 +1336,11 @@ const SLIDES = [
    "path": "M11.998,24c-0.321,0-0.641-0.084-0.922-0.247l-2.936-1.737c-0.438-0.245-0.224-0.332-0.08-0.383 c0.585-0.203,0.703-0.25,1.328-0.604c0.065-0.037,0.151-0.023,0.218,0.017l2.256,1.339c0.082,0.045,0.197,0.045,0.272,0l8.795-5.076 c0.082-0.047,0.134-0.141,0.134-0.238V6.921c0-0.099-0.053-0.192-0.137-0.242l-8.791-5.072c-0.081-0.047-0.189-0.047-0.271,0 L3.075,6.68C2.99,6.729,2.936,6.825,2.936,6.921v10.15c0,0.097,0.054,0.189,0.139,0.235l2.409,1.392 c1.307,0.654,2.108-0.116,2.108-0.89V7.787c0-0.142,0.114-0.253,0.256-0.253h1.115c0.139,0,0.255,0.112,0.255,0.253v10.021 c0,1.745-0.95,2.745-2.604,2.745c-0.508,0-0.909,0-2.026-0.551L2.28,18.675c-0.57-0.329-0.922-0.945-0.922-1.604V6.921 c0-0.659,0.353-1.275,0.922-1.603l8.795-5.082c0.557-0.315,1.296-0.315,1.848,0l8.794,5.082c0.57,0.329,0.924,0.944,0.924,1.603 v10.15c0,0.659-0.354,1.273-0.924,1.604l-8.794,5.078C12.643,23.916,12.324,24,11.998,24z M19.099,13.993 c0-1.9-1.284-2.406-3.987-2.763c-2.731-0.361-3.009-0.548-3.009-1.187c0-0.528,0.235-1.233,2.258-1.233 c1.807,0,2.473,0.389,2.747,1.607c0.024,0.115,0.129,0.199,0.247,0.199h1.141c0.071,0,0.138-0.031,0.186-0.081 c0.048-0.054,0.074-0.123,0.067-0.196c-0.177-2.098-1.571-3.076-4.388-3.076c-2.508,0-4.004,1.058-4.004,2.833 c0,1.925,1.488,2.457,3.895,2.695c2.88,0.282,3.103,0.703,3.103,1.269c0,0.983-0.789,1.402-2.642,1.402 c-2.327,0-2.839-0.584-3.011-1.742c-0.02-0.124-0.126-0.215-0.253-0.215h-1.137c-0.141,0-0.254,0.112-0.254,0.253 c0,1.482,0.806,3.248,4.655,3.248C17.501,17.007,19.099,15.91,19.099,13.993z"
   },
   "visual": {
-   "kind": "live",
+   "kind": "diagram-built",
    "desc": "Type: 'Create a high priority task for Karim…' → then the task appearing on the board. The strongest 15 seconds in the deck.",
    "ratio": "16/10",
    "table": null,
-   "html": null
+   "html": "<div class=\"dg dg-fc\">\n  <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#61DAFB\"></i><span>You</span></div><i class=\"dg-a\">“create a high-priority task for Karim” →</i></div>\n  <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#339933\"></i><span>AI Service</span><code>:8089</code></div><i class=\"dg-a\">↔ tool call ↔</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#10A37F\"></i><span>Model</span></div></div>\n  <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Gateway</span><code>:8080</code></div><i class=\"dg-a\">← your bearer token, forwarded</i></div>\n  <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Tasks</span><code>:8085</code></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Calendar</span><code>:8083</code></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Chat</span><code>:8084</code></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Workspace</span><code>:8087</code></div></div>\n  <div class=\"dg-cap\"><b>No service account.</b> The assistant can only see and do\n    what you could do yourself — same APIs, same permissions.</div>\n</div>"
   },
   "next": null
  },
@@ -1372,7 +1410,7 @@ const SLIDES = [
   "visual": {
    "kind": "table",
    "desc": "The OfficeState schema — ten lines of @type decorators — beside the office. Say: 'this is the entire network protocol.'",
-   "ratio": "1596/406",
+   "ratio": "4/3",
    "table": {
     "head": [
      "",
@@ -1524,7 +1562,7 @@ const SLIDES = [
   "visual": {
    "kind": "shot",
    "desc": "Phone frames: login · channels · chat. A real device beats an emulator.",
-   "ratio": "1597/1172",
+   "ratio": "1597/1190",
    "table": null,
    "html": null
   },
@@ -1632,7 +1670,7 @@ const SLIDES = [
   "visual": {
    "kind": "shot",
    "desc": "Channels · a live DM · creating a room — on the device.",
-   "ratio": "1597/1172",
+   "ratio": "1597/1190",
    "table": null,
    "html": null
   },
@@ -1674,7 +1712,7 @@ const SLIDES = [
   "visual": {
    "kind": "shot",
    "desc": "Four phones: Workspace · Create channel · Rooms (with Join) · Profile. The five-tab nav is the point.",
-   "ratio": "1597/1172",
+   "ratio": "1597/1190",
    "table": null,
    "html": null
   },
@@ -1713,11 +1751,11 @@ const SLIDES = [
   "tech": [],
   "mark": null,
   "visual": {
-   "kind": "live",
+   "kind": "diagram-built",
    "desc": "LIVE DEMO. Log in → chat + thread → assistant catch-up → create a task → walk into the 2D office. Have the backup video ready.",
    "ratio": "16/9",
    "table": null,
-   "html": null
+   "html": "<div class=\"dg dg-run\">\n  <ol class=\"run\">\n    <li><b>Log in</b> — the workspace is already alive. 15 people, real history.</li>\n    <li><b>Chat + thread</b> — open #general, open a thread, send one message.</li>\n    <li><b>“Catch me up”</b> — the assistant answers from the real cursor.</li>\n    <li><b>Create a task from a sentence</b> — watch it land on the board.</li>\n    <li><b>Walk into the 2D office</b> — end here. Always end here.</li>\n  </ol>\n  <div class=\"dg-cap\">Backup video ready. If a step stalls, move on — never debug on stage.</div>\n</div>"
   },
   "next": null
  }

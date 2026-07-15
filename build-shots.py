@@ -21,12 +21,17 @@ ROOT = pathlib.Path(__file__).resolve().parent
 SRC, OUT = ROOT / "screenshots", ROOT / "shots"
 OUT.mkdir(exist_ok=True)
 
-BG, RULE, MUTED = (248, 248, 248), (224, 224, 224), (110, 109, 110)
-PAD, LAB = 16, 30
+BG, RULE, MUTED = (248, 248, 248), (224, 224, 224), (74, 73, 74)
+PAD, LAB = 16, 48
+CAP_PX = 28          # ~14px once the composite is scaled into the slide's column
 
-def font(sz):
-    for c in ("/usr/share/fonts/TTF/DejaVuSans.ttf",
-              "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"):
+def font(sz, bold=True):
+    # Captions sit under a screenshot on a projector — thin grey at 14px reads as
+    # a smudge from the back row. Bold, and darker than the usual muted.
+    for c in (("/usr/share/fonts/TTF/DejaVuSans-Bold.ttf",
+               "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf") if bold else
+              ("/usr/share/fonts/TTF/DejaVuSans.ttf",
+               "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")):
         if pathlib.Path(c).exists():
             return ImageFont.truetype(c, sz)
     return ImageFont.load_default()
@@ -36,32 +41,55 @@ def load(rel):
 
 ratios = {}
 
-def row(n, specs, W=1600, cap_h=None):
-    """specs: [(image, label)]. Same height for all; width ∝ aspect ratio."""
-    labelled = any(l for _, l in specs)
-    lab = LAB if labelled else 0
-    avail = W - PAD * (len(specs) + 1)
-    h = int(avail / sum(im.width / im.height for im, _ in specs))
+def _lay(specs, W, cap_h=None):
+    """Justify one row to width W: shared height, widths ∝ aspect ratio."""
+    h = int((W - PAD * (len(specs) + 1)) / sum(im.width / im.height for im, _ in specs))
     if cap_h:
         h = min(h, cap_h)
     ims = [(im.resize((max(1, int(h * im.width / im.height)), h), Image.LANCZOS), l)
            for im, l in specs]
+    return ims, h, (LAB if any(l for _, l in specs) else 0)
+
+def _paint(c, ims, y, W):
+    d, f = ImageDraw.Draw(c), font(CAP_PX)
     total = sum(i.width for i, _ in ims) + PAD * (len(ims) - 1)
-    W = min(W, total + PAD * 2)          # no dead space: the slot's ratio is the row's ratio
-    H = h + PAD * 2 + lab
-    c = Image.new("RGB", (W, H), BG)
-    d = ImageDraw.Draw(c)
-    f = font(16)
     x = (W - total) // 2
     for im, l in ims:
-        d.rectangle([x - 1, PAD - 1, x + im.width, PAD + im.height], outline=RULE, width=1)
-        c.paste(im, (x, PAD))
+        d.rectangle([x - 1, y - 1, x + im.width, y + im.height], outline=RULE, width=1)
+        c.paste(im, (x, y))
         if l:
-            d.text((x + 1, PAD + im.height + 7), l, font=f, fill=MUTED)
+            d.text((x + 1, y + im.height + 10), l, font=f, fill=MUTED)
         x += im.width + PAD
+
+def _save(c, n):
     c.save(OUT / f"slide-{n:02d}.png", optimize=True)
-    ratios[str(n)] = f"{W}/{H}"
-    print(f"  slide-{n:02d}.png  {W}x{H}   ar={W/H:.2f}")
+    ratios[str(n)] = f"{c.width}/{c.height}"
+    print(f"  slide-{n:02d}.png  {c.width}x{c.height}   ar={c.width / c.height:.2f}")
+
+def row(n, specs, W=1600, cap_h=None):
+    """One justified row."""
+    ims, h, lab = _lay(specs, W, cap_h)
+    total = sum(i.width for i, _ in ims) + PAD * (len(ims) - 1)
+    W = min(W, total + PAD * 2)          # no dead space: the slot's ratio is the row's ratio
+    c = Image.new("RGB", (W, h + PAD * 2 + lab), BG)
+    _paint(c, ims, PAD, W)
+    _save(c, n)
+
+def stack(n, rows, W=1600):
+    """Several justified rows, one above the other.
+
+    Each row is justified to the SAME width, so a hero row of one or two large
+    captures sits over a row of smaller ones without either being cropped. Five
+    captures in a single row would shrink them all past reading distance.
+    """
+    laid = [_lay(specs, W) for specs in rows]
+    H = PAD + sum(h + lab + PAD for _, h, lab in laid)
+    c = Image.new("RGB", (W, H), BG)
+    y = PAD
+    for ims, h, lab in laid:
+        _paint(c, ims, y, W)
+        y += h + lab + PAD
+    _save(c, n)
 
 # ── 6 · chat, threads, voice — the parity slide ─────────────────────────────
 row(6, [(load("website/chat.png"), "Channel + messages"),
@@ -71,14 +99,18 @@ row(6, [(load("website/chat.png"), "Channel + messages"),
 # ── 8 · the personal desk ───────────────────────────────────────────────────
 row(8, [(load("website/my-desk.png"), None)], W=1500)
 
-# ── 9 · human presence: the floor, and who's on it ──────────────────────────
-row(9, [(load("website/2d-plane-office-room.png"), "The floor — real people at real desks"),
-        (load("website/2d-plane-how-are-online.png"), "Who's online")])
+# ── 9 · human presence: the floor, who's on it, and the rooms you walk into ─
+# Top row carries the argument (a floor with real people at real desks, and the
+# presence list). Bottom row answers "and then what?" — the places you can walk
+# into. Five in one row would make every one of them unreadable.
+stack(9, [[(load("website/2d-plane-office-room.png"), "The floor — real people at real desks"),
+           (load("website/2d-plane-how-are-online.png"), "Who's online")],
+          [(load("website/2d-plane-meeting-room.png"), "Meeting room"),
+           (load("website/2d-plane-ceo-room.png"), "CEO room"),
+           (load("website/2d-plane-chill-zone.png"), "Chill zone")]])
 
-# ── 18 · rooms you can walk into ────────────────────────────────────────────
-row(18, [(load("website/2d-plane-meeting-room.png"), "Meeting room"),
-         (load("website/2d-plane-ceo-room.png"), "CEO room"),
-         (load("website/2d-plane-chill-zone.png"), "Chill zone")], cap_h=470)
+# ── 10 · requirements -> interface: the actual design file ──────────────────
+row(10, [(load("website/figma.png"), None)], W=1500)
 
 # ── 20 · mobile: auth (login · register · OTP reset) ────────────────────────
 row(20, [(load("mobile/mobile-login.jpeg"), "Login"),
