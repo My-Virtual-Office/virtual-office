@@ -64,11 +64,11 @@ html,body{height:100%;overflow:hidden;background:var(--rail);font-family:var(--s
 .count b{color:var(--blue);font-weight:700}
 
 /* body: text left · visual right */
-.body{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:clamp(1.2rem,2.8vw,3rem);
+.body{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:clamp(1rem,2.2vw,2.4rem);
       align-items:safe center;align-content:safe center;padding:.5em 0;min-height:0;overflow:hidden}
 /* Long slides keep their visual — they're the ones that need it most. Tighten
    the type instead of throwing the picture away. */
-.slide[data-dense] .body{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);align-content:center}
+.slide[data-dense] .body{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-content:center}
 .slide[data-dense] li{line-height:1.42;max-width:44ch}
 .slide[data-dense] ul{gap:.42em}
 .slide[data-dense] h1{font-size:2.1em}
@@ -82,7 +82,7 @@ h1{font-size:2.5em;line-height:1.04;letter-spacing:-.034em;font-weight:800;max-w
 .hr{width:3.4em;height:.26em;background:var(--aubergine);margin:1rem 0 1.3rem;transform-origin:left}
 
 ul{list-style:none;display:flex;flex-direction:column;gap:.72em}
-li{position:relative;padding-left:1.05em;font-size:1.06em;line-height:1.42;color:#2c2b2c;max-width:34ch}
+li{position:relative;padding-left:1.05em;font-size:1.1em;line-height:1.4;color:#2c2b2c;max-width:30ch}
 li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;background:var(--blue);border-radius:1px}
 li b{color:var(--ink);font-weight:700}
 li i{font-style:italic;color:var(--muted)}
@@ -96,10 +96,10 @@ li code{font:500 .88em/1 var(--mono);background:var(--wash);border:1px solid var
 .chip i{width:7px;height:7px;border-radius:50%;background:var(--c);flex:none}
 
 /* a rendered table, where the table IS the argument */
-table{width:100%;border-collapse:collapse;font-size:.72em}
+table{width:100%;border-collapse:collapse;font-size:1.02em}
 caption{caption-side:top;text-align:left;font:700 clamp(8px,.62vw,10px)/1 var(--mono);letter-spacing:.14em;
         text-transform:uppercase;color:var(--muted);padding-bottom:.5rem}
-th,td{border:1px solid var(--rule);padding:.42em .6em;text-align:left;vertical-align:middle}
+th,td{border:1px solid var(--rule);padding:.74em .8em;text-align:left;vertical-align:middle}
 thead th{background:var(--aubergine);color:#fff;font:700 .92em/1.3 var(--mono);letter-spacing:.04em}
 thead th:last-child{background:var(--blue)}
 tbody th{background:var(--wash);font-weight:700;color:var(--ink);width:1%;white-space:nowrap}
@@ -109,14 +109,92 @@ td.n{color:#c9c9c9;font-weight:800;text-align:center}
 td.p{color:#e8a33d;font-weight:800;text-align:center}
 tbody tr:last-child th,tbody tr:last-child td{background:#1164a30d;font-weight:700}
 
+/* ── diagram kit ──────────────────────────────────────────────────────────
+   Everything that isn't a screenshot of the product is drawn here. Components
+   carry their tech's brand colour as a bar, so the stack reads at a glance. */
+.dg{font-size:1.02em;width:100%;line-height:1.35;display:flex;flex-direction:column;gap:.7em;align-items:center}
+.dg-box{position:relative;display:flex;flex-direction:column;align-items:center;gap:.12em;
+  border:1px solid var(--rule);border-radius:4px;background:var(--paper);padding:.5em .7em;
+  box-shadow:0 1px 2px #1d1c1d0d;white-space:nowrap;font-weight:700;color:var(--ink);overflow:hidden}
+.dg-box .dg-t{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,#999)}
+.dg-box code{font:500 .82em/1 var(--mono);color:var(--muted);font-weight:500}
+.dg-box small{font:500 .74em/1 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dg-box.wide{padding:.55em 2em}
+.dg-box.dg-ghost{border-style:dashed;box-shadow:none;background:transparent}
+.dg-box.bad{border-color:#e01e5a55;background:#e01e5a08}
+.dg-box.bad code{color:#e01e5a;text-decoration:line-through}
+.dg-box.good{border-color:#2bac7655;background:#2bac7608}
+.dg-box.good code{color:#2bac76}
+.dg-row{display:flex;align-items:center;gap:.5em;flex-wrap:wrap;justify-content:center}
+.dg-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4em;width:100%}
+.dg-a{font:600 .82em/1 var(--mono);color:var(--muted);font-style:normal;white-space:nowrap}
+.dg-a2{color:var(--blue);font-weight:700}
+.dg-v{color:var(--rule);font-size:1.1em;font-style:normal;line-height:.6}
+.dg-cap{font-size:.86em;flex-wrap:wrap;color:var(--muted);text-align:center;display:flex;align-items:center;gap:.5em;justify-content:center}
+
+/* architecture */
+.dg-arch{width:100%}
+.dg-tier{width:100%;position:relative;border:1px solid var(--rule);border-radius:5px;padding:.7em .6em .6em;background:var(--wash)}
+.dg-tier-l{position:absolute;top:-.62em;left:.7em;background:var(--paper);padding:0 .4em;
+  font:700 .7em/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.dg-gate{width:100%;display:flex;flex-direction:column;align-items:center;gap:.3em;
+  border:2px solid var(--aubergine);border-radius:5px;padding:.6em;background:#3f0e400a}
+.dg-gate small{font:500 .78em/1 var(--mono);color:var(--muted)}
+
+/* hub-and-spoke: satellites above and below, the thing that matters across the middle */
+.dg-hub{width:100%}
+.hub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.55em;width:100%;place-items:stretch}
+.hub-n{position:relative;border:1px solid var(--rule);border-radius:5px;background:var(--paper);
+  padding:1.05em .5em;text-align:center;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;box-shadow:0 1px 2px #1d1c1d0d}
+.hub-n::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--rule))}
+.hub-n.on::before{background:var(--blue)}
+.hub-c{grid-column:1/4;background:var(--blue);color:#fff;border-radius:5px;padding:1.25em .85em;text-align:center;
+  font-weight:800;font-size:1.12em;letter-spacing:-.01em;display:flex;flex-direction:column;gap:.1em;
+  box-shadow:0 6px 18px #1164a340}
+.hub-c small{font:500 .62em/1 var(--mono);color:#ffffffb3;text-transform:uppercase;letter-spacing:.1em}
+.hub-c.bad{background:var(--aubergine);box-shadow:0 6px 18px #3f0e4040}
+/* a row of satellites that centres itself however many there are */
+.hub-row{grid-column:1/4;display:flex;gap:.55em}
+.hub-row > *{flex:1}
+
+/* realtime lanes */
+.dg-flow{width:100%;align-items:stretch}
+.dg-lane{border:1px solid var(--rule);border-radius:5px;padding:.75em .6em .6em;position:relative;background:var(--paper)}
+.dg-lane.hot{border-color:var(--blue);background:#1164a308}
+.dg-lane-t{position:absolute;top:-.6em;left:.7em;background:var(--paper);padding:0 .4em;
+  font:700 .72em/1 var(--mono);letter-spacing:.06em;color:var(--muted)}
+.dg-lane.hot .dg-lane-t{color:var(--blue)}
+.dg-sub{text-align:center;font:500 .8em/1 var(--mono);color:var(--muted);margin-top:.5em}
+.dg-side{margin-top:.1em}
+
+/* identity */
+.dg-auth{width:100%}
+.dg-gatebox{display:flex;flex-direction:column;gap:.4em;align-items:center;border:2px solid var(--aubergine);
+  border-radius:5px;padding:.6em .7em;background:#3f0e400a}
+.dg-gatebox ol{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.16em;font-size:.86em}
+.dg-gatebox li{counter-increment:s;position:relative;padding-left:1.3em;white-space:nowrap;color:#3c3b3c}
+.dg-gatebox li::before{content:counter(s);position:absolute;left:0;top:.05em;width:1em;height:1em;border-radius:50%;
+  background:var(--aubergine);color:#fff;font:700 .68em/1em var(--mono);text-align:center}
+.dg-gatebox li.strike{font-weight:700;color:var(--ink)}
+.dg-gatebox code{font:500 .84em/1 var(--mono);background:var(--wash);padding:0 .25em;border-radius:2px}
+
+/* mobile */
+.dg-layers{width:100%}
+.dg-chain{display:flex;align-items:center;gap:.35em;flex-wrap:wrap;justify-content:center}
+.dg-tree{align-self:stretch;border:1px solid var(--rule);border-radius:5px;background:var(--wash);
+  padding:.7em .8em;font:500 .88em/1.6 var(--mono);color:#3c3b3c}
+.dg-tree b{color:var(--ink)}
+.dg-tree .in{padding-left:1.6em}
+.dg-tree small{color:var(--muted)}
+
 /* visual placeholder */
 figure{border:2px dashed #c9c9c9;border-radius:4px;background:
    repeating-linear-gradient(45deg,#fbfbfb 0 9px,#f4f4f4 9px 18px);
    display:grid;place-items:center;padding:clamp(.7rem,1.6vw,1.3rem);aspect-ratio:var(--ar,16/9);width:100%;
-   max-height:78vh;justify-self:center;position:relative;overflow:hidden}
+   max-height:80vh;justify-self:stretch;position:relative;overflow:hidden}
 figure[data-kind=live]{border-color:var(--blue);background:
    repeating-linear-gradient(45deg,#f2f8fd 0 9px,#eaf3fb 9px 18px)}
-figcaption{font-size:.72em;line-height:1.55;color:#5a5a5a;text-align:center;max-width:40ch}
+figcaption{font-size:.8em;line-height:1.55;color:#5a5a5a;text-align:center;max-width:40ch}
 .tag{position:absolute;top:0;left:0;background:#c9c9c9;color:#fff;font:700 clamp(7.5px,.6vw,9.5px)/1 var(--mono);
      letter-spacing:.1em;padding:.28rem .5rem;border-radius:0 0 4px 0}
 figure[data-kind=live] .tag{background:var(--blue)}
@@ -128,12 +206,14 @@ figure.has figcaption,figure.has .tag{display:none}
 
 /* bottom-right: who's next */
 .foot{display:flex;justify-content:flex-end;align-items:flex-end;padding-top:.6rem}
-.next{display:flex;align-items:center;gap:.62rem;border-left:3px solid var(--aubergine);padding:.4rem 0 .4rem .7rem;max-width:min(46ch,52%)}
-.next .lbl{font:700 clamp(8px,.62vw,10px)/1 var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
-.next .nm{font-weight:800;font-size:clamp(11px,.95vw,14.5px);letter-spacing:-.01em}
-.next .hint{font-size:clamp(9.5px,.76vw,12px);color:var(--muted);line-height:1.4}
-.next .av{width:clamp(26px,2.1vw,34px);aspect-ratio:1;border-radius:7px;background:var(--wash);border:1px solid var(--rule);
-      color:var(--aubergine);display:grid;place-items:center;font:800 clamp(9px,.75vw,11.5px)/1 var(--sans)}
+.next{display:flex;align-items:center;gap:.7em;border-left:3px solid var(--aubergine);padding:.15em 0 .15em .8em;max-width:min(40ch,58%)}
+.next-b{display:flex;flex-direction:column;gap:.15em}
+.next .lbl{font:700 .58em/1 var(--mono);letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+.next .nm{font-weight:800;font-size:1.05em;letter-spacing:-.015em;line-height:1.1}
+.next-r{width:1.6em;height:2px;background:var(--rule);margin:.15em 0}
+.next .hint{font-size:.72em;color:var(--muted);line-height:1.35}
+.next .av{width:2.3em;aspect-ratio:1;border-radius:6px;background:var(--aubergine);border:none;
+      color:#fff;display:grid;place-items:center;font:800 .72em/1 var(--sans);flex:none}
 
 /* ── entrance choreography ─────────────────────────────────────────────── */
 .slide.live .anim{animation:rise .5s cubic-bezier(.22,1,.36,1) both}
@@ -248,7 +328,9 @@ function render(){
           <ul>${s.bullets.map((b,k)=>`<li class="anim" style="animation-delay:${.16+k*.05}s">${b}</li>`).join('')}</ul>
           ${s.tech.length?`<div class="tech anim" style="animation-delay:${.16+s.bullets.length*.05}s">${s.tech.map(chip).join('')}</div>`:''}
         </div>
-        ${v.kind==='table'
+        ${v.kind==='diagram-built'
+           ? `<div class="anim" style="animation-delay:.2s">${v.html}</div>`
+           : v.kind==='table'
            ? `<div class="anim" style="animation-delay:.2s">${tableHTML(v.table)}</div>`
            : `<figure class="anim" data-kind="${v.kind}" style="--ar:${v.ratio};animation-delay:.2s" data-shot="slide-${String(s.n).padStart(2,'0')}">
           <span class="tag">${KIND[v.kind]}</span>
@@ -260,8 +342,10 @@ function render(){
       <div class="foot">
         ${s.next?`<div class="next anim" style="animation-delay:.3s">
           <span class="av">${s.next.initials}</span>
-          <span><span class="lbl">Next</span><br><span class="nm">${s.next.name}</span>
-          <span class="hint">— ${s.next.role}${s.next.hint?`<br>${s.next.hint}`:''}</span></span>
+          <span class="next-b"><span class="lbl">Next</span>
+            <span class="nm">${s.next.name}</span>
+            <i class="next-r"></i>
+            <span class="hint">${s.next.hint}</span></span>
         </div>`:''}
       </div>
       <div class="ghost">${String(s.n).padStart(2,'0')}</div>

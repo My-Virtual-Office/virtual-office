@@ -64,11 +64,11 @@ html,body{height:100%;overflow:hidden;background:var(--rail);font-family:var(--s
 .count b{color:var(--blue);font-weight:700}
 
 /* body: text left · visual right */
-.body{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:clamp(1.2rem,2.8vw,3rem);
+.body{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:clamp(1rem,2.2vw,2.4rem);
       align-items:safe center;align-content:safe center;padding:.5em 0;min-height:0;overflow:hidden}
 /* Long slides keep their visual — they're the ones that need it most. Tighten
    the type instead of throwing the picture away. */
-.slide[data-dense] .body{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);align-content:center}
+.slide[data-dense] .body{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-content:center}
 .slide[data-dense] li{line-height:1.42;max-width:44ch}
 .slide[data-dense] ul{gap:.42em}
 .slide[data-dense] h1{font-size:2.1em}
@@ -82,7 +82,7 @@ h1{font-size:2.5em;line-height:1.04;letter-spacing:-.034em;font-weight:800;max-w
 .hr{width:3.4em;height:.26em;background:var(--aubergine);margin:1rem 0 1.3rem;transform-origin:left}
 
 ul{list-style:none;display:flex;flex-direction:column;gap:.72em}
-li{position:relative;padding-left:1.05em;font-size:1.06em;line-height:1.42;color:#2c2b2c;max-width:34ch}
+li{position:relative;padding-left:1.05em;font-size:1.1em;line-height:1.4;color:#2c2b2c;max-width:30ch}
 li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;background:var(--blue);border-radius:1px}
 li b{color:var(--ink);font-weight:700}
 li i{font-style:italic;color:var(--muted)}
@@ -96,10 +96,10 @@ li code{font:500 .88em/1 var(--mono);background:var(--wash);border:1px solid var
 .chip i{width:7px;height:7px;border-radius:50%;background:var(--c);flex:none}
 
 /* a rendered table, where the table IS the argument */
-table{width:100%;border-collapse:collapse;font-size:.72em}
+table{width:100%;border-collapse:collapse;font-size:1.02em}
 caption{caption-side:top;text-align:left;font:700 clamp(8px,.62vw,10px)/1 var(--mono);letter-spacing:.14em;
         text-transform:uppercase;color:var(--muted);padding-bottom:.5rem}
-th,td{border:1px solid var(--rule);padding:.42em .6em;text-align:left;vertical-align:middle}
+th,td{border:1px solid var(--rule);padding:.74em .8em;text-align:left;vertical-align:middle}
 thead th{background:var(--aubergine);color:#fff;font:700 .92em/1.3 var(--mono);letter-spacing:.04em}
 thead th:last-child{background:var(--blue)}
 tbody th{background:var(--wash);font-weight:700;color:var(--ink);width:1%;white-space:nowrap}
@@ -109,14 +109,92 @@ td.n{color:#c9c9c9;font-weight:800;text-align:center}
 td.p{color:#e8a33d;font-weight:800;text-align:center}
 tbody tr:last-child th,tbody tr:last-child td{background:#1164a30d;font-weight:700}
 
+/* ── diagram kit ──────────────────────────────────────────────────────────
+   Everything that isn't a screenshot of the product is drawn here. Components
+   carry their tech's brand colour as a bar, so the stack reads at a glance. */
+.dg{font-size:1.02em;width:100%;line-height:1.35;display:flex;flex-direction:column;gap:.7em;align-items:center}
+.dg-box{position:relative;display:flex;flex-direction:column;align-items:center;gap:.12em;
+  border:1px solid var(--rule);border-radius:4px;background:var(--paper);padding:.5em .7em;
+  box-shadow:0 1px 2px #1d1c1d0d;white-space:nowrap;font-weight:700;color:var(--ink);overflow:hidden}
+.dg-box .dg-t{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,#999)}
+.dg-box code{font:500 .82em/1 var(--mono);color:var(--muted);font-weight:500}
+.dg-box small{font:500 .74em/1 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dg-box.wide{padding:.55em 2em}
+.dg-box.dg-ghost{border-style:dashed;box-shadow:none;background:transparent}
+.dg-box.bad{border-color:#e01e5a55;background:#e01e5a08}
+.dg-box.bad code{color:#e01e5a;text-decoration:line-through}
+.dg-box.good{border-color:#2bac7655;background:#2bac7608}
+.dg-box.good code{color:#2bac76}
+.dg-row{display:flex;align-items:center;gap:.5em;flex-wrap:wrap;justify-content:center}
+.dg-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4em;width:100%}
+.dg-a{font:600 .82em/1 var(--mono);color:var(--muted);font-style:normal;white-space:nowrap}
+.dg-a2{color:var(--blue);font-weight:700}
+.dg-v{color:var(--rule);font-size:1.1em;font-style:normal;line-height:.6}
+.dg-cap{font-size:.86em;flex-wrap:wrap;color:var(--muted);text-align:center;display:flex;align-items:center;gap:.5em;justify-content:center}
+
+/* architecture */
+.dg-arch{width:100%}
+.dg-tier{width:100%;position:relative;border:1px solid var(--rule);border-radius:5px;padding:.7em .6em .6em;background:var(--wash)}
+.dg-tier-l{position:absolute;top:-.62em;left:.7em;background:var(--paper);padding:0 .4em;
+  font:700 .7em/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.dg-gate{width:100%;display:flex;flex-direction:column;align-items:center;gap:.3em;
+  border:2px solid var(--aubergine);border-radius:5px;padding:.6em;background:#3f0e400a}
+.dg-gate small{font:500 .78em/1 var(--mono);color:var(--muted)}
+
+/* hub-and-spoke: satellites above and below, the thing that matters across the middle */
+.dg-hub{width:100%}
+.hub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.55em;width:100%;place-items:stretch}
+.hub-n{position:relative;border:1px solid var(--rule);border-radius:5px;background:var(--paper);
+  padding:1.05em .5em;text-align:center;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;box-shadow:0 1px 2px #1d1c1d0d}
+.hub-n::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--rule))}
+.hub-n.on::before{background:var(--blue)}
+.hub-c{grid-column:1/4;background:var(--blue);color:#fff;border-radius:5px;padding:1.25em .85em;text-align:center;
+  font-weight:800;font-size:1.12em;letter-spacing:-.01em;display:flex;flex-direction:column;gap:.1em;
+  box-shadow:0 6px 18px #1164a340}
+.hub-c small{font:500 .62em/1 var(--mono);color:#ffffffb3;text-transform:uppercase;letter-spacing:.1em}
+.hub-c.bad{background:var(--aubergine);box-shadow:0 6px 18px #3f0e4040}
+/* a row of satellites that centres itself however many there are */
+.hub-row{grid-column:1/4;display:flex;gap:.55em}
+.hub-row > *{flex:1}
+
+/* realtime lanes */
+.dg-flow{width:100%;align-items:stretch}
+.dg-lane{border:1px solid var(--rule);border-radius:5px;padding:.75em .6em .6em;position:relative;background:var(--paper)}
+.dg-lane.hot{border-color:var(--blue);background:#1164a308}
+.dg-lane-t{position:absolute;top:-.6em;left:.7em;background:var(--paper);padding:0 .4em;
+  font:700 .72em/1 var(--mono);letter-spacing:.06em;color:var(--muted)}
+.dg-lane.hot .dg-lane-t{color:var(--blue)}
+.dg-sub{text-align:center;font:500 .8em/1 var(--mono);color:var(--muted);margin-top:.5em}
+.dg-side{margin-top:.1em}
+
+/* identity */
+.dg-auth{width:100%}
+.dg-gatebox{display:flex;flex-direction:column;gap:.4em;align-items:center;border:2px solid var(--aubergine);
+  border-radius:5px;padding:.6em .7em;background:#3f0e400a}
+.dg-gatebox ol{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:.16em;font-size:.86em}
+.dg-gatebox li{counter-increment:s;position:relative;padding-left:1.3em;white-space:nowrap;color:#3c3b3c}
+.dg-gatebox li::before{content:counter(s);position:absolute;left:0;top:.05em;width:1em;height:1em;border-radius:50%;
+  background:var(--aubergine);color:#fff;font:700 .68em/1em var(--mono);text-align:center}
+.dg-gatebox li.strike{font-weight:700;color:var(--ink)}
+.dg-gatebox code{font:500 .84em/1 var(--mono);background:var(--wash);padding:0 .25em;border-radius:2px}
+
+/* mobile */
+.dg-layers{width:100%}
+.dg-chain{display:flex;align-items:center;gap:.35em;flex-wrap:wrap;justify-content:center}
+.dg-tree{align-self:stretch;border:1px solid var(--rule);border-radius:5px;background:var(--wash);
+  padding:.7em .8em;font:500 .88em/1.6 var(--mono);color:#3c3b3c}
+.dg-tree b{color:var(--ink)}
+.dg-tree .in{padding-left:1.6em}
+.dg-tree small{color:var(--muted)}
+
 /* visual placeholder */
 figure{border:2px dashed #c9c9c9;border-radius:4px;background:
    repeating-linear-gradient(45deg,#fbfbfb 0 9px,#f4f4f4 9px 18px);
    display:grid;place-items:center;padding:clamp(.7rem,1.6vw,1.3rem);aspect-ratio:var(--ar,16/9);width:100%;
-   max-height:78vh;justify-self:center;position:relative;overflow:hidden}
+   max-height:80vh;justify-self:stretch;position:relative;overflow:hidden}
 figure[data-kind=live]{border-color:var(--blue);background:
    repeating-linear-gradient(45deg,#f2f8fd 0 9px,#eaf3fb 9px 18px)}
-figcaption{font-size:.72em;line-height:1.55;color:#5a5a5a;text-align:center;max-width:40ch}
+figcaption{font-size:.8em;line-height:1.55;color:#5a5a5a;text-align:center;max-width:40ch}
 .tag{position:absolute;top:0;left:0;background:#c9c9c9;color:#fff;font:700 clamp(7.5px,.6vw,9.5px)/1 var(--mono);
      letter-spacing:.1em;padding:.28rem .5rem;border-radius:0 0 4px 0}
 figure[data-kind=live] .tag{background:var(--blue)}
@@ -128,12 +206,14 @@ figure.has figcaption,figure.has .tag{display:none}
 
 /* bottom-right: who's next */
 .foot{display:flex;justify-content:flex-end;align-items:flex-end;padding-top:.6rem}
-.next{display:flex;align-items:center;gap:.62rem;border-left:3px solid var(--aubergine);padding:.4rem 0 .4rem .7rem;max-width:min(46ch,52%)}
-.next .lbl{font:700 clamp(8px,.62vw,10px)/1 var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
-.next .nm{font-weight:800;font-size:clamp(11px,.95vw,14.5px);letter-spacing:-.01em}
-.next .hint{font-size:clamp(9.5px,.76vw,12px);color:var(--muted);line-height:1.4}
-.next .av{width:clamp(26px,2.1vw,34px);aspect-ratio:1;border-radius:7px;background:var(--wash);border:1px solid var(--rule);
-      color:var(--aubergine);display:grid;place-items:center;font:800 clamp(9px,.75vw,11.5px)/1 var(--sans)}
+.next{display:flex;align-items:center;gap:.7em;border-left:3px solid var(--aubergine);padding:.15em 0 .15em .8em;max-width:min(40ch,58%)}
+.next-b{display:flex;flex-direction:column;gap:.15em}
+.next .lbl{font:700 .58em/1 var(--mono);letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+.next .nm{font-weight:800;font-size:1.05em;letter-spacing:-.015em;line-height:1.1}
+.next-r{width:1.6em;height:2px;background:var(--rule);margin:.15em 0}
+.next .hint{font-size:.72em;color:var(--muted);line-height:1.35}
+.next .av{width:2.3em;aspect-ratio:1;border-radius:6px;background:var(--aubergine);border:none;
+      color:#fff;display:grid;place-items:center;font:800 .72em/1 var(--sans);flex:none}
 
 /* ── entrance choreography ─────────────────────────────────────────────── */
 .slide.live .anim{animation:rise .5s cubic-bezier(.22,1,.36,1) both}
@@ -222,7 +302,6 @@ const SLIDES = [
   "role": "Backend · Security & Services",
   "time": "~30s",
   "bullets": [
-   "Project name + one line",
    "Who we are — Frontend · Backend · Mobile",
    "Agenda: problem → what → how → demo"
   ],
@@ -241,7 +320,8 @@ const SLIDES = [
    "kind": "diagram",
    "desc": "Title card — project name + the six of you. A team photo works better than a logo.",
    "ratio": "16/9",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": null
  },
@@ -269,10 +349,11 @@ const SLIDES = [
   ],
   "tech": [],
   "visual": {
-   "kind": "diagram",
+   "kind": "diagram-built",
    "desc": "One person surrounded by app logos (Slack · Teams · Zoom · Jira · Calendar) with arrows going everywhere. Draw it — a screenshot can't say this.",
    "ratio": "4/3",
-   "table": null
+   "table": null,
+   "html": "<div class=\"dg dg-hub\">\n  <div class=\"hub-grid\">\n    <span class=\"hub-n\" style=\"--c:#4A154B\">Slack</span>\n    <span class=\"hub-n\" style=\"--c:#6264A7\">Teams</span>\n    <span class=\"hub-n\" style=\"--c:#2D8CFF\">Zoom</span>\n    <span class=\"hub-c bad\">you<small>all day</small></span>\n    <div class=\"hub-row\">\n      <span class=\"hub-n\" style=\"--c:#0052CC\">Jira</span>\n      <span class=\"hub-n\" style=\"--c:#4285F4\">Calendar</span>\n      <span class=\"hub-n\" style=\"--c:#5865F2\">Discord</span>\n    </div>\n  </div>\n  <div class=\"dg-cap\">Five tools. One job. No idea what the team is doing.</div>\n</div>"
   },
   "next": null
  },
@@ -286,7 +367,7 @@ const SLIDES = [
   "bullets": [
    "Studied them honestly — they&#x27;re good at their job",
    "<b>None give you a workplace.</b> They give you channels",
-   "(presence is the missing piece — don&#x27;t say 2D yet)"
+   "Presence is the missing piece"
   ],
   "notes": [
    "Be genuinely fair to Slack/Teams/Discord — give them their ticks out loud",
@@ -368,7 +449,8 @@ const SLIDES = [
       "y"
      ]
     ]
-   }
+   },
+   "html": null
   },
   "next": null
  },
@@ -396,16 +478,16 @@ const SLIDES = [
   ],
   "tech": [],
   "visual": {
-   "kind": "diagram",
+   "kind": "diagram-built",
    "desc": "A single ring labelled 'Workspace' with five segments: People · Chat · Tasks · Meetings · Presence. Still no 2D reveal.",
    "ratio": "1/1",
-   "table": null
+   "table": null,
+   "html": "<div class=\"dg dg-hub\">\n  <div class=\"hub-grid\">\n    <span class=\"hub-n on\">People</span><span class=\"hub-n on\">Chat</span><span class=\"hub-n on\">Tasks</span>\n    <span class=\"hub-c\">Workspace</span>\n    <div class=\"hub-row\"><span class=\"hub-n on\">Meetings</span><span class=\"hub-n on\">Presence</span></div>\n  </div>\n  <div class=\"dg-cap\">Not five features. One workflow.</div>\n</div>"
   },
   "next": {
    "name": "Rokaya",
    "initials": "RO",
-   "role": "Frontend · UI/UX",
-   "hint": "takes the research — how we turned interviews into what we built"
+   "hint": "how research became what we built"
   }
  },
  {
@@ -441,7 +523,8 @@ const SLIDES = [
    "kind": "shot",
    "desc": "3–4 real user-story cards + the arrow Research → User Stories → Features. From Figma if you have it.",
    "ratio": "4/3",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": null
  },
@@ -454,7 +537,7 @@ const SLIDES = [
   "time": "~45s",
   "bullets": [
    "Chat · Threads · Voice calls",
-   "<b>This is parity, not the answer</b> → next slides"
+   "<b>Parity — not the answer</b> →"
   ],
   "notes": [
    "Go fast — this is table stakes and everyone knows it",
@@ -469,13 +552,13 @@ const SLIDES = [
    "kind": "shot",
    "desc": "The chat UI: a channel with a thread open, real names and avatars. Use the Northstar demo — never an empty workspace.",
    "ratio": "16/10",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": {
    "name": "Sersawy",
    "initials": "SE",
-   "role": "Backend · Workspace, AI & Platform",
-   "hint": "shows what we added for the person, not just the work"
+   "hint": "what we added for the employee"
   }
  },
  {
@@ -519,7 +602,8 @@ const SLIDES = [
    "kind": "shot",
    "desc": "The Assistant answering 'Catch me up — what did I miss?', with the 'Based on live data' caption visible in frame.",
    "ratio": "16/10",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": null
  },
@@ -554,18 +638,18 @@ const SLIDES = [
    "kind": "shot",
    "desc": "My Desk — Today's Agenda with real meetings, tasks, sticky notes, whiteboard. Seed first; an empty desk proves the opposite of your point.",
    "ratio": "16/10",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": {
    "name": "Nadine",
    "initials": "NA",
-   "role": "Frontend · Real-Time & the 2D Office",
-   "hint": "on the gap nobody else has closed"
+   "hint": "the gap nobody else has closed"
   }
  },
  {
   "n": 9,
-  "title": "The Biggest Gap: Human Presence 🎯",
+  "title": "The Biggest Gap: Human Presence",
   "who": "Nadine",
   "initials": "NA",
   "role": "Frontend · Real-Time & the 2D Office",
@@ -595,12 +679,12 @@ const SLIDES = [
    "kind": "live",
    "desc": "THE 2D OFFICE — go live. Several avatars, a meeting room, someone's status. Walk across the floor. Fallback screenshot: 1600×900.",
    "ratio": "16/9",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": {
    "name": "Rokaya",
    "initials": "RO",
-   "role": "Frontend · UI/UX",
    "hint": ""
   }
  },
@@ -635,7 +719,8 @@ const SLIDES = [
    "kind": "shot",
    "desc": "Figma board: wireframe and the shipped screen side by side. The before → after is the whole story.",
    "ratio": "16/10",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": null
  },
@@ -683,13 +768,13 @@ const SLIDES = [
    "kind": "shot",
    "desc": "Component tree or the reusable-components folder + one small Axios interceptor snippet (the auth token). Keep the code readable from the back row.",
    "ratio": "4/3",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": {
    "name": "Nadine",
    "initials": "NA",
-   "role": "Frontend · Real-Time & the 2D Office",
-   "hint": "on why HTTP wasn't enough"
+   "hint": "why HTTP wasn't enough"
   }
  },
  {
@@ -732,10 +817,11 @@ const SLIDES = [
    }
   ],
   "visual": {
-   "kind": "diagram",
+   "kind": "diagram-built",
    "desc": "Browser ⇄ WebSocket/STOMP ⇄ Gateway ⇄ Chat Service, with a second line for Agora. Or: two browsers, a message landing instantly.",
    "ratio": "16/9",
-   "table": null
+   "table": null,
+   "html": "<div class=\"dg dg-flow\">\n  <div class=\"dg-lane\"><b class=\"dg-lane-t\">HTTP — you ask</b>\n    <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#61DAFB\"></i><span>Browser</span></div><i class=\"dg-a\">request →</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Gateway</span></div>\n      <i class=\"dg-a\">← response</i></div></div>\n  <div class=\"dg-lane hot\"><b class=\"dg-lane-t\">WebSocket / STOMP — it arrives</b>\n    <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#61DAFB\"></i><span>Browser</span></div><i class=\"dg-a dg-a2\">⇄ persistent ⇄</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Gateway</span></div>\n      <i class=\"dg-a dg-a2\">⇄</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Chat</span></div></div>\n    <div class=\"dg-sub\">messages · presence · office activity · notifications</div></div>\n  <div class=\"dg-row dg-side\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#099DFD\"></i><span>Agora SDK</span></div><i class=\"dg-a\">voice / video — we didn't rebuild WebRTC</i></div>\n</div>"
   },
   "next": null
  },
@@ -747,7 +833,6 @@ const SLIDES = [
   "role": "Frontend · Real-Time & the 2D Office",
   "time": "~1m 30s",
   "bullets": [
-   "Slide 9 was <i>why</i>. This is <i>how</i>",
    "<b>Phaser 3</b> — a floor plan <b>is</b> a game loop",
    "<b>Colyseus</b> — authoritative, its own Node service",
    "<i>“Why two realtime stacks?”</i> → <b>opposite problems</b> →",
@@ -832,13 +917,13 @@ const SLIDES = [
       "Colyseus"
      ]
     ]
-   }
+   },
+   "html": null
   },
   "next": {
    "name": "Khalwsh",
    "initials": "KH",
-   "role": "Backend · Architecture & Chat",
-   "hint": "opens the backend"
+   "hint": "the backend"
   }
  },
  {
@@ -902,16 +987,16 @@ const SLIDES = [
    }
   ],
   "visual": {
-   "kind": "diagram",
+   "kind": "diagram-built",
    "desc": "THE ARCHITECTURE. Clients → Gateway → 9 services → datastores (MySQL · PostgreSQL · MongoDB · Redis · RabbitMQ). Colour-code by concern. Your most important slide.",
    "ratio": "16/9",
-   "table": null
+   "table": null,
+   "html": "<div class=\"dg dg-arch\">\n  <div class=\"dg-tier\"><span class=\"dg-tier-l\">clients</span><div class=\"dg-row\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#61DAFB\"></i><span>Web</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#02569B\"></i><span>Mobile</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#CC3333\"></i><span>2D Office</span></div></div></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-gate\"><div class=\"dg-box wide\"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>API Gateway</span></div><small>one door · validates the JWT once · injects identity</small></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-tier\"><span class=\"dg-tier-l\">services</span><div class=\"dg-grid\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>User</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Workspace</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Chat</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Notif</span></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Calendar</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Tasks</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Room</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#10A37F\"></i><span>AI</span></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#339933\"></i><span>Office</span></div></div></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-tier\"><span class=\"dg-tier-l\">data</span><div class=\"dg-row\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#4479A1\"></i><span>MySQL</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#4169E1\"></i><span>Postgres</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#47A248\"></i><span>Mongo</span></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#DC382D\"></i><span>Redis</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#FF6600\"></i><span>RabbitMQ</span></div></div></div>\n  <div class=\"dg-cap\"><div class=\"dg-box dg-ghost\"><i class=\"dg-t\" style=\"--c:#2496ED\"></i><span>Docker Compose</span></div> ~20 containers · one command</div>\n</div>"
   },
   "next": {
    "name": "Mousa",
    "initials": "MO",
-   "role": "Backend · Security & Services",
-   "hint": ""
+   "hint": "identity, tasks and the calendar"
   }
  },
  {
@@ -958,10 +1043,11 @@ const SLIDES = [
    }
   ],
   "visual": {
-   "kind": "diagram",
+   "kind": "diagram-built",
    "desc": "Strip-then-inject: Client (X-User-Id: 1 ← spoofed ✗) → Gateway [verify JWT · strip · inject] → Service (X-User-Id: 64 ✓).",
    "ratio": "16/9",
-   "table": null
+   "table": null,
+   "html": "<div class=\"dg dg-auth\">\n  <div class=\"dg-row\">\n    <div class=\"dg-box bad\"><span>Client</span><code>X-User-Id: 1</code><small>spoofed</small></div>\n    <i class=\"dg-a\">→</i>\n    <div class=\"dg-gatebox\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Gateway</span></div>\n      <ol><li>verify JWT</li><li class=\"strike\">strip <code>X-User-*</code></li><li>inject trusted</li></ol></div>\n    <i class=\"dg-a\">→</i>\n    <div class=\"dg-box good\"><span>Service</span><code>X-User-Id: 64</code><small>trusted</small></div>\n  </div>\n  <div class=\"dg-cap\">Services never parse a JWT. They trust the gateway — because only it can set these.</div>\n</div>"
   },
   "next": null
  },
@@ -977,7 +1063,7 @@ const SLIDES = [
    "<b><code>#42</code>, not a UUID</b> — max+1 per workspace",
    "Assign → RabbitMQ → Notification. <b>Never waits</b>",
    "<code>@Scheduled</code> 60s — reminders + <b>auto-status</b>",
-   "Meeting starts → <i>“In a meeting 📅”</i> by itself",
+   "Meeting starts → <i>“In a meeting ”</i> by itself",
    "<b>Idempotent</b> — flags, never double-send",
    "<b>Never clobber a human&#x27;s own status</b>"
   ],
@@ -1012,22 +1098,22 @@ const SLIDES = [
    "kind": "shot",
    "desc": "AutoStatusScheduler.sync() — ~15 lines. Plus the tasks board with Overdue / Today / upcoming bands.",
    "ratio": "4/3",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": {
-   "name": "Sersawy",
-   "initials": "SE",
-   "role": "Backend · Workspace, AI & Platform",
-   "hint": "on the workspace and the AI bot"
+   "name": "Khalwsh",
+   "initials": "KH",
+   "hint": "chat, notifications and rooms"
   }
  },
  {
   "n": 17,
-  "title": "Workspace Service & the AI Bot",
-  "who": "Sersawy",
-  "initials": "SE",
-  "role": "Backend · Workspace, AI & Platform",
-  "time": "~1m 15s",
+  "title": "Chat, Notifications & Rooms",
+  "who": "Khalwsh",
+  "initials": "KH",
+  "role": "Backend · Architecture & Chat",
+  "time": "~1m 30s",
   "bullets": [
    "Workspace = the backbone",
    "Members · teams · channels · roles · office layout",
@@ -1036,15 +1122,14 @@ const SLIDES = [
    "Function calling — same APIs, <b>your</b> token"
   ],
   "notes": [
-   "<b>Create the task from a sentence, live</b>",
-   "While it runs, say the context + permissions point — that&#x27;s the actual content",
-   "The task appearing on the board is the applause moment"
+   "Three services <i>and</i> encryption — budget it: ~30s chat/Redis/Mongo · ~20s RabbitMQ · ~40s encryption",
+   "<b>Run the Mongo ciphertext query live</b> — ten seconds, and it ends the argument"
   ],
   "script": [
-   "<b>Workspace Service</b> — the backbone. It creates the workspace, adds/removes members, splits people into <b>teams</b>, manages channels and rooms, sets roles and permissions, and connects people to their tasks, meetings and conversations. It also holds the virtual office layout.",
-   "One place instead of five apps — that&#x27;s this service&#x27;s job.",
-   "<b>AI Bot</b> — it can summarise a long conversation, pull out the decisions, tell you which tasks were mentioned, answer questions about the workspace, and create tasks and meetings from plain language.",
-   "<b>Say the hard part out loud (examiners like this):</b> the real challenge was <b>context</b> — giving the model only the data that belongs to this user and this conversation, so the answer is accurate and grounded. We solved it with <b>function calling</b>: the model doesn&#x27;t get a data dump, it calls the same APIs a user would, <b>using that user&#x27;s own token</b> — so it can never see anything the person couldn&#x27;t see themselves."
+   "<b>Chat Service</b> — DMs, channels, threads, group conversations, delivered live.",
+   "<b>🔒 Direct messages are end-to-end encrypted — we can&#x27;t read them, and neither can our server.</b>",
+   "<b>Notification Service</b> — email, in-app pop-ups, and real-time.",
+   "<b>Room Service</b> — meeting and voice rooms, who&#x27;s inside, joining and leaving, and linking a room to a place in the virtual office. <b>Agora</b> provides the call transport; we own rooms and permissions."
   ],
   "tech": [
    {
@@ -1064,26 +1149,26 @@ const SLIDES = [
    "kind": "live",
    "desc": "Type: 'Create a high priority task for Karim…' → then the task appearing on the board. The strongest 15 seconds in the deck.",
    "ratio": "16/10",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": {
-   "name": "Khalwsh",
-   "initials": "KH",
-   "role": "Backend · Architecture & Chat",
-   "hint": "on chat, notifications and rooms"
+   "name": "Sersawy",
+   "initials": "SE",
+   "hint": "the workspace and the AI bot"
   }
  },
  {
   "n": 18,
-  "title": "Chat, Notifications & Rooms",
-  "who": "Khalwsh",
-  "initials": "KH",
-  "role": "Backend · Architecture & Chat",
-  "time": "~1m 30s",
+  "title": "Workspace Service & the AI Bot",
+  "who": "Sersawy",
+  "initials": "SE",
+  "role": "Backend · Workspace, AI & Platform",
+  "time": "~1m 15s",
   "bullets": [
    "Chat: DMs · channels · threads, live",
    "WebSocket · <b>Redis</b> presence · <b>Mongo</b> volume",
-   "🔒 <b>DMs are E2E — we can&#x27;t read them</b>",
+   " <b>DMs are E2E — we can&#x27;t read them</b>",
    "ECDH → AES-GCM <b>in the browser</b>",
    "Server stores <code>vo1:&lt;iv&gt;:&lt;ct&gt;</code> and nothing else",
    "<b>Trade-off: DMs only</b> — channels feed search + AI",
@@ -1092,14 +1177,15 @@ const SLIDES = [
    "Rooms: <b>Agora</b> transport, we own permissions"
   ],
   "notes": [
-   "Three services <i>and</i> encryption — budget it: ~30s chat/Redis/Mongo · ~20s RabbitMQ · ~40s encryption",
-   "<b>Run the Mongo ciphertext query live</b> — ten seconds, and it ends the argument"
+   "<b>Create the task from a sentence, live</b>",
+   "While it runs, say the context + permissions point — that&#x27;s the actual content",
+   "The task appearing on the board is the applause moment"
   ],
   "script": [
-   "<b>Chat Service</b> — DMs, channels, threads, group conversations, delivered live.",
-   "<b>🔒 Direct messages are end-to-end encrypted — we can&#x27;t read them, and neither can our server.</b>",
-   "<b>Notification Service</b> — email, in-app pop-ups, and real-time.",
-   "<b>Room Service</b> — meeting and voice rooms, who&#x27;s inside, joining and leaving, and linking a room to a place in the virtual office. <b>Agora</b> provides the call transport; we own rooms and permissions."
+   "<b>Workspace Service</b> — the backbone. It creates the workspace, adds/removes members, splits people into <b>teams</b>, manages channels and rooms, sets roles and permissions, and connects people to their tasks, meetings and conversations. It also holds the virtual office layout.",
+   "One place instead of five apps — that&#x27;s this service&#x27;s job.",
+   "<b>AI Bot</b> — it can summarise a long conversation, pull out the decisions, tell you which tasks were mentioned, answer questions about the workspace, and create tasks and meetings from plain language.",
+   "<b>Say the hard part out loud (examiners like this):</b> the real challenge was <b>context</b> — giving the model only the data that belongs to this user and this conversation, so the answer is accurate and grounded. We solved it with <b>function calling</b>: the model doesn&#x27;t get a data dump, it calls the same APIs a user would, <b>using that user&#x27;s own token</b> — so it can never see anything the person couldn&#x27;t see themselves."
   ],
   "tech": [
    {
@@ -1131,14 +1217,10 @@ const SLIDES = [
    "kind": "live",
    "desc": "Terminal: the Mongo query returning vo1:<iv>:<ciphertext>. Ten seconds, and it ends the argument. Plus the RabbitMQ event flow diagram.",
    "ratio": "16/9",
-   "table": null
+   "table": null,
+   "html": null
   },
-  "next": {
-   "name": "Sersawy",
-   "initials": "SE",
-   "role": "Backend · Workspace, AI & Platform",
-   "hint": "on how we know when any of it breaks"
-  }
+  "next": null
  },
  {
   "n": 19,
@@ -1186,13 +1268,13 @@ const SLIDES = [
    "kind": "shot",
    "desc": "The Grafana dashboard — Virtual Office — Logs & Errors. Filter to one service live so it's obviously real.",
    "ratio": "16/9",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": {
    "name": "Khaled Qenawy",
    "initials": "KQ",
-   "role": "Mobile · Flutter",
-   "hint": "takes it to the phone"
+   "hint": "the phone"
   }
  },
  {
@@ -1233,7 +1315,8 @@ const SLIDES = [
    "kind": "shot",
    "desc": "Phone frames: login · channels · chat. A real device beats an emulator.",
    "ratio": "9/16",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": null
  },
@@ -1276,10 +1359,11 @@ const SLIDES = [
    }
   ],
   "visual": {
-   "kind": "diagram",
+   "kind": "diagram-built",
    "desc": "The folder tree (lib/features/chat/...) beside: Screen → Provider → Repository → ApiClient → Gateway.",
    "ratio": "4/3",
-   "table": null
+   "table": null,
+   "html": "<div class=\"dg dg-layers\">\n  <div class=\"dg-chain\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#02569B\"></i><span>Screen</span></div><i class=\"dg-a\">→</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#02569B\"></i><span>Provider</span></div><i class=\"dg-a\">→</i>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#02569B\"></i><span>Repository</span></div><i class=\"dg-a\">→</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#02569B\"></i><span>ApiClient</span></div>\n    <i class=\"dg-a\">→</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Gateway</span></div>\n  </div>\n  <div class=\"dg-tree\"><b>lib/</b>\n    <div>├── core/ <small>theme · constants</small></div>\n    <div>└── features/chat/</div>\n    <div class=\"in\">├── api/ · models/ · repositories/</div>\n    <div class=\"in\">├── providers/ <small>connection · channel · message · thread</small></div>\n    <div class=\"in\">└── screens/ · services/ · widgets/</div>\n  </div>\n  <div class=\"dg-cap\">Same APIs as the web. No mobile backend.</div>\n</div>"
   },
   "next": null
  },
@@ -1324,13 +1408,13 @@ const SLIDES = [
    "kind": "live",
    "desc": "Two devices. Send on one, land on the other, background it, show the notification arrive.",
    "ratio": "16/10",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": {
    "name": "All",
    "initials": "VO",
-   "role": "The whole team",
-   "hint": "— demo time"
+   "hint": "the demo"
   }
  },
  {
@@ -1364,7 +1448,8 @@ const SLIDES = [
    "kind": "live",
    "desc": "LIVE DEMO. Log in → chat + thread → assistant catch-up → create a task → walk into the 2D office. Have the backup video ready.",
    "ratio": "16/9",
-   "table": null
+   "table": null,
+   "html": null
   },
   "next": null
  }
@@ -1403,7 +1488,9 @@ function render(){
           <ul>${s.bullets.map((b,k)=>`<li class="anim" style="animation-delay:${.16+k*.05}s">${b}</li>`).join('')}</ul>
           ${s.tech.length?`<div class="tech anim" style="animation-delay:${.16+s.bullets.length*.05}s">${s.tech.map(chip).join('')}</div>`:''}
         </div>
-        ${v.kind==='table'
+        ${v.kind==='diagram-built'
+           ? `<div class="anim" style="animation-delay:.2s">${v.html}</div>`
+           : v.kind==='table'
            ? `<div class="anim" style="animation-delay:.2s">${tableHTML(v.table)}</div>`
            : `<figure class="anim" data-kind="${v.kind}" style="--ar:${v.ratio};animation-delay:.2s" data-shot="slide-${String(s.n).padStart(2,'0')}">
           <span class="tag">${KIND[v.kind]}</span>
@@ -1415,8 +1502,10 @@ function render(){
       <div class="foot">
         ${s.next?`<div class="next anim" style="animation-delay:.3s">
           <span class="av">${s.next.initials}</span>
-          <span><span class="lbl">Next</span><br><span class="nm">${s.next.name}</span>
-          <span class="hint">— ${s.next.role}${s.next.hint?`<br>${s.next.hint}`:''}</span></span>
+          <span class="next-b"><span class="lbl">Next</span>
+            <span class="nm">${s.next.name}</span>
+            <i class="next-r"></i>
+            <span class="hint">${s.next.hint}</span></span>
         </div>`:''}
       </div>
       <div class="ghost">${String(s.n).padStart(2,'0')}</div>

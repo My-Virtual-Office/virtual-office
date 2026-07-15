@@ -24,16 +24,16 @@ PEOPLE = {
 
 # One line the CURRENT speaker uses to hand over — shown bottom-right.
 HANDOFF = {
-    4:  "takes the research — how we turned interviews into what we built",
-    6:  "shows what we added for the person, not just the work",
-    8:  "on the gap nobody else has closed",
-    11: "on why HTTP wasn't enough",
-    13: "opens the backend",
-    16: "on the workspace and the AI bot",
-    17: "on chat, notifications and rooms",
-    18: "on how we know when any of it breaks",
-    19: "takes it to the phone",
-    22: "— demo time",
+    4:  "how research became what we built",
+    6:  "what we added for the employee",
+    8:  "the gap nobody else has closed",
+    11: "why HTTP wasn't enough",
+    13: "the backend",
+    14: "identity, tasks and the calendar",
+    16: "chat, notifications and rooms",
+    17: "the workspace and the AI bot",
+    19: "the phone",
+    22: "the demo",
 }
 
 # ── tech chips (brand colours; no fake logos) ────────────────────────────────
@@ -72,6 +72,107 @@ TECH = {
     22: ["stomp_dart_client", "awesome_notifications"],
 }
 
+# Hand-built diagrams. Anything that isn't a real screenshot of the product is
+# drawn here in HTML/CSS — a dashed box saying "draw this" is a promise, not a
+# slide. Components carry their tech's brand colour.
+def box(label, tech=None, cls=""):
+    t = f'<i class="dg-t" style="--c:{tech}"></i>' if tech else ""
+    return f'<div class="dg-box {cls}">{t}<span>{label}</span></div>'
+
+C = dict(react="#61DAFB", flutter="#02569B", phaser="#CC3333", spring="#6DB33F", node="#339933",
+         mysql="#4479A1", pg="#4169E1", mongo="#47A248", redis="#DC382D", rabbit="#FF6600",
+         docker="#2496ED", grafana="#F46800", loki="#FBBF24", agora="#099DFD", ai="#10A37F",
+         slack="#4A154B", teams="#6264A7", discord="#5865F2", zoom="#2D8CFF", jira="#0052CC", gcal="#4285F4")
+
+DIAGRAMS = {
+
+# ── 2 · the fragmentation ────────────────────────────────────────────────────
+2: f'''<div class="dg dg-hub">
+  <div class="hub-grid">
+    <span class="hub-n" style="--c:{C['slack']}">Slack</span>
+    <span class="hub-n" style="--c:{C['teams']}">Teams</span>
+    <span class="hub-n" style="--c:{C['zoom']}">Zoom</span>
+    <span class="hub-c bad">you<small>all day</small></span>
+    <div class="hub-row">
+      <span class="hub-n" style="--c:{C['jira']}">Jira</span>
+      <span class="hub-n" style="--c:{C['gcal']}">Calendar</span>
+      <span class="hub-n" style="--c:{C['discord']}">Discord</span>
+    </div>
+  </div>
+  <div class="dg-cap">Five tools. One job. No idea what the team is doing.</div>
+</div>''',
+
+# ── 4 · one place ────────────────────────────────────────────────────────────
+4: '''<div class="dg dg-hub">
+  <div class="hub-grid">
+    <span class="hub-n on">People</span><span class="hub-n on">Chat</span><span class="hub-n on">Tasks</span>
+    <span class="hub-c">Workspace</span>
+    <div class="hub-row"><span class="hub-n on">Meetings</span><span class="hub-n on">Presence</span></div>
+  </div>
+  <div class="dg-cap">Not five features. One workflow.</div>
+</div>''',
+
+# ── 12 · realtime ────────────────────────────────────────────────────────────
+12: f'''<div class="dg dg-flow">
+  <div class="dg-lane"><b class="dg-lane-t">HTTP — you ask</b>
+    <div class="dg-row">{box("Browser", C['react'])}<i class="dg-a">request →</i>{box("Gateway", C['spring'])}
+      <i class="dg-a">← response</i></div></div>
+  <div class="dg-lane hot"><b class="dg-lane-t">WebSocket / STOMP — it arrives</b>
+    <div class="dg-row">{box("Browser", C['react'])}<i class="dg-a dg-a2">⇄ persistent ⇄</i>{box("Gateway", C['spring'])}
+      <i class="dg-a dg-a2">⇄</i>{box("Chat", C['spring'])}</div>
+    <div class="dg-sub">messages · presence · office activity · notifications</div></div>
+  <div class="dg-row dg-side">{box("Agora SDK", C['agora'])}<i class="dg-a">voice / video — we didn't rebuild WebRTC</i></div>
+</div>''',
+
+# ── 14 · the architecture ────────────────────────────────────────────────────
+14: f'''<div class="dg dg-arch">
+  <div class="dg-tier"><span class="dg-tier-l">clients</span><div class="dg-row">
+    {box("Web", C['react'])}{box("Mobile", C['flutter'])}{box("2D Office", C['phaser'])}</div></div>
+  <i class="dg-v">↓</i>
+  <div class="dg-gate">{box("API Gateway", C['spring'], "wide")}<small>one door · validates the JWT once · injects identity</small></div>
+  <i class="dg-v">↓</i>
+  <div class="dg-tier"><span class="dg-tier-l">services</span><div class="dg-grid">
+    {box("User", C['spring'])}{box("Workspace", C['spring'])}{box("Chat", C['spring'])}{box("Notif", C['spring'])}
+    {box("Calendar", C['spring'])}{box("Tasks", C['spring'])}{box("Room", C['spring'])}{box("AI", C['ai'])}
+    {box("Office", C['node'])}</div></div>
+  <i class="dg-v">↓</i>
+  <div class="dg-tier"><span class="dg-tier-l">data</span><div class="dg-row">
+    {box("MySQL", C['mysql'])}{box("Postgres", C['pg'])}{box("Mongo", C['mongo'])}
+    {box("Redis", C['redis'])}{box("RabbitMQ", C['rabbit'])}</div></div>
+  <div class="dg-cap">{box("Docker Compose", C['docker'], "dg-ghost")} ~20 containers · one command</div>
+</div>''',
+
+# ── 15 · identity at the edge ────────────────────────────────────────────────
+15: f'''<div class="dg dg-auth">
+  <div class="dg-row">
+    <div class="dg-box bad"><span>Client</span><code>X-User-Id: 1</code><small>spoofed</small></div>
+    <i class="dg-a">→</i>
+    <div class="dg-gatebox">{box("Gateway", C['spring'])}
+      <ol><li>verify JWT</li><li class="strike">strip <code>X-User-*</code></li><li>inject trusted</li></ol></div>
+    <i class="dg-a">→</i>
+    <div class="dg-box good"><span>Service</span><code>X-User-Id: 64</code><small>trusted</small></div>
+  </div>
+  <div class="dg-cap">Services never parse a JWT. They trust the gateway — because only it can set these.</div>
+</div>''',
+
+# ── 21 · mobile layers ───────────────────────────────────────────────────────
+21: f'''<div class="dg dg-layers">
+  <div class="dg-chain">
+    {box("Screen", C['flutter'])}<i class="dg-a">→</i>{box("Provider", C['flutter'])}<i class="dg-a">→</i>
+    {box("Repository", C['flutter'])}<i class="dg-a">→</i>{box("ApiClient", C['flutter'])}
+    <i class="dg-a">→</i>{box("Gateway", C['spring'])}
+  </div>
+  <div class="dg-tree"><b>lib/</b>
+    <div>├── core/ <small>theme · constants</small></div>
+    <div>└── features/chat/</div>
+    <div class="in">├── api/ · models/ · repositories/</div>
+    <div class="in">├── providers/ <small>connection · channel · message · thread</small></div>
+    <div class="in">└── screens/ · services/ · widgets/</div>
+  </div>
+  <div class="dg-cap">Same APIs as the web. No mobile backend.</div>
+</div>''',
+}
+
 # Two slides carry a table as their actual argument — render it, don't ask for a
 # screenshot of one. (Slide 13's table was being dropped by the parser entirely.)
 TABLES = {
@@ -90,16 +191,16 @@ TABLES = {
 # Short cues shown ON the slide. The full talking points stay in the markdown
 # and live behind the N key — a slide should jog your memory, not be read out.
 CUES = {
- 1: ["Project name + one line", "Who we are — Frontend · Backend · Mobile", "Agenda: problem → what → how → demo"],
+ 1: ["Who we are — Frontend · Backend · Mobile", "Agenda: problem → what → how → demo"],
  2: ["Remote broke what the office gave free", "Who's online? · app-switching · no presence · scattered",
      "*“Five tools all day, still don't know what the team is doing”*"],
  3: ["Studied them honestly — they're good at their job", "**None give you a workplace.** They give you channels",
-     "(presence is the missing piece — don't say 2D yet)"],
+     "Presence is the missing piece"],
  4: ["People · Tasks · Meetings · Chat · Workspace", "Not five features — **one workflow**",
      "Message → task → deadline → meeting → same people"],
  5: ["Analysed Slack · Teams · Discord", "Studied real remote pain", "→ user stories drove every feature",
      "*“Nothing here because it looked nice”*"],
- 6: ["Chat · Threads · Voice calls", "**This is parity, not the answer** → next slides"],
+ 6: ["Chat · Threads · Voice calls", "**Parity — not the answer** →"],
  7: ["Built for the person, not just the work", "200 unread → nobody actually reads them",
      "**Ask instead of read**", "Only *your* unread — real cursor, not “last 50”",
      "Reading it doesn't mark it read", "Can't invent — same APIs, your permissions"],
@@ -115,7 +216,7 @@ CUES = {
  12:["HTTP you *ask* · WebSocket it *arrives*", "STOMP via `@stomp/stompjs`",
      "Messages · presence · office activity", "Same pipe → real-time notifications",
      "Agora for voice/video — we didn't rebuild WebRTC"],
- 13:["Slide 9 was *why*. This is *how*", "**Phaser 3** — a floor plan **is** a game loop",
+ 13:["**Phaser 3** — a floor plan **is** a game loop",
      "**Colyseus** — authoritative, its own Node service", "*“Why two realtime stacks?”* → **opposite problems** →",
      "`@type` decorators = binary deltas = **the protocol**",
      "`filterBy(workspaceId)` → one room per company", "Phaser canvas + React HUD, one page",
@@ -129,13 +230,13 @@ CUES = {
      "*“Decided once, at the edge”*"],
  16:["Spring Data JPA on PostgreSQL", "**`#42`, not a UUID** — max+1 per workspace",
      "Assign → RabbitMQ → Notification. **Never waits**", "`@Scheduled` 60s — reminders + **auto-status**",
-     "Meeting starts → *“In a meeting 📅”* by itself", "**Idempotent** — flags, never double-send",
+     "Meeting starts → *“In a meeting ”* by itself", "**Idempotent** — flags, never double-send",
      "**Never clobber a human's own status**"],
  17:["Workspace = the backbone", "Members · teams · channels · roles · office layout",
      "AI: summarise · decisions · create · answer", "**The hard part was context**",
      "Function calling — same APIs, **your** token"],
  18:["Chat: DMs · channels · threads, live", "WebSocket · **Redis** presence · **Mongo** volume",
-     "🔒 **DMs are E2E — we can't read them**", "ECDH → AES-GCM **in the browser**",
+     " **DMs are E2E — we can't read them**", "ECDH → AES-GCM **in the browser**",
      "Server stores `vo1:<iv>:<ct>` and nothing else", "**Trade-off: DMs only** — channels feed search + AI",
      "Limits: one device · no forward secrecy · TOFU", "Notif: **RabbitMQ** — Task never waits",
      "Rooms: **Agora** transport, we own permissions"],
@@ -219,6 +320,7 @@ def build():
         nxt = slides[i + 1]["who"] if i + 1 < len(slides) else None
         kind, desc, ratio = VISUAL.get(n, ("diagram", "", "16/9"))
         if n in TABLES: kind = "table"
+        if n in DIAGRAMS: kind = "diagram-built"
         data.append({
             "n": n, "title": sl["title"], "who": sl["who"],
             "initials": PEOPLE.get(sl["who"], ("??", ""))[0],
@@ -230,10 +332,10 @@ def build():
             "notes": [md(h) for h in sl["how"]],
             "script": [md(b) for b in sl["say"]],
             "tech": [{"name": t, "color": TECH_COLOR.get(t, "#7A7A7A")} for t in TECH.get(n, [])],
-            "visual": {"kind": kind, "desc": desc, "ratio": ratio, "table": TABLES.get(n)},
+            "visual": {"kind": kind, "desc": desc, "ratio": ratio, "table": TABLES.get(n),
+                       "html": DIAGRAMS.get(n)},
             "next": None if not nxt or nxt == sl["who"] else {
                 "name": nxt, "initials": PEOPLE.get(nxt, ("??", ""))[0],
-                "role": PEOPLE.get(nxt, ("", ""))[1],
                 "hint": HANDOFF.get(n, ""),
             },
         })

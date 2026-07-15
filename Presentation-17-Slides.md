@@ -155,7 +155,7 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 
 ---
 
-### Slide 9 — The Biggest Gap: Human Presence 🎯
+### Slide 9 — The Biggest Gap: Human Presence
 **Who:** Nadine
 **Time:** ~1m 30s
 **How:**
@@ -323,24 +323,7 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 
 ---
 
-### Slide 17 — Workspace Service & the AI Bot
-**Who:** Sersawy
-**Time:** ~1m 15s · **Then hand to:** Khalwsh
-**How:**
-- **Create the task from a sentence, live**
-- While it runs, say the context + permissions point — that's the actual content
-- The task appearing on the board is the applause moment
-**Say:**
-- **Workspace Service** — the backbone. It creates the workspace, adds/removes members, splits people into **teams**, manages channels and rooms, sets roles and permissions, and connects people to their tasks, meetings and conversations. It also holds the virtual office layout.
-- One place instead of five apps — that's this service's job.
-- **AI Bot** — it can summarise a long conversation, pull out the decisions, tell you which tasks were mentioned, answer questions about the workspace, and create tasks and meetings from plain language.
-- **Say the hard part out loud (examiners like this):** the real challenge was **context** — giving the model only the data that belongs to this user and this conversation, so the answer is accurate and grounded. We solved it with **function calling**: the model doesn't get a data dump, it calls the same APIs a user would, **using that user's own token** — so it can never see anything the person couldn't see themselves.
-
-**Show:** The Assistant creating a task from a sentence — type *"Create a high priority task for Karim to fix the analytics bug, due Thursday"* → then show the task appearing on the board. **That before/after is the strongest 15 seconds in the deck.**
-
----
-
-### Slide 18 — Chat, Notifications & Rooms
+### Slide 17 — Chat, Notifications & Rooms
 **Who:** Khalwsh
 **Time:** ~1m 30s · **Then hand to:** Sersawy
 **How:**
@@ -373,6 +356,23 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
    ```
    Backup if the terminal is risky: `node website/e2e-dm-test.mjs` — 9 checks, including that an unrelated key **cannot** decrypt and that tampered ciphertext is rejected. See `ENCRYPTION.md` for the diagram.
 2. **RabbitMQ event flow** (Task Service → queue → Notification Service → user), then trigger a live notification if you can.
+
+---
+
+### Slide 18 — Workspace Service & the AI Bot
+**Who:** Sersawy
+**Time:** ~1m 15s · **Then hand to:** Khalwsh
+**How:**
+- **Create the task from a sentence, live**
+- While it runs, say the context + permissions point — that's the actual content
+- The task appearing on the board is the applause moment
+**Say:**
+- **Workspace Service** — the backbone. It creates the workspace, adds/removes members, splits people into **teams**, manages channels and rooms, sets roles and permissions, and connects people to their tasks, meetings and conversations. It also holds the virtual office layout.
+- One place instead of five apps — that's this service's job.
+- **AI Bot** — it can summarise a long conversation, pull out the decisions, tell you which tasks were mentioned, answer questions about the workspace, and create tasks and meetings from plain language.
+- **Say the hard part out loud (examiners like this):** the real challenge was **context** — giving the model only the data that belongs to this user and this conversation, so the answer is accurate and grounded. We solved it with **function calling**: the model doesn't get a data dump, it calls the same APIs a user would, **using that user's own token** — so it can never see anything the person couldn't see themselves.
+
+**Show:** The Assistant creating a task from a sentence — type *"Create a high priority task for Karim to fix the analytics bug, due Thursday"* → then show the task appearing on the board. **That before/after is the strongest 15 seconds in the deck.**
 
 ---
 
@@ -492,6 +492,8 @@ curl -s http://localhost:8089/actuator/health                          # {"statu
 ```
 Then: log in as `maya.hassan@northstar.io` / `Northstar@2026`, ask the assistant one question to confirm the AI quota is alive, and open the 2D office once so it's warm.
 
+---
+
 ## ⚠️ Corrections — `flow.md` vs the code that actually runs
 
 I checked these against the repo. Fix them before you present:
@@ -531,9 +533,9 @@ Do **not** cut the demo or slide 9 (the 2D reveal). Those are the two slides peo
 | Mousa | 1, 2, 3, 4, **15 — Identity**, **16 — Tasks & Calendar** |
 | Rokaya | 5, 6, 10, 11 |
 | Nadine | 9, 12, **13 — 2D engine** |
-| Khalwsh | 14, 18 |
+| Khalwsh | 14, 17 |
 | Khaled Qenawy | **20, 21, 22 — Mobile** |
-| Sersawy | 7, 8, 17, **19 — Observability** |
+| Sersawy | 7, 8, **18 — AI**, **19 — Observability** |
 | All | 23 — Demo |
 
 Mousa carries six, Khaled Qenawy three, Nadine two — but Nadine has slide 9, the 2D reveal — the moment the whole pitch turns on. Load is about weight, not count. If Mousa is stretched, slide 15 is the most natural one to hand to Khalwsh (it is backend engineering, and it pairs with his slide 17).
