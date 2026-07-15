@@ -27,6 +27,7 @@ HANDOFF = {
     4:  "how research became what we built",
     6:  "what we added for the employee",
     8:  "the gap nobody else has closed",
+    9:  "how all of it got designed",   # 2D reveal -> Rokaya on Figma/UI
     11: "why HTTP wasn't enough",
     13: "the backend",
     14: "identity, tasks and the calendar",
@@ -339,6 +340,12 @@ def build():
                 "hint": HANDOFF.get(n, ""),
             },
         })
+    missing = [d["n"] for d in data if d["next"] and not d["next"]["hint"]]
+    if missing:
+        raise SystemExit(
+            f"HANDOFF is missing a hint for slide(s) {missing}. Every hand-off must say what the "
+            f"next person covers, or the card reads '…and now, <name>.' and dies.")
+
     tpl = (ROOT / "deck-template.html").read_text()
     out = tpl.replace("/*__SLIDES__*/", json.dumps(data, ensure_ascii=False, indent=1))
     (ROOT / "Presentation.html").write_text(out)
