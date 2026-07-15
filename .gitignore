@@ -38,3 +38,7 @@ dist/
 # ── Editor / tooling local config (never push) ──
 .claude/
 .vscode/
+
+# release artifact (built by make-release.sh)
+virtual-office.zip
+ziptest/
