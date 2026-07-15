@@ -202,6 +202,7 @@ async function runTool(name, args, ctx) {
     case "get_my_tasks": {
       const list = await api(token, "GET", `/api/tasks/mine?workspaceId=${workspaceId}`);
       const tasks = (Array.isArray(list) ? list : [])
+        .filter(Boolean)
         .filter((t) => !args.status || t.status === args.status)
         .map((t) => ({ number: t.taskNumber, title: t.title, status: t.status, priority: t.priority, due: t.dueDate }));
       return { count: tasks.length, tasks };
@@ -214,7 +215,7 @@ async function runTool(name, args, ctx) {
       const from = args.from || start.toISOString();
       const to = args.to || end.toISOString();
       const list = await api(token, "GET", `/api/calendar/events?workspaceId=${workspaceId}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
-      const events = (Array.isArray(list) ? list : []).map((e) => ({
+      const events = (Array.isArray(list) ? list : []).filter(Boolean).map((e) => ({
         title: e.title, start: e.startTime, end: e.endTime, description: e.description || undefined,
       }));
       return { count: events.length, from, to, events };
@@ -316,8 +317,14 @@ app.post("/api/ai/chat", async (req, res) => {
       }
 
       for (const call of msg.tool_calls) {
+        // Models are not consistent here: some send "{}", some send "null", some
+        // send malformed JSON. JSON.parse("null") returns null, which then blows
+        // up on the first args.foo read — so normalise to a plain object.
         let args = {};
-        try { args = JSON.parse(call.function.arguments || "{}"); } catch { /* model sent bad JSON */ }
+        try {
+          const parsed = JSON.parse(call.function.arguments || "{}");
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) args = parsed;
+        } catch { /* model sent bad JSON — treat as no arguments */ }
         let result;
         try {
           result = await runTool(call.function.name, args, ctx);
