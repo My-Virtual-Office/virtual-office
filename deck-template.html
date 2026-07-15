@@ -81,8 +81,8 @@ h1{font-size:2.5em;line-height:1.04;letter-spacing:-.034em;font-weight:800;max-w
         color:var(--blue);margin-bottom:.6rem}
 .hr{width:3.4em;height:.26em;background:var(--aubergine);margin:1rem 0 1.3rem;transform-origin:left}
 
-ul{list-style:none;display:flex;flex-direction:column;gap:.62em}
-li{position:relative;padding-left:1.05em;font-size:1em;line-height:1.5;color:#2c2b2c;max-width:46ch}
+ul{list-style:none;display:flex;flex-direction:column;gap:.72em}
+li{position:relative;padding-left:1.05em;font-size:1.06em;line-height:1.42;color:#2c2b2c;max-width:34ch}
 li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;background:var(--blue);border-radius:1px}
 li b{color:var(--ink);font-weight:700}
 li i{font-style:italic;color:var(--muted)}
@@ -161,11 +161,13 @@ figure.has figcaption,figure.has .tag{display:none}
 /* ── presenter notes (n) ───────────────────────────────────────────────── */
 #notes{position:absolute;left:0;right:0;bottom:0;z-index:12;background:var(--aubergine);color:#fff;
        padding:1rem 1.4rem 1.2rem;transform:translateY(101%);transition:transform .32s cubic-bezier(.22,1,.36,1);
-       border-top:3px solid var(--blue);max-height:46%;overflow:auto}
+       border-top:3px solid var(--blue);max-height:58%;overflow:auto}
 #notes.on{transform:none}
+.ncols{display:grid;grid-template-columns:1fr 1.25fr;gap:1.6rem;align-items:start}
+.ncols h4{margin-bottom:.5rem}
 #notes h4{font:700 10px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mauve-dim);margin-bottom:.6rem}
 #notes ul{gap:.35rem}
-#notes li{color:#f0e9f0;font-size:13px;max-width:none}
+#notes li{color:#f0e9f0;font-size:12.5px;line-height:1.5;max-width:none}
 #notes li::before{background:var(--mauve-dim)}
 #notes li b{color:#fff}
 #notes li i{color:var(--mauve)}
@@ -203,7 +205,7 @@ figure.has figcaption,figure.has .tag{display:none}
     <div class="band"></div>
     <div id="slides"></div>
     <div id="wipe"><span></span><span></span><span></span><span></span></div>
-    <div id="notes"><span class="t"></span><h4>How to deliver this</h4><ul></ul></div>
+    <div id="notes"><span class="t"></span><div class="ncols"><div><h4>How to deliver this</h4><ul id="nhow"></ul></div><div><h4>Talking points</h4><ul id="nsay"></ul></div></div></div>
     <div id="bar"><i></i></div>
   </div>
 </div>
@@ -288,7 +290,8 @@ function paint(){
   bar.style.width = ((i+1)/SLIDES.length*100)+'%';
   const cur = slidesEl.querySelector('.slide.live'); if(cur) fit(cur);
   const s = SLIDES[i];
-  $('#notes ul').innerHTML = s.notes.map(n=>`<li>${n}</li>`).join('');
+  $('#nhow').innerHTML = s.notes.map(n=>`<li>${n}</li>`).join('');
+  $('#nsay').innerHTML = (s.script||[]).map(n=>`<li>${n}</li>`).join('');
   $('#notes .t').textContent = s.time.replace('~','');
   location.hash = i+1;
 }

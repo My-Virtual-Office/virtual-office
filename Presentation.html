@@ -81,8 +81,8 @@ h1{font-size:2.5em;line-height:1.04;letter-spacing:-.034em;font-weight:800;max-w
         color:var(--blue);margin-bottom:.6rem}
 .hr{width:3.4em;height:.26em;background:var(--aubergine);margin:1rem 0 1.3rem;transform-origin:left}
 
-ul{list-style:none;display:flex;flex-direction:column;gap:.62em}
-li{position:relative;padding-left:1.05em;font-size:1em;line-height:1.5;color:#2c2b2c;max-width:46ch}
+ul{list-style:none;display:flex;flex-direction:column;gap:.72em}
+li{position:relative;padding-left:1.05em;font-size:1.06em;line-height:1.42;color:#2c2b2c;max-width:34ch}
 li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;background:var(--blue);border-radius:1px}
 li b{color:var(--ink);font-weight:700}
 li i{font-style:italic;color:var(--muted)}
@@ -161,11 +161,13 @@ figure.has figcaption,figure.has .tag{display:none}
 /* ── presenter notes (n) ───────────────────────────────────────────────── */
 #notes{position:absolute;left:0;right:0;bottom:0;z-index:12;background:var(--aubergine);color:#fff;
        padding:1rem 1.4rem 1.2rem;transform:translateY(101%);transition:transform .32s cubic-bezier(.22,1,.36,1);
-       border-top:3px solid var(--blue);max-height:46%;overflow:auto}
+       border-top:3px solid var(--blue);max-height:58%;overflow:auto}
 #notes.on{transform:none}
+.ncols{display:grid;grid-template-columns:1fr 1.25fr;gap:1.6rem;align-items:start}
+.ncols h4{margin-bottom:.5rem}
 #notes h4{font:700 10px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mauve-dim);margin-bottom:.6rem}
 #notes ul{gap:.35rem}
-#notes li{color:#f0e9f0;font-size:13px;max-width:none}
+#notes li{color:#f0e9f0;font-size:12.5px;line-height:1.5;max-width:none}
 #notes li::before{background:var(--mauve-dim)}
 #notes li b{color:#fff}
 #notes li i{color:var(--mauve)}
@@ -203,7 +205,7 @@ figure.has figcaption,figure.has .tag{display:none}
     <div class="band"></div>
     <div id="slides"></div>
     <div id="wipe"><span></span><span></span><span></span><span></span></div>
-    <div id="notes"><span class="t"></span><h4>How to deliver this</h4><ul></ul></div>
+    <div id="notes"><span class="t"></span><div class="ncols"><div><h4>How to deliver this</h4><ul id="nhow"></ul></div><div><h4>Talking points</h4><ul id="nsay"></ul></div></div></div>
     <div id="bar"><i></i></div>
   </div>
 </div>
@@ -220,14 +222,19 @@ const SLIDES = [
   "role": "Backend · Security & Services",
   "time": "~30s",
   "bullets": [
-   "Project name, one line of what it is: <i>&quot;a virtual office that puts your people, chat, tasks and meetings in one place.&quot;</i>",
-   "Introduce the team and what each person owned: Frontend, Backend, Mobile.",
-   " the problem → what we built → how it works → demo.Say the agenda in one sentence:"
+   "Project name + one line",
+   "Who we are — Frontend · Backend · Mobile",
+   "Agenda: problem → what → how → demo"
   ],
   "notes": [
    "Don&#x27;t linger",
    "Names, roles, one line on the product, then move",
    "The panel is deciding whether you&#x27;re organised — brisk says yes"
+  ],
+  "script": [
+   "Project name, one line of what it is: <i>&quot;a virtual office that puts your people, chat, tasks and meetings in one place.&quot;</i>",
+   "Introduce the team and what each person owned: Frontend, Backend, Mobile.",
+   " the problem → what we built → how it works → demo.Say the agenda in one sentence:"
   ],
   "tech": [],
   "visual": {
@@ -246,14 +253,19 @@ const SLIDES = [
   "role": "Backend · Security & Services",
   "time": "~1m",
   "bullets": [
-   "Remote and hybrid work broke something that the office gave us for free.",
-   "Four concrete pains (from our research, not opinion):",
-   "Land it with a human sentence: <i>&quot;You can be in five tools all day and still not know what your team is doing.&quot;</i>"
+   "Remote broke what the office gave free",
+   "Who&#x27;s online? · app-switching · no presence · scattered",
+   "<i>“Five tools all day, still don&#x27;t know what the team is doing”</i>"
   ],
   "notes": [
    "The only slide where you&#x27;re allowed to be human before you&#x27;re technical",
    "Slow down on the four pains",
    "Land the closing line, then <b>pause for a beat</b> — silence sells it"
+  ],
+  "script": [
+   "Remote and hybrid work broke something that the office gave us for free.",
+   "Four concrete pains (from our research, not opinion):",
+   "Land it with a human sentence: <i>&quot;You can be in five tools all day and still not know what your team is doing.&quot;</i>"
   ],
   "tech": [],
   "visual": {
@@ -272,14 +284,19 @@ const SLIDES = [
   "role": "Backend · Security & Services",
   "time": "~1m",
   "bullets": [
-   "We studied the leaders honestly — they are good at what they do:",
-   "The common gap: <b>none of them give you a workplace.</b> They give you channels.",
-   "Do <b>not</b> mention the 2D plane yet — just plant that &quot;presence&quot; is the missing piece."
+   "Studied them honestly — they&#x27;re good at their job",
+   "<b>None give you a workplace.</b> They give you channels",
+   "(presence is the missing piece — don&#x27;t say 2D yet)"
   ],
   "notes": [
    "Be genuinely fair to Slack/Teams/Discord — give them their ticks out loud",
    "Rubbishing them reads as naive",
    "Conceding their strengths makes the gap you found credible"
+  ],
+  "script": [
+   "We studied the leaders honestly — they are good at what they do:",
+   "The common gap: <b>none of them give you a workplace.</b> They give you channels.",
+   "Do <b>not</b> mention the 2D plane yet — just plant that &quot;presence&quot; is the missing piece."
   ],
   "tech": [
    {
@@ -363,14 +380,19 @@ const SLIDES = [
   "role": "Backend · Security & Services",
   "time": "~45s",
   "bullets": [
-   "We built one product that combines: <b>people &amp; teams · tasks · meetings · conversations · the workspace itself.</b>",
-   "The thesis: these aren&#x27;t five features, they&#x27;re one workflow. A message becomes a task, a task has a deadline, the deadline becomes a meeting, the meeting happens with the same people.",
-   "Hand over: <i>&quot;Rokaya will show how we got to this from real user research.&quot;</i>"
+   "People · Tasks · Meetings · Chat · Workspace",
+   "Not five features — <b>one workflow</b>",
+   "Message → task → deadline → meeting → same people"
   ],
   "notes": [
    "This is a promise, not a feature list",
    "Say the workflow sentence (message → task → deadline → meeting), then stop",
    "<b>Do not preview the 2D plane</b>"
+  ],
+  "script": [
+   "We built one product that combines: <b>people &amp; teams · tasks · meetings · conversations · the workspace itself.</b>",
+   "The thesis: these aren&#x27;t five features, they&#x27;re one workflow. A message becomes a task, a task has a deadline, the deadline becomes a meeting, the meeting happens with the same people.",
+   "Hand over: <i>&quot;Rokaya will show how we got to this from real user research.&quot;</i>"
   ],
   "tech": [],
   "visual": {
@@ -394,14 +416,20 @@ const SLIDES = [
   "role": "Frontend · UI/UX",
   "time": "~45s",
   "bullets": [
-   "We analysed Slack, Teams and Discord for strengths and weaknesses.",
-   "We studied what actually goes wrong for remote employees (the four pains from slide 2).",
-   "We turned findings into <b>user stories</b>, e.g. <i>&quot;As an employee returning from leave, I want to catch up on a channel without reading 200 messages.&quot;</i>",
-   "Those stories drove every feature we built — nothing is here because it looked nice."
+   "Analysed Slack · Teams · Discord",
+   "Studied real remote pain",
+   "→ user stories drove every feature",
+   "<i>“Nothing here because it looked nice”</i>"
   ],
   "notes": [
    "The point is <i>we didn&#x27;t guess</i>",
    "Quote one real user story word-for-word — more convincing than describing a method"
+  ],
+  "script": [
+   "We analysed Slack, Teams and Discord for strengths and weaknesses.",
+   "We studied what actually goes wrong for remote employees (the four pains from slide 2).",
+   "We turned findings into <b>user stories</b>, e.g. <i>&quot;As an employee returning from leave, I want to catch up on a channel without reading 200 messages.&quot;</i>",
+   "Those stories drove every feature we built — nothing is here because it looked nice."
   ],
   "tech": [
    {
@@ -425,12 +453,16 @@ const SLIDES = [
   "role": "Frontend · UI/UX",
   "time": "~45s",
   "bullets": [
-   "We started with what every team needs before anything clever:",
-   "Then say the honest bridge: <i>&quot;This gets us to parity. It doesn&#x27;t solve the gaps. The next slides are what we added.&quot;</i>"
+   "Chat · Threads · Voice calls",
+   "<b>This is parity, not the answer</b> → next slides"
   ],
   "notes": [
    "Go fast — this is table stakes and everyone knows it",
    "The bridge line is the only sentence that matters: <i>&quot;this gets us to parity, it doesn&#x27;t solve the gaps&quot;</i>"
+  ],
+  "script": [
+   "We started with what every team needs before anything clever:",
+   "Then say the honest bridge: <i>&quot;This gets us to parity. It doesn&#x27;t solve the gaps. The next slides are what we added.&quot;</i>"
   ],
   "tech": [],
   "visual": {
@@ -454,16 +486,24 @@ const SLIDES = [
   "role": "Backend · Workspace, AI & Platform",
   "time": "~1m 15s",
   "bullets": [
-   "We didn&#x27;t only build tools for <i>work</i>, we built for the <i>person doing the work</i>. Two examples — this one and the next.",
-   "The problem: you join a conversation late, or come back from leave to 200 unread messages. Nobody actually reads them. People scroll to the bottom and quietly hope they didn&#x27;t miss anything important.",
-   "So we let you <b>ask instead of read</b>: <i>&quot;Catch me up — what did I miss?&quot;</i>",
-   "<b>The detail worth stressing:</b> it summarises only what <b>you</b> actually haven&#x27;t read — it uses your real unread position, not &quot;the last 50 messages&quot;. The answer is about <i>your</i> gap, not a generic recap. And reading it doesn&#x27;t mark anything read, so your unread badges survive.",
-   "It can&#x27;t invent anything: the assistant doesn&#x27;t get a data dump, it calls the same APIs you would, with your own permissions. Every answer says which live data it read."
+   "Built for the person, not just the work",
+   "200 unread → nobody actually reads them",
+   "<b>Ask instead of read</b>",
+   "Only <i>your</i> unread — real cursor, not “last 50”",
+   "Reading it doesn&#x27;t mark it read",
+   "Can&#x27;t invent — same APIs, your permissions"
   ],
   "notes": [
    "<b>Type it live</b>",
    "While it&#x27;s thinking, say the unread-cursor detail — the sentence that separates you from a ChatGPT wrapper",
    "Then point at the <i>&quot;based on live data&quot;</i> caption"
+  ],
+  "script": [
+   "We didn&#x27;t only build tools for <i>work</i>, we built for the <i>person doing the work</i>. Two examples — this one and the next.",
+   "The problem: you join a conversation late, or come back from leave to 200 unread messages. Nobody actually reads them. People scroll to the bottom and quietly hope they didn&#x27;t miss anything important.",
+   "So we let you <b>ask instead of read</b>: <i>&quot;Catch me up — what did I miss?&quot;</i>",
+   "<b>The detail worth stressing:</b> it summarises only what <b>you</b> actually haven&#x27;t read — it uses your real unread position, not &quot;the last 50 messages&quot;. The answer is about <i>your</i> gap, not a generic recap. And reading it doesn&#x27;t mark anything read, so your unread badges survive.",
+   "It can&#x27;t invent anything: the assistant doesn&#x27;t get a data dump, it calls the same APIs you would, with your own permissions. Every answer says which live data it read."
   ],
   "tech": [
    {
@@ -491,16 +531,23 @@ const SLIDES = [
   "role": "Backend · Workspace, AI & Platform",
   "time": "~45s",
   "bullets": [
-   "In a real office, everyone has a desk they make theirs — notes, photos, stickers, a mug. That isn&#x27;t decoration; it&#x27;s what makes a place <i>yours</i>.",
-   "Remote tools give you a list of channels. Nothing in Slack belongs to you.",
-   "So we built <b>My Desk</b>: your tasks, today&#x27;s agenda pulled from the calendar, sticky notes, a whiteboard, a focus timer — one place that&#x27;s yours, not the company&#x27;s.",
-   "Why it matters: <b>belonging is a feature.</b> People stay where they feel present.",
-   "<b>Bridge to Nadine (say it, it sets up the reveal):</b> <i>&quot;A desk makes the workspace yours. But a desk on its own is still a room with one person in it — and that&#x27;s the real problem.&quot;</i>"
+   "Real office: your desk is <i>yours</i>",
+   "Slack gives you channels. Nothing belongs to you",
+   "My Desk — tasks · agenda · notes · whiteboard",
+   "<b>Belonging is a feature</b>",
+   "→ <i>“still a room with one person in it”</i>"
   ],
   "notes": [
    "Short and warm",
    "End on the bridge line and hand over",
    "<b>Don&#x27;t explain the 2D plane yourself</b> — it&#x27;s Nadine&#x27;s reveal, you&#x27;d spend her ammunition"
+  ],
+  "script": [
+   "In a real office, everyone has a desk they make theirs — notes, photos, stickers, a mug. That isn&#x27;t decoration; it&#x27;s what makes a place <i>yours</i>.",
+   "Remote tools give you a list of channels. Nothing in Slack belongs to you.",
+   "So we built <b>My Desk</b>: your tasks, today&#x27;s agenda pulled from the calendar, sticky notes, a whiteboard, a focus timer — one place that&#x27;s yours, not the company&#x27;s.",
+   "Why it matters: <b>belonging is a feature.</b> People stay where they feel present.",
+   "<b>Bridge to Nadine (say it, it sets up the reveal):</b> <i>&quot;A desk makes the workspace yours. But a desk on its own is still a room with one person in it — and that&#x27;s the real problem.&quot;</i>"
   ],
   "tech": [],
   "visual": {
@@ -524,17 +571,24 @@ const SLIDES = [
   "role": "Frontend · Real-Time & the 2D Office",
   "time": "~1m 30s",
   "bullets": [
-   "The biggest gap isn&#x27;t features. It&#x27;s that <b>you can&#x27;t see your colleagues.</b>",
-   "In a real office: you look up, see who&#x27;s at their desk, walk over, ask a question. It takes five seconds and no one schedules it.",
-   "In Slack: search the person → open a DM → type → wait → maybe call. Spontaneity is gone.",
-   "So we built the <b>2D Plane</b> — a virtual office you actually move around in. You can:",
-   "<b>The key line:</b> <i>&quot;This is not a game and it&#x27;s not decoration. It&#x27;s the part that brings back the human interaction the other tools removed.&quot;</i>"
+   "You can&#x27;t <b>see</b> your colleagues",
+   "Real office: look up → walk over → 5 seconds",
+   "Slack: search → DM → type → wait → maybe call",
+   "<b>The 2D Plane</b> — see · move · walk up · join a room",
+   "<i>“Not a game. Not decoration.”</i>"
   ],
   "notes": [
    "<b>The moment — slow right down</b>",
    "Make them picture a real office <i>first</i>: looking up, walking over",
    "Then show it — walk the avatar live",
    "Don&#x27;t apologise for it looking like a game — say the <i>&quot;not a game&quot;</i> line with conviction and let it sit"
+  ],
+  "script": [
+   "The biggest gap isn&#x27;t features. It&#x27;s that <b>you can&#x27;t see your colleagues.</b>",
+   "In a real office: you look up, see who&#x27;s at their desk, walk over, ask a question. It takes five seconds and no one schedules it.",
+   "In Slack: search the person → open a DM → type → wait → maybe call. Spontaneity is gone.",
+   "So we built the <b>2D Plane</b> — a virtual office you actually move around in. You can:",
+   "<b>The key line:</b> <i>&quot;This is not a game and it&#x27;s not decoration. It&#x27;s the part that brings back the human interaction the other tools removed.&quot;</i>"
   ],
   "tech": [],
   "visual": {
@@ -558,13 +612,18 @@ const SLIDES = [
   "role": "Frontend · UI/UX",
   "time": "~45s",
   "bullets": [
-   "How user stories became real screens.",
-   "Design principles we held to: simplicity, clear elements, features easy to reach, one consistent experience across pages.",
-   "Show the evolution: wireframe → final UI."
+   "Stories → screens",
+   "Simple · clear · reachable · consistent",
+   "Wireframe → final"
   ],
   "notes": [
    "Wireframe and final, side by side",
    "One sentence on principles — don&#x27;t recite all four, the slide already shows them"
+  ],
+  "script": [
+   "How user stories became real screens.",
+   "Design principles we held to: simplicity, clear elements, features easy to reach, one consistent experience across pages.",
+   "Show the evolution: wireframe → final UI."
   ],
   "tech": [
    {
@@ -588,16 +647,23 @@ const SLIDES = [
   "role": "Frontend · UI/UX",
   "time": "~1m",
   "bullets": [
-   "<b>Single Page Application</b> — navigation is instant, no full page reload.",
-   "<b>React Router v7</b> — organised routing across the app.",
-   "<b>Reusable components</b> — buttons, forms, modals, cards, navigation built once, used everywhere. Less duplicated code, one consistent look, easier maintenance.",
-   "<b>Axios</b> — all HTTP to the backend: login, creating channels, fetching data, creating/updating/deleting tasks. It also gave us one place for error handling and auth tokens.",
-   "<b>End on the cliffhanger:</b> <i>&quot;But HTTP has a limit — you have to ask for data. Messages and notifications need to arrive on their own.&quot;</i> → hands to Nadine."
+   "SPA — instant, no reload",
+   "React Router v7",
+   "Reusable: buttons · forms · modals · cards",
+   "Axios — one place for errors + tokens",
+   "<b>But HTTP: you have to ask</b> →"
   ],
   "notes": [
    "Nobody will challenge React — don&#x27;t defend it",
    "Spend the time on reusable components and Axios",
    "Land the cliffhanger — that <i>is</i> the handoff"
+  ],
+  "script": [
+   "<b>Single Page Application</b> — navigation is instant, no full page reload.",
+   "<b>React Router v7</b> — organised routing across the app.",
+   "<b>Reusable components</b> — buttons, forms, modals, cards, navigation built once, used everywhere. Less duplicated code, one consistent look, easier maintenance.",
+   "<b>Axios</b> — all HTTP to the backend: login, creating channels, fetching data, creating/updating/deleting tasks. It also gave us one place for error handling and auth tokens.",
+   "<b>End on the cliffhanger:</b> <i>&quot;But HTTP has a limit — you have to ask for data. Messages and notifications need to arrive on their own.&quot;</i> → hands to Nadine."
   ],
   "tech": [
    {
@@ -634,15 +700,22 @@ const SLIDES = [
   "role": "Frontend · Real-Time & the 2D Office",
   "time": "~1m",
   "bullets": [
+   "HTTP you <i>ask</i> · WebSocket it <i>arrives</i>",
+   "STOMP via <code>@stomp/stompjs</code>",
+   "Messages · presence · office activity",
+   "Same pipe → real-time notifications",
+   "Agora for voice/video — we didn&#x27;t rebuild WebRTC"
+  ],
+  "notes": [
+   "One idea: HTTP you <i>ask</i>, WebSocket it <i>arrives</i>",
+   "If you can: two browsers and a message landing beats any diagram"
+  ],
+  "script": [
    "For anything live we use <b>WebSockets</b> instead of HTTP polling — one permanent connection, data flows both ways, no repeated requests.",
    "We use the <b>STOMP</b> protocol via <code>@stomp/stompjs</code> on top of it.",
    "What runs on it: new messages appear instantly, conversations update live, user presence, and activity inside the virtual office.",
    "That same connection gave us <b>real-time notifications</b>: new message, task assigned to you, workspace updates, activity that concerns you.",
    "<b>Agora SDK</b> for voice and video — we didn&#x27;t rebuild WebRTC from scratch; we own the experience (rooms, permissions), Agora owns the transport quality."
-  ],
-  "notes": [
-   "One idea: HTTP you <i>ask</i>, WebSocket it <i>arrives</i>",
-   "If you can: two browsers and a message landing beats any diagram"
   ],
   "tech": [
    {
@@ -674,6 +747,22 @@ const SLIDES = [
   "role": "Frontend · Real-Time & the 2D Office",
   "time": "~1m 30s",
   "bullets": [
+   "Slide 9 was <i>why</i>. This is <i>how</i>",
+   "<b>Phaser 3</b> — a floor plan <b>is</b> a game loop",
+   "<b>Colyseus</b> — authoritative, its own Node service",
+   "<i>“Why two realtime stacks?”</i> → <b>opposite problems</b> →",
+   "<code>@type</code> decorators = binary deltas = <b>the protocol</b>",
+   "<code>filterBy(workspaceId)</code> → one room per company",
+   "Phaser canvas + React HUD, one page",
+   "Proximity → the call connects. You walk over",
+   "Joystick for touch"
+  ],
+  "notes": [
+   "Densest slide in the deck",
+   "Open with: <i>&quot;a floor plan with people on it <b>is</b> a game loop&quot;</i>",
+   "<b>The chat-vs-movement table is the whole slide</b> — if short on time, cut everything else and keep it"
+  ],
+  "script": [
    "Slide 9 was the <i>why</i>. This is the <i>how</i> — and it&#x27;s the one part of the stack that isn&#x27;t a normal web app.",
    "<b>Phaser 3</b> — an actual 2D game engine, because a floor plan with people walking on it <b>is</b> a game loop: 60fps rendering, a <b>Tiled</b> tilemap with collision, sprite animation, a camera that follows your character. Building that from DOM elements would be a fight you lose; Phaser gives it away.",
    "<b>Colyseus</b> — an authoritative multiplayer server. It runs as its <b>own Node service</b>, separate from the Spring backend.",
@@ -683,11 +772,6 @@ const SLIDES = [
    "<b>React and Phaser share the screen:</b> Phaser renders the canvas; a <b>React + Redux</b> HUD draws the UI on top of it. Two rendering systems, one page.",
    "<b>Proximity becomes media</b> — walk up to someone, or into a meeting room, and the call connects (<b>Agora</b>, with PeerJS behind the earlier prototype). <i>That&#x27;s the slide 9 promise, delivered: you don&#x27;t dial anyone, you walk over.</i>",
    "It works on a phone too — <code>react-joystick-component</code> for touch."
-  ],
-  "notes": [
-   "Densest slide in the deck",
-   "Open with: <i>&quot;a floor plan with people on it <b>is</b> a game loop&quot;</i>",
-   "<b>The chat-vs-movement table is the whole slide</b> — if short on time, cut everything else and keep it"
   ],
   "tech": [
    {
@@ -765,16 +849,23 @@ const SLIDES = [
   "role": "Backend · Architecture & Chat",
   "time": "~1m 30s",
   "bullets": [
-   "Instead of one big application, the backend is a set of independent services, each owning one part of the system.",
-   "<b>API Gateway</b> — a single entry point for the web and mobile clients; it validates the JWT once at the edge, then routes each request to the right service.",
-   "The services: <b>User</b> (accounts + authentication), <b>Workspace</b>, <b>Chat</b>, <b>Notifications</b>, <b>Calendar</b>, <b>Tasks</b>, <b>Room</b>, <b>AI</b> — plus a realtime <b>Office server</b> for the 2D plane.",
-   "Why it was worth it: separate responsibilities, develop and deploy each independently, easier to test and maintain, scales per service, and one service failing doesn&#x27;t take the system down.",
-   "Mention the whole thing runs with <b>Docker Compose</b> — ~20 containers, one command."
+   "Not one app — independent services",
+   "<b>Gateway</b> — one door, validates the JWT once",
+   "User · Workspace · Chat · Notif · Calendar · Tasks · Room · AI · +Office",
+   "Separate · deploy alone · scale alone · <b>fail alone</b>",
+   "~20 containers, one command"
   ],
   "notes": [
    "Your biggest technical slide — don&#x27;t rush it",
    "<b>Trace one request across the diagram out loud</b>",
    "If asked <i>&quot;why not a monolith?&quot;</i> — honest answer: a monolith ships faster; we wanted independent deploys and per-service scaling, and the AI service later proved it (zero auth work)"
+  ],
+  "script": [
+   "Instead of one big application, the backend is a set of independent services, each owning one part of the system.",
+   "<b>API Gateway</b> — a single entry point for the web and mobile clients; it validates the JWT once at the edge, then routes each request to the right service.",
+   "The services: <b>User</b> (accounts + authentication), <b>Workspace</b>, <b>Chat</b>, <b>Notifications</b>, <b>Calendar</b>, <b>Tasks</b>, <b>Room</b>, <b>AI</b> — plus a realtime <b>Office server</b> for the 2D plane.",
+   "Why it was worth it: separate responsibilities, develop and deploy each independently, easier to test and maintain, scales per service, and one service failing doesn&#x27;t take the system down.",
+   "Mention the whole thing runs with <b>Docker Compose</b> — ~20 containers, one command."
   ],
   "tech": [
    {
@@ -831,6 +922,19 @@ const SLIDES = [
   "role": "Backend · Security & Services",
   "time": "~1m",
   "bullets": [
+   "BCrypt — we never store a password",
+   "JWT (HS256), shared only gateway ↔ user-service",
+   "<b>Strip</b> client <code>X-User-*</code> · <b>inject</b> trusted",
+   "Services never parse a JWT",
+   "Account role <b>vs</b> workspace role",
+   "OTP reset — no links to leak",
+   "<i>“Decided once, at the edge”</i>"
+  ],
+  "notes": [
+   "Strip-then-inject is the whole idea — say it once, clearly, and point at the diagram",
+   "<b>Don&#x27;t recite JWT internals</b> — nobody asked, and it invites a question you don&#x27;t want"
+  ],
+  "script": [
    "Registration, login and identity live in <b>user-service</b>. Passwords are hashed with <b>BCrypt</b> — we never store a password, not even encrypted.",
    "On login we issue a <b>JWT (HS256)</b>, signed with a secret shared only between user-service and the gateway.",
    "<b>The gateway is the only place identity is decided.</b> On every request it:",
@@ -838,10 +942,6 @@ const SLIDES = [
    "<b>Two levels of authorization:</b>",
    "Password reset is <b>OTP over email</b> — no reset links to leak or replay.",
    "<b>The line:</b> <i>&quot;Identity is decided once, at the edge. Every service trusts the gateway and nothing else.&quot;</i>"
-  ],
-  "notes": [
-   "Strip-then-inject is the whole idea — say it once, clearly, and point at the diagram",
-   "<b>Don&#x27;t recite JWT internals</b> — nobody asked, and it invites a question you don&#x27;t want"
   ],
   "tech": [
    {
@@ -873,17 +973,26 @@ const SLIDES = [
   "role": "Backend · Security & Services",
   "time": "~1m 15s",
   "bullets": [
+   "Spring Data JPA on PostgreSQL",
+   "<b><code>#42</code>, not a UUID</b> — max+1 per workspace",
+   "Assign → RabbitMQ → Notification. <b>Never waits</b>",
+   "<code>@Scheduled</code> 60s — reminders + <b>auto-status</b>",
+   "Meeting starts → <i>“In a meeting 📅”</i> by itself",
+   "<b>Idempotent</b> — flags, never double-send",
+   "<b>Never clobber a human&#x27;s own status</b>"
+  ],
+  "notes": [
+   "<b>Skip the CRUD</b> — create/assign/deadline isn&#x27;t interesting, and the slide already says it",
+   "Go straight to auto-status and the idempotency flags",
+   "Your best line: <i>&quot;we only revert if the status still carries our marker&quot;</i>"
+  ],
+  "script": [
    "Both are Spring Boot + <b>Spring Data JPA on PostgreSQL</b>, each with its own schema. Relational on purpose: tasks and events have real relationships and we query them by assignee, status and date range.",
    "<b>Human task numbers.</b> Tasks are <code>#42</code>, not a UUID — <code>max(taskNumber) + 1</code> per workspace, so numbers are per-company and someone can say <i>&quot;take a look at 42&quot;</i> in chat and be understood. <i>(Honest trade-off: it&#x27;s a read-then-write, so under real concurrency it needs the transaction plus a unique constraint to stay safe.)</i>",
    "<b>Event-driven, not blocking.</b> Assign a task → Task Service publishes an event to <b>RabbitMQ</b> → Notification Service consumes it and sends. Task Service never waits for an email. If notifications are down, tasks still work — that&#x27;s the whole point of the queue.",
    "<b>Scheduled jobs</b> (<code>@Scheduled</code>, 60s tick) — this is where the calendar gets interesting:",
    "<b>The two details worth stressing — examiners ask about exactly this:</b>",
    "Plus the unglamorous parts that keep it honest: <code>@NotNull</code> / <code>@NotBlank</code> validation at each service edge, enums normalised on input, and space membership checked before you can put a task on someone&#x27;s board."
-  ],
-  "notes": [
-   "<b>Skip the CRUD</b> — create/assign/deadline isn&#x27;t interesting, and the slide already says it",
-   "Go straight to auto-status and the idempotency flags",
-   "Your best line: <i>&quot;we only revert if the status still carries our marker&quot;</i>"
   ],
   "tech": [
    {
@@ -920,15 +1029,22 @@ const SLIDES = [
   "role": "Backend · Workspace, AI & Platform",
   "time": "~1m 15s",
   "bullets": [
-   "<b>Workspace Service</b> — the backbone. It creates the workspace, adds/removes members, splits people into <b>teams</b>, manages channels and rooms, sets roles and permissions, and connects people to their tasks, meetings and conversations. It also holds the virtual office layout.",
-   "One place instead of five apps — that&#x27;s this service&#x27;s job.",
-   "<b>AI Bot</b> — it can summarise a long conversation, pull out the decisions, tell you which tasks were mentioned, answer questions about the workspace, and create tasks and meetings from plain language.",
-   "<b>Say the hard part out loud (examiners like this):</b> the real challenge was <b>context</b> — giving the model only the data that belongs to this user and this conversation, so the answer is accurate and grounded. We solved it with <b>function calling</b>: the model doesn&#x27;t get a data dump, it calls the same APIs a user would, <b>using that user&#x27;s own token</b> — so it can never see anything the person couldn&#x27;t see themselves."
+   "Workspace = the backbone",
+   "Members · teams · channels · roles · office layout",
+   "AI: summarise · decisions · create · answer",
+   "<b>The hard part was context</b>",
+   "Function calling — same APIs, <b>your</b> token"
   ],
   "notes": [
    "<b>Create the task from a sentence, live</b>",
    "While it runs, say the context + permissions point — that&#x27;s the actual content",
    "The task appearing on the board is the applause moment"
+  ],
+  "script": [
+   "<b>Workspace Service</b> — the backbone. It creates the workspace, adds/removes members, splits people into <b>teams</b>, manages channels and rooms, sets roles and permissions, and connects people to their tasks, meetings and conversations. It also holds the virtual office layout.",
+   "One place instead of five apps — that&#x27;s this service&#x27;s job.",
+   "<b>AI Bot</b> — it can summarise a long conversation, pull out the decisions, tell you which tasks were mentioned, answer questions about the workspace, and create tasks and meetings from plain language.",
+   "<b>Say the hard part out loud (examiners like this):</b> the real challenge was <b>context</b> — giving the model only the data that belongs to this user and this conversation, so the answer is accurate and grounded. We solved it with <b>function calling</b>: the model doesn&#x27;t get a data dump, it calls the same APIs a user would, <b>using that user&#x27;s own token</b> — so it can never see anything the person couldn&#x27;t see themselves."
   ],
   "tech": [
    {
@@ -965,14 +1081,25 @@ const SLIDES = [
   "role": "Backend · Architecture & Chat",
   "time": "~1m 30s",
   "bullets": [
-   "<b>Chat Service</b> — DMs, channels, threads, group conversations, delivered live.",
-   "<b>🔒 Direct messages are end-to-end encrypted — we can&#x27;t read them, and neither can our server.</b>",
-   "<b>Notification Service</b> — email, in-app pop-ups, and real-time.",
-   "<b>Room Service</b> — meeting and voice rooms, who&#x27;s inside, joining and leaving, and linking a room to a place in the virtual office. <b>Agora</b> provides the call transport; we own rooms and permissions."
+   "Chat: DMs · channels · threads, live",
+   "WebSocket · <b>Redis</b> presence · <b>Mongo</b> volume",
+   "🔒 <b>DMs are E2E — we can&#x27;t read them</b>",
+   "ECDH → AES-GCM <b>in the browser</b>",
+   "Server stores <code>vo1:&lt;iv&gt;:&lt;ct&gt;</code> and nothing else",
+   "<b>Trade-off: DMs only</b> — channels feed search + AI",
+   "Limits: one device · no forward secrecy · TOFU",
+   "Notif: <b>RabbitMQ</b> — Task never waits",
+   "Rooms: <b>Agora</b> transport, we own permissions"
   ],
   "notes": [
    "Three services <i>and</i> encryption — budget it: ~30s chat/Redis/Mongo · ~20s RabbitMQ · ~40s encryption",
    "<b>Run the Mongo ciphertext query live</b> — ten seconds, and it ends the argument"
+  ],
+  "script": [
+   "<b>Chat Service</b> — DMs, channels, threads, group conversations, delivered live.",
+   "<b>🔒 Direct messages are end-to-end encrypted — we can&#x27;t read them, and neither can our server.</b>",
+   "<b>Notification Service</b> — email, in-app pop-ups, and real-time.",
+   "<b>Room Service</b> — meeting and voice rooms, who&#x27;s inside, joining and leaving, and linking a room to a place in the virtual office. <b>Agora</b> provides the call transport; we own rooms and permissions."
   ],
   "tech": [
    {
@@ -1021,16 +1148,25 @@ const SLIDES = [
   "role": "Backend · Workspace, AI & Platform",
   "time": "~1m",
   "bullets": [
-   "Twenty containers across nine services. When something breaks, <i>&quot;check the logs&quot;</i> means nine <code>docker logs</code> commands and guessing which one.",
-   "So every container ships its stdout to <b>Loki</b> via <b>Promtail</b>, and we read it all from one <b>Grafana</b> dashboard: errors and warnings per service, log volume, and a searchable stream across the whole system.",
-   "<b>The line that makes this land — it&#x27;s a true story, tell it:</b> the dashboard paid for itself the day we built it. It immediately showed ~200 gateway errors an hour that nobody had noticed from the UI. Following them found a real bug — in the Notification Service Khalwsh just described: a route (<code>DELETE /{id}</code>) was also matching <code>/api/notifications/connect</code> and swallowing the <b>WebSocket handshake</b>, so the real-time notifications you just heard about had been silently broken. The app looked fine. The logs didn&#x27;t.",
-   "The point for the panel: <i>&quot;You can&#x27;t fix what you can&#x27;t see. Centralised logging is how we found bugs the UI was hiding.&quot;</i>",
-   "If asked why not Prometheus/metrics too: honest answer — logs first, because they told us <i>what</i> broke; metrics would tell us <i>how often</i>. It&#x27;s the natural next step."
+   "20 containers, 9 services → nine <code>docker logs</code>?",
+   "<b>Loki</b> ← Promtail ← every container",
+   "One <b>Grafana</b> dashboard",
+   "<b>Paid off day one:</b> ~200 errors/hr nobody saw",
+   "→ the WS handshake bug Khalwsh just described",
+   "<i>“App looked fine. Logs didn&#x27;t.”</i>",
+   "Metrics next: logs = <i>what</i>, metrics = <i>how often</i>"
   ],
   "notes": [
    "<b>Tell it as a story, not a feature</b>",
    "Open with: <i>&quot;we built the dashboard, and it immediately showed us 200 errors an hour nobody had noticed…&quot;</i>",
    "The callback is the punch — say <i>&quot;the one Khalwsh just showed you&quot;</i>"
+  ],
+  "script": [
+   "Twenty containers across nine services. When something breaks, <i>&quot;check the logs&quot;</i> means nine <code>docker logs</code> commands and guessing which one.",
+   "So every container ships its stdout to <b>Loki</b> via <b>Promtail</b>, and we read it all from one <b>Grafana</b> dashboard: errors and warnings per service, log volume, and a searchable stream across the whole system.",
+   "<b>The line that makes this land — it&#x27;s a true story, tell it:</b> the dashboard paid for itself the day we built it. It immediately showed ~200 gateway errors an hour that nobody had noticed from the UI. Following them found a real bug — in the Notification Service Khalwsh just described: a route (<code>DELETE /{id}</code>) was also matching <code>/api/notifications/connect</code> and swallowing the <b>WebSocket handshake</b>, so the real-time notifications you just heard about had been silently broken. The app looked fine. The logs didn&#x27;t.",
+   "The point for the panel: <i>&quot;You can&#x27;t fix what you can&#x27;t see. Centralised logging is how we found bugs the UI was hiding.&quot;</i>",
+   "If asked why not Prometheus/metrics too: honest answer — logs first, because they told us <i>what</i> broke; metrics would tell us <i>how often</i>. It&#x27;s the natural next step."
   ],
   "tech": [
    {
@@ -1067,15 +1203,21 @@ const SLIDES = [
   "role": "Mobile · Flutter",
   "time": "~45s",
   "bullets": [
-   "<b>Flutter</b> — one codebase, and we ship <b>Android, iOS and web</b> from it. For a team our size that&#x27;s the difference between having a mobile app and not having one.",
-   "<b>Be upfront about scope — this is a strength, not an apology:</b> we went <b>deep on chat</b> rather than shallow on everything. On the phone you can connect to your workspace, browse channels and DMs, read and send messages, follow threads, and get notified.",
-   "The reasoning: chat is the thing you actually need on a phone. Nobody plans a sprint on a 6-inch screen — but everyone answers a message from one. So we built the part that earns its place in your pocket.",
-   "Tasks, calendar and calls are on the web today. The backend APIs are already there and shared — those are screens we haven&#x27;t built yet, not architecture we&#x27;re missing."
+   "One codebase → Android · iOS · web",
+   "<b>Deep on chat, not shallow on everything</b>",
+   "Nobody plans a sprint on a 6-inch screen",
+   "Tasks/calendar/calls = screens, not architecture"
   ],
   "notes": [
    "<b>Own the scope in your first breath</b>",
    "Confidence about a deliberate limit reads as judgement",
    "Hedging reads as a gap you&#x27;re hiding"
+  ],
+  "script": [
+   "<b>Flutter</b> — one codebase, and we ship <b>Android, iOS and web</b> from it. For a team our size that&#x27;s the difference between having a mobile app and not having one.",
+   "<b>Be upfront about scope — this is a strength, not an apology:</b> we went <b>deep on chat</b> rather than shallow on everything. On the phone you can connect to your workspace, browse channels and DMs, read and send messages, follow threads, and get notified.",
+   "The reasoning: chat is the thing you actually need on a phone. Nobody plans a sprint on a 6-inch screen — but everyone answers a message from one. So we built the part that earns its place in your pocket.",
+   "Tasks, calendar and calls are on the web today. The backend APIs are already there and shared — those are screens we haven&#x27;t built yet, not architecture we&#x27;re missing."
   ],
   "tech": [
    {
@@ -1103,14 +1245,21 @@ const SLIDES = [
   "role": "Mobile · Flutter",
   "time": "~45s",
   "bullets": [
-   "<b>Feature-first structure</b>, not type-first: <code>core/</code> (theme, constants) and <code>features/chat/</code> — and inside that, <code>api / models / repositories / providers / screens / services / widgets</code>. Adding &quot;tasks&quot; tomorrow means adding one folder, not touching six.",
-   "<b>Layered, with one job each:</b>",
-   "<b><code>shared_preferences</code></b> stores the JWT so you stay signed in.",
-   "<b>The point to land:</b> the phone calls <b>the same backend APIs as the web</b> — no mobile BFF, no special endpoints, no second auth path. <b>That&#x27;s the payoff from slide 13:</b> because identity is settled at the gateway and services are independent, a second client was almost free."
+   "Feature-first: <code>core/</code> + <code>features/chat/</code>",
+   "Screen → Provider → Repository → ApiClient",
+   "Provider <b>split by concern</b>, not one god-object",
+   "<code>shared_preferences</code> holds the JWT",
+   "<b>Same APIs as web. No mobile backend.</b>"
   ],
   "notes": [
    "The payoff line: <i>&quot;same APIs as the web — no mobile backend&quot;</i>",
    "Everything else on this slide is supporting evidence for it"
+  ],
+  "script": [
+   "<b>Feature-first structure</b>, not type-first: <code>core/</code> (theme, constants) and <code>features/chat/</code> — and inside that, <code>api / models / repositories / providers / screens / services / widgets</code>. Adding &quot;tasks&quot; tomorrow means adding one folder, not touching six.",
+   "<b>Layered, with one job each:</b>",
+   "<b><code>shared_preferences</code></b> stores the JWT so you stay signed in.",
+   "<b>The point to land:</b> the phone calls <b>the same backend APIs as the web</b> — no mobile BFF, no special endpoints, no second auth path. <b>That&#x27;s the payoff from slide 13:</b> because identity is settled at the gateway and services are independent, a second client was almost free."
   ],
   "tech": [
    {
@@ -1142,16 +1291,24 @@ const SLIDES = [
   "role": "Mobile · Flutter",
   "time": "~45s",
   "bullets": [
-   "The phone speaks the <b>same realtime protocol as the browser</b>: <b>STOMP over WebSocket</b>, via <code>stomp_dart_client</code> — the web uses <code>@stomp/stompjs</code>, different language, identical contract.",
-   "<b>This is the architectural point of the whole mobile section:</b> we didn&#x27;t build a mobile realtime stack. We reused the one that already existed. One contract, two clients, and a message published once reaches both.",
-   "<b><code>uuid</code></b> generates a <code>clientMessageId</code> on every send — so if the connection drops and a send retries, the server can recognise the duplicate instead of posting your message twice. Idempotency belongs on the client too, not just the server.",
-   "<b><code>awesome_notifications</code></b> raises a real device notification when a message arrives while you&#x27;re not looking at the screen.",
-   "Honest and forward-looking: voice/video isn&#x27;t on mobile yet — that&#x27;s an Agora SDK integration, and Room Service already handles rooms and permissions. It&#x27;s the next screen, not the next architecture."
+   "<b>Same STOMP contract as the browser</b>",
+   "<code>stomp_dart_client</code> ↔ <code>@stomp/stompjs</code>",
+   "We reused the realtime stack, didn&#x27;t rebuild it",
+   "<code>uuid</code> → clientMessageId → idempotent retries",
+   "<code>awesome_notifications</code> on the device",
+   "Calls next: Agora SDK — Rooms already handles it"
   ],
   "notes": [
    "Two devices: send on one, land on the other",
    "Background the app, show the notification arrive",
    "Say <i>&quot;same STOMP contract as the browser&quot;</i> <b>while it&#x27;s happening</b>, not before"
+  ],
+  "script": [
+   "The phone speaks the <b>same realtime protocol as the browser</b>: <b>STOMP over WebSocket</b>, via <code>stomp_dart_client</code> — the web uses <code>@stomp/stompjs</code>, different language, identical contract.",
+   "<b>This is the architectural point of the whole mobile section:</b> we didn&#x27;t build a mobile realtime stack. We reused the one that already existed. One contract, two clients, and a message published once reaches both.",
+   "<b><code>uuid</code></b> generates a <code>clientMessageId</code> on every send — so if the connection drops and a send retries, the server can recognise the duplicate instead of posting your message twice. Idempotency belongs on the client too, not just the server.",
+   "<b><code>awesome_notifications</code></b> raises a real device notification when a message arrives while you&#x27;re not looking at the screen.",
+   "Honest and forward-looking: voice/video isn&#x27;t on mobile yet — that&#x27;s an Agora SDK integration, and Room Service already handles rooms and permissions. It&#x27;s the next screen, not the next architecture."
   ],
   "tech": [
    {
@@ -1184,15 +1341,23 @@ const SLIDES = [
   "role": "The whole team",
   "time": "~3m",
   "bullets": [
-   "Run the story in 2–3 minutes, in this order:",
-   "Close on the sentence you opened with: <i>&quot;Your people, your chat, your tasks, your meetings — in one place you can actually walk into.&quot;</i>",
-   "Then: questions."
+   "Login → the workspace is <b>alive</b>",
+   "Chat + thread",
+   "<i>“Catch me up”</i>",
+   "Create a task from a sentence",
+   "<b>Walk into the 2D office</b>",
+   "<i>“…one place you can actually walk into.”</i>"
   ],
   "notes": [
    "<b>One driver, one narrator — never both talking</b>",
    "Rehearse the exact click path until it&#x27;s muscle memory",
    "End on the 2D office, deliver the closing line, then <b>stop talking</b>",
    "Don&#x27;t trail off into <i>&quot;so, yeah&quot;</i>"
+  ],
+  "script": [
+   "Run the story in 2–3 minutes, in this order:",
+   "Close on the sentence you opened with: <i>&quot;Your people, your chat, your tasks, your meetings — in one place you can actually walk into.&quot;</i>",
+   "Then: questions."
   ],
   "tech": [],
   "visual": {
@@ -1280,7 +1445,8 @@ function paint(){
   bar.style.width = ((i+1)/SLIDES.length*100)+'%';
   const cur = slidesEl.querySelector('.slide.live'); if(cur) fit(cur);
   const s = SLIDES[i];
-  $('#notes ul').innerHTML = s.notes.map(n=>`<li>${n}</li>`).join('');
+  $('#nhow').innerHTML = s.notes.map(n=>`<li>${n}</li>`).join('');
+  $('#nsay').innerHTML = (s.script||[]).map(n=>`<li>${n}</li>`).join('');
   $('#notes .t').textContent = s.time.replace('~','');
   location.hash = i+1;
 }
