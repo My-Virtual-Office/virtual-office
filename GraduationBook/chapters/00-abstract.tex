@@ -1,0 +1,48 @@
+% ---------------- Abstract ----------------
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\markboth{Abstract}{Abstract}
+
+The shift toward remote and hybrid work has scattered the modern workplace across
+a dozen disconnected tools: one application for video meetings, another for
+chat, others for tasks, calendars, and file sharing. This fragmentation erodes
+the two qualities that make a physical office productive --- \emph{presence}
+(knowing who is around and available) and \emph{spontaneity} (the ability to walk
+up to a colleague and start talking). \voname{} is a graduation project that
+addresses this gap by delivering a single, spatial, all-in-one collaboration
+platform: a digital headquarters where teams appear as avatars in an animated
+2D office and where messaging, meetings, tasks, scheduling, and workspace
+administration live under one roof.
+
+The platform is engineered as three coordinated front-ends over a
+distributed backend. An immersive \textbf{2D virtual office} --- built with the
+Phaser game engine on the client and an authoritative Colyseus multiplayer
+server --- renders avatars that walk around a tile-mapped office, sit at desks,
+gather at whiteboards, and start proximity-based voice, video, and screen-sharing
+sessions the moment they move close to one another. A \textbf{React web client}
+provides a full Slack-style collaboration surface --- workspaces, channels,
+direct messages, threads, room calls (powered by Agora real-time media), and a
+live notification centre. A \textbf{Flutter mobile client} brings the messaging
+experience to phones, complete with optimistic delivery, read receipts, threads,
+and cross-state push notifications. Underneath, a \textbf{microservices backend}
+of nine cooperating Spring~Boot services --- gateway, user, workspace, room,
+chat, tasks, calendar, notifications, and a shared library --- handles identity,
+spatial state, real-time messaging, and event-driven side effects, coordinated
+through an Nginx gateway, per-service databases (PostgreSQL, MongoDB, Redis),
+and a RabbitMQ message bus.
+
+This book documents the complete engineering of the system: the problem it
+solves and the requirements it targets; the microservices architecture and the
+cross-cutting patterns that hold it together (token-based WebSocket
+authentication, the \code{\{action, payload\}} real-time envelope, event-driven
+service decoupling, and store-the-foreign-key service boundaries); the internal
+design of each backend service, including its data model, REST and WebSocket
+APIs, and message flows; the real-time multiplayer model of the 2D office; and
+the implementation of the web and mobile clients. It closes with the project's
+testing approach, an honest evaluation of what was achieved, and a roadmap for
+future work.
+
+\vspace{0.8cm}
+\noindent\textbf{Keywords:} virtual office, spatial collaboration, microservices,
+Spring Boot, real-time systems, WebSocket, STOMP, WebRTC, Phaser, Colyseus,
+React, Flutter, event-driven architecture.

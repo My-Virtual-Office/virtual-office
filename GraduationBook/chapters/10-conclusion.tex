@@ -1,0 +1,128 @@
+\chapter{Conclusion and Future Work}
+\label{ch:conclusion}
+
+\section{Summary}
+
+This book has documented the design and implementation of \voname{}, an
+all-in-one, spatial team-collaboration platform. Starting from a concrete problem
+--- the fragmentation of remote-work tools and the loss of the \emph{presence} and
+\emph{spontaneity} of a physical office --- the project set out to give a
+distributed team a single \emph{place} rather than a collection of applications,
+and to build it as a properly architected, multi-client, real-time system.
+
+The result is a platform with real breadth. A 2D virtual office, built on Phaser
+and an authoritative Colyseus server, lets users appear as avatars, move around a
+shared world, interact with computers and whiteboards, and fall into
+proximity-based voice, video, and screen sharing. A React web client delivers a
+full Slack-style collaboration surface --- workspaces, channels, direct messages,
+threads, room calls over Agora, and live notifications. A Flutter mobile client
+brings the messaging experience to phones with optimistic delivery and
+cross-state push notifications. Underneath, a backend of cooperating Spring~Boot
+microservices --- gateway, user, workspace, chat, room, and notifications ---
+handles identity, spatial and organisational state, real-time messaging, and
+event-driven side effects, over a polyglot mix of MySQL, PostgreSQL, MongoDB,
+Redis, and RabbitMQ.
+
+\section{Achievements}
+
+Measured against its objectives (Section~\ref{sec:fr}), the project delivered:
+
+\begin{itemize}
+  \item A working \textbf{real-time multiplayer office} with client-side
+  prediction, remote interpolation, server-authoritative interactive objects, and
+  proximity peer-to-peer media.
+  \item A complete \textbf{messaging system} --- channels, DMs, threads, mentions,
+  edits, soft deletion, read receipts, typing, and idempotent delivery ---
+  realised on both web and mobile.
+  \item A rich \textbf{workspace and identity layer} modelling companies, desks,
+  teams, roles, invitations, and an editable 2D map, with centralised
+  authentication and an internal API designed to drive the spatial client.
+  \item A \textbf{room and proximity-voice service} that mints media tokens and
+  computes voice groups from avatar positions without ever carrying media.
+  \item A \textbf{unified notification service} spanning transactional e-mail and
+  real-time in-app delivery.
+  \item A coherent set of \textbf{cross-cutting patterns} --- edge-validated
+  identity with header propagation, ticket-based WebSocket authentication, the
+  uniform \code{\{action, payload\}} envelope, and idempotent event-driven
+  decoupling --- applied consistently across five services and three clients, and
+  demonstrable end-to-end through a one-command stack.
+\end{itemize}
+
+Beyond the artefact, the project's value is the demonstration that four very
+different concerns --- a real-time multiplayer game, a Slack-style chat system, a
+microservices identity/workspace layer, and peer-to-peer media --- can be
+integrated into one coherent product.
+
+\section{Lessons Learned}
+
+Several engineering lessons recur through the work. \emph{Uniform patterns pay
+compound dividends}: because every real-time service used the same ticket
+handshake and the same message envelope, each new client needed only one
+connection recipe and one dispatch loop. \emph{Asynchronous decoupling buys
+resilience but costs immediacy}: event-driven binding between services survives
+outages and avoids tight coupling, at the price of eventual consistency that
+clients must be designed to tolerate. \emph{Security is easiest when it lives in
+one place}: validating identity once at the gateway, and having every service
+trust the result, removed authentication logic from five services at a stroke ---
+provided the edge is disciplined about stripping spoofable headers. And
+\emph{polyglot persistence rewards fitting the store to the data}: relational
+integrity for workspaces, documents for messages, and Redis for ephemeral
+presence and tickets each simplified their service.
+
+\section{Future Work}
+
+The limitations catalogued in Chapter~\ref{ch:testing} map directly onto a
+roadmap, ordered roughly by leverage.
+
+\begin{description}
+  \item[Complete the tasks and calendar services.] These are the largest
+  functional gaps. The notification service already \emph{consumes}
+  \code{TASK\_ASSIGNED} events, so implementing the tasks service --- task
+  creation, assignment, progress, and deadlines --- immediately lights up in-app
+  and push task notifications end-to-end. The calendar service (scheduling,
+  meeting invites) would similarly emit events consumed by notifications and could
+  bind meetings to rooms.
+
+  \item[Fully integrate the 2D office with the backend.] The demonstration stack
+  already runs the office against the seeded services; the next step is to drive
+  it \emph{live} in steady state --- boot each Colyseus room from the workspace
+  service's \route{/session-config}, stream avatar positions to the room service's
+  proximity engine, and reflect desk presence and status --- so that the spatial
+  world and the collaboration backend are one system rather than two that meet in
+  a demo.
+
+  \item[Broaden the mobile client.] Extend it beyond chat to workspace membership,
+  room presence, and eventually a mobile view of the office, and add a real JWT
+  login on top of the existing header-based identity.
+
+  \item[Harden security for production.] Move all secrets (JWT signing key, mail
+  credentials, Agora certificate, internal token) into a secret manager; introduce
+  platform-level role-based access control alongside the existing per-workspace
+  roles; and enforce the authorisation checks currently trusted to the client.
+
+  \item[Strengthen reliability and observability.] Add dead-letter queues and a
+  reaper for orphaned presence, and build on the existing Prometheus/Grafana
+  metrics (Section~\ref{sec:observability}) with distributed tracing, alerting,
+  and centralised logging so the real-time flows can be observed in production.
+
+  \item[Consolidate shared code.] Populate the shared library with the common
+  DTOs, user-context helpers, and exception handling that each service currently
+  re-implements, reducing drift.
+
+  \item[Polish the clients.] Finish the partially wired web features (a
+  server-backed presence roster, a visible typing indicator, attachment upload)
+  and replace prototype-grade interactions with production UX.
+\end{description}
+
+\section{Closing Remarks}
+
+\voname{} set out to reproduce, online, the two things a physical office gives a
+team for free --- knowing who is around, and being able to simply walk over and
+talk --- and to fold the rest of the working day into the same place. The
+delivered system does this at its core: avatars share a live space, conversations
+begin by proximity, and persistent messaging, rooms, workspaces, and notifications
+surround that space through a web, a mobile, and a game client over a coherent
+microservices backend. What remains is breadth and hardening rather than a change
+of direction. As a piece of engineering, the project stands as a demonstration of
+how a real-time, spatial, multi-client collaboration platform can be designed and
+built --- and as a foundation ready to be carried further.

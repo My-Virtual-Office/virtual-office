@@ -1,0 +1,415 @@
+\chapter{System Architecture}
+\label{ch:architecture}
+
+This chapter presents the architecture of \voname{} as a whole: the decomposition
+into microservices, the clients that consume them, the gateway that guards them,
+and the cross-cutting mechanisms --- authentication, synchronous and asynchronous
+communication, real-time messaging, and persistence --- that make the parts work
+as a coherent system. Chapter~\ref{ch:backend} then descends into each service in
+detail; here the goal is the big picture and the patterns that repeat everywhere.
+
+\section{Architectural Style}
+
+\voname{} follows a \textbf{microservices} architecture with an \textbf{API
+gateway} at the edge and an \textbf{event-driven} backbone for cross-service
+communication. The guiding principles are:
+
+\begin{description}
+  \item[One capability per service.] Each service owns a single business
+  capability --- identity, workspaces, chat, rooms, notifications --- and nothing
+  else. A service is the sole owner of its data; no other service reaches into
+  its database.
+  \item[Security at the edge.] Authentication is verified once, at the gateway.
+  Internal services trust identity that the gateway has already validated and
+  forwarded, and never re-implement token parsing.
+  \item[Synchronous where an answer is needed, asynchronous where it is not.]
+  A service calls another synchronously only when it needs an immediate
+  answer (for example, ``what is this user's role in this workspace?''). For
+  changes that other services should merely \emph{react} to, it publishes an
+  event and moves on.
+  \item[Polyglot persistence.] Each service uses the database that best fits its
+  data: a relational store for structured, transactional data; a document store
+  for flexible, high-volume data; and an in-memory store for ephemeral state and
+  caches.
+\end{description}
+
+\section{System Overview}
+
+Figure~\ref{fig:sysarch} shows the full topology: three families of clients, the
+gateway, the nine backend modules, the message broker, and the datastores.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize,
+  client/.style={draw=voIndigo,fill=voIndigo!8,rounded corners=3pt,align=center,
+                 minimum height=0.9cm,text width=2.5cm,inner sep=4pt},
+  gw/.style={draw=voDark,fill=voDark!8,rounded corners=3pt,align=center,
+             minimum height=0.9cm,text width=2.4cm},
+  svc/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=3pt,align=center,
+              minimum height=0.85cm,text width=2.2cm,inner sep=3pt},
+  scaf/.style={draw=voGray,fill=voLight,rounded corners=3pt,align=center,dashed,
+              minimum height=0.85cm,text width=2.2cm,inner sep=3pt},
+  infra/.style={draw=voAccent!70!black,fill=voAccent!10,rounded corners=3pt,
+               align=center,minimum height=0.8cm,text width=2.0cm,inner sep=3pt},
+  arr/.style={-{Stealth[]},voGray,thick},
+  darr/.style={-{Stealth[]},voAccent!60!black,thick,dashed},
+]
+% clients
+\node[client] (web) at (0,9)  {Web client\\\scriptsize React};
+\node[client] (mob) at (3,9)  {Mobile client\\\scriptsize Flutter};
+\node[client] (game) at (6.3,9) {2D Office\\\scriptsize Phaser + Colyseus};
+
+% gateway
+\node[gw] (gw) at (1.5,7.2) {API Gateway\\\scriptsize :8080};
+
+% services row 1
+\node[svc] (user) at (-1.2,5.4) {User\\\scriptsize :8091};
+\node[svc] (wsx)  at (1.3,5.4)  {Workspace\\\scriptsize :8087};
+\node[svc] (chat) at (3.8,5.4)  {Chat\\\scriptsize :8084};
+\node[svc] (room) at (6.3,5.4)  {Room\\\scriptsize :8086};
+% services row 2
+\node[svc] (notif) at (-1.2,3.9) {Notifications\\\scriptsize :8082};
+\node[scaf] (cal) at (1.3,3.9) {Calendar\\\scriptsize :8083 (stub)};
+\node[scaf] (task) at (3.8,3.9) {Tasks\\\scriptsize :8085 (stub)};
+\node[scaf] (shared) at (6.3,3.9) {Shared\\\scriptsize library};
+
+% broker
+\node[infra,fill=voIndigo!10,draw=voIndigo] (mq) at (9.4,4.65) {RabbitMQ\\\scriptsize event bus};
+
+% datastores
+\node[infra] (mysql) at (-1.2,2.0) {MySQL};
+\node[infra] (pg) at (1.3,2.0) {PostgreSQL};
+\node[infra] (mongo) at (3.8,2.0) {MongoDB};
+\node[infra] (redis) at (6.3,2.0) {Redis};
+
+% external
+\node[client,draw=voAccent!70!black,fill=voAccent!8] (agora) at (9.4,9) {Agora\\\scriptsize media SFU};
+\node[client,draw=voAccent!70!black,fill=voAccent!8] (smtp) at (9.4,7.4) {SMTP\\\scriptsize e-mail};
+
+% client -> gateway
+\draw[arr] (web) -- (gw); \draw[arr] (mob) -- (gw);
+\draw[arr] (game) to[out=250,in=60] (room);
+% gateway -> services
+\draw[arr] (gw) -- (user); \draw[arr] (gw) -- (wsx);
+\draw[arr] (gw) -- (chat); \draw[arr] (gw) -- (room);
+% services -> datastores
+\draw[arr] (user) -- (mysql); \draw[arr] (wsx) -- (pg);
+\draw[arr] (chat) -- (mongo); \draw[arr] (room) -- (mongo);
+\draw[arr] (notif) -- (mongo);
+\draw[arr] (chat) -- (redis); \draw[arr] (room) -- (redis);
+\draw[arr] (notif) -- (redis);
+% events
+\draw[darr] (user) to[out=0,in=180] (mq);
+\draw[darr] (room) -- (mq); \draw[darr] (wsx) to[out=0,in=200] (mq);
+\draw[darr] (mq.north) to[out=120,in=40] (chat.north east);
+\draw[darr] (mq.south) to[out=-90,in=-12] (notif.south east);
+% external
+\draw[arr] (web) to[out=90,in=180] (agora);
+\draw[arr] (room) -- (agora);
+\draw[arr] (notif) -- (smtp);
+% internal RestClient (role lookups) — arced above the service row, clear of the labels
+\draw[arr,voPrimary,densely dotted] (chat.north) to[out=125,in=55]
+      node[above,font=\tiny,voPrimary]{role} (wsx.north);
+\draw[arr,voPrimary,densely dotted] (room.north) to[out=130,in=50] (wsx.north);
+\end{tikzpicture}
+\caption{\voname{} system architecture. Solid grey arrows: request/response and
+storage; dashed green: asynchronous events over RabbitMQ; dotted blue:
+synchronous internal role lookups; dashed boxes: unimplemented scaffolds.}
+\label{fig:sysarch}
+\end{figure}
+
+\begin{notebox}
+\textbf{Honest note on maturity.} Of the nine backend modules, five are
+implemented services (user, workspace, chat, room, notifications), two are
+unimplemented Maven scaffolds (\svc{calendar} and \svc{tasks} --- only a POM,
+properties, and README each), and one (\svc{shared-library}) is a placeholder
+module with no code. This is stated plainly wherever these modules appear, so
+that the architecture is described as it is, not as intended.
+\end{notebox}
+
+\section{Service Catalogue}
+
+Table~\ref{tab:services} catalogues the backend modules with their port,
+responsibility, persistence, and messaging role. Two facts are worth flagging
+because they correct common assumptions: the event bus is \textbf{RabbitMQ}
+(there is no Kafka anywhere in the system), and internal service-to-service HTTP
+uses Spring's \textbf{\code{RestClient}} (not Feign, despite an unused Feign
+dependency lingering on one classpath).
+
+\begin{table}[htbp]
+\centering
+\caption{Backend service catalogue.}
+\label{tab:services}
+\scriptsize
+\begin{tabularx}{\textwidth}{L{2.2cm} C{0.9cm} X L{2.0cm} L{2.2cm}}
+\toprule
+\textbf{Service} & \textbf{Port} & \textbf{Responsibility} & \textbf{Datastore} & \textbf{Messaging} \\
+\midrule
+Gateway API & 8080 & Edge routing, JWT validation, header injection & --- & --- \\
+User & 8091 & Registration, login, JWT issuance, profile, OTP & MySQL & Produces \code{Notification\-Event} \\
+Workspace & 8087 & Workspaces, desks, teams, invitations, map layout, roles & PostgreSQL + Flyway & Produces \code{Workspace\-ChannelEvent} \\
+Chat & 8084 & Channels, DMs, messages, threads, read receipts, real-time & MongoDB + Redis & Consumes room \& workspace events \\
+Room & 8086 & Voice/video rooms, presence, Agora tokens, proximity voice & MongoDB + Redis & Produces \code{Room\-ChannelEvent} \\
+Notifications & 8082 & E-mails + in-app notifications, real-time push & MongoDB + Redis & Consumes \code{Notification\-Event} \\
+Calendar & 8083 & \emph{(scaffold)} scheduling / meetings & --- & --- \\
+Tasks & 8085 & \emph{(scaffold)} task assignment / tracking & --- & --- \\
+Shared library & --- & \emph{(placeholder)} intended common DTOs/utilities & --- & --- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{The API Gateway and Security Model}
+\label{sec:gateway}
+
+Every client request enters through the \textbf{gateway} (Spring Cloud Gateway,
+reactive). The gateway is the system's single security trust boundary, and its
+filter runs before routing with three responsibilities.
+
+\begin{enumerate}
+  \item \textbf{Anti-spoofing.} It strips any client-supplied \code{X-User-Id}
+  and \code{X-User-Role} headers from every incoming request. This is what makes
+  it \emph{safe} for internal services to trust those headers later --- they can
+  only ever be set by the gateway.
+  \item \textbf{Edge isolation of internal endpoints.} Any path under
+  \route{/api/internal/**} is rejected with \code{403} at the edge, so
+  server-to-server endpoints are unreachable from outside.
+  \item \textbf{Authentication.} Public paths (\route{/api/auth/*},
+  \route{/api/otp/*}, and any \route{*/health}) pass through untouched. Every
+  other request must carry a valid \code{Bearer} JWT; the gateway verifies the
+  HS256 signature and expiry, extracts the \code{userId} claim, and injects
+  \code{X-User-Id} (and a default \code{X-User-Role}) before forwarding.
+\end{enumerate}
+
+Figure~\ref{fig:authflow} shows the end-to-end authentication flow, from
+credential exchange to an authenticated call reaching a downstream service.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize,
+  node distance=0.0cm,
+  lifeline/.style={voGray,densely dashed},
+  actorbox/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=2pt,
+                   minimum width=2.0cm,minimum height=0.7cm,align=center},
+  msg/.style={-{Stealth[]},voDark,thick},
+  ret/.style={-{Stealth[]},voGray,densely dashed},
+  note/.style={font=\scriptsize\itshape,voGray},
+]
+% actors
+\node[actorbox] (c) at (0,7) {Client};
+\node[actorbox] (u) at (4,7) {User Svc\\:8091};
+\node[actorbox] (g) at (8,7) {Gateway\\:8080};
+\node[actorbox] (s) at (12,7) {Chat Svc\\:8084};
+% lifelines
+\foreach \n in {c,u,g,s}{\draw[lifeline] (\n.south) -- ++(0,-6.3);}
+% messages
+\draw[msg] (0,6.3) -- node[above,note]{login (email, password)} (4,6.3);
+\draw[ret] (4,5.7) -- node[above,note]{JWT (HS256, userId, 24h)} (0,5.7);
+\draw[msg] (0,5.0) -- node[above,note]{request + Bearer JWT} (8,5.0);
+\node[note,align=left] at (8.9,4.4) {strip X-User-*,};
+\node[note,align=left] at (8.7,4.1) {verify JWT};
+\draw[msg] (8,3.6) -- node[above,note]{+ X-User-Id / X-User-Role} (12,3.6);
+\node[note,align=left] at (12.9,3.0) {trust headers,};
+\node[note,align=left] at (13.0,2.7) {no JWT parse};
+\draw[ret] (12,2.2) -- node[above,note]{response} (0,2.2);
+% internal call
+\draw[msg,voPrimary] (12,1.5) to[out=200,in=340] node[below,note,voPrimary]{internal role lookup + X-Internal-Token} (4.2,1.5);
+\end{tikzpicture}
+\caption{End-to-end authentication and identity-propagation flow.}
+\label{fig:authflow}
+\end{figure}
+
+Beyond the JWT, the system uses a second, coarser credential for
+\textbf{server-to-server} calls: internal endpoints (workspace role lookups, the
+Colyseus session/presence API) are authenticated with a shared
+\code{X-Internal-Token}. Because such endpoints are blocked at the gateway, this
+token only ever travels inside the trusted network. Together, the two mechanisms
+give a clean separation: \emph{user} identity via JWT at the edge, and
+\emph{service} identity via a shared token behind it.
+
+\section{Communication Patterns}
+
+\subsection{Synchronous: internal REST}
+
+When a service needs an immediate answer from another, it makes a direct HTTP
+call using Spring's \code{RestClient}. In \voname{} the dominant example is
+authorisation: both the chat and room services must know a caller's role
+\emph{within a specific workspace} before allowing an action, so they call the
+workspace service's internal endpoint
+\route{/api/internal/workspace/\{id\}/members/\{userId\}/role}. These calls are
+designed to \textbf{fail closed}: if the workspace service is unreachable, the
+caller denies the action (returning \code{503}) rather than allowing it, so a
+dependency outage cannot become a security hole.
+
+\subsection{Asynchronous: the RabbitMQ event bus}
+
+Most cross-service communication is asynchronous and event-driven. A service that
+changes state publishes an \emph{event} to a RabbitMQ \code{DirectExchange}; a
+consuming service, bound to a durable queue by a routing key, reacts to it. The
+producer neither knows nor waits for the consumer. Table~\ref{tab:events} lists
+every event flow in the system.
+
+\begin{table}[htbp]
+\centering
+\caption{Event flows over RabbitMQ. All use durable direct exchanges, JSON
+payloads, and consumer-side retry with exponential backoff.}
+\label{tab:events}
+\scriptsize
+\begin{tabularx}{\textwidth}{L{2.0cm} L{2.4cm} L{2.6cm} L{2.0cm} X}
+\toprule
+\textbf{Producer} & \textbf{Exchange} & \textbf{Routing key} & \textbf{Consumer} & \textbf{Event / effect} \\
+\midrule
+User & \code{notifications.\-exchange} & \code{routing.key} & Notifications & \code{NotificationEvent}: send e-mail / in-app notice \\
+Room & \code{room.exchange} & \code{room.channel.event} & Chat & \code{RoomChannelEvent}: create/sync a \code{ROOM} channel \\
+Workspace & \code{workspace.\-exchange} & \code{workspace.\-channel.event} & Chat & \code{WorkspaceChannelEvent}: maintain the canonical workspace channel \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+This design has three payoffs that recur through the book. First,
+\textbf{decoupling}: the room service can create a room and return immediately,
+while the chat service materialises the bound channel a moment later. Second,
+\textbf{resilience}: if the chat service is momentarily down, its events wait
+durably in the queue and are processed on recovery. Third, \textbf{idempotency}:
+every event carries a unique \code{eventId}, and consumers check it before
+acting, so a redelivered message is harmless. The price is \textbf{eventual
+consistency} --- a freshly created room's channel may \code{404} for a brief
+window until its event is processed --- which clients are designed to tolerate
+(``setting up chat\ldots'').
+
+\section{The Real-time Layer}
+\label{sec:realtime-arch}
+
+Three services --- chat, room, and notifications --- expose real-time
+functionality over STOMP-on-WebSocket. They share two patterns so consistently
+that it is worth describing them once, centrally.
+
+\subsection{Ticket-based WebSocket authentication}
+
+Because a browser cannot set an \code{Authorization} header on a WebSocket
+handshake, each real-time service authenticates the socket with a single-use
+\emph{ticket}, illustrated in Figure~\ref{fig:wsticket}:
+
+\begin{enumerate}
+  \item The client makes an authenticated REST call, \route{POST .../ws-ticket}.
+  The service generates a random ticket and stores it in Redis, mapped to the
+  caller's identity, with a 60-second time-to-live.
+  \item The client opens the WebSocket with the ticket as a query parameter,
+  e.g. \route{/api/chat/connect?ticket=<uuid>}.
+  \item A handshake interceptor atomically reads-and-deletes the ticket from
+  Redis (\code{GETDEL}), binding the resulting identity to the STOMP session. The
+  ticket cannot be reused.
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize,
+  box/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=2pt,align=center,
+              minimum height=0.7cm,text width=2.2cm},
+  redis/.style={draw=voAccent!70!black,fill=voAccent!10,rounded corners=2pt,
+              align=center,minimum height=0.7cm,text width=1.8cm},
+  a/.style={-{Stealth[]},thick,voDark},
+  r/.style={-{Stealth[]},densely dashed,voGray},
+  note/.style={font=\scriptsize\itshape,voGray},
+]
+\node[box] (cl) at (0,0) {Client};
+\node[box] (sv) at (5,0) {Real-time\\Service};
+\node[redis] (rd) at (9.5,0) {Redis};
+\draw[a] (cl.30) -- node[above,note]{1. POST ws-ticket (JWT)} (sv.150);
+\draw[a] (sv.30) -- node[above,note]{store ticket, TTL 60s} (rd.150);
+\draw[r] (sv.210) -- node[below,note]{2. ticket} (cl.-30);
+\draw[a] (cl) to[out=-40,in=200] node[below,note]{3. WS connect ?ticket=} (sv.-140);
+\draw[a] (sv.-30) to[out=-30,in=210] node[below,note]{GETDEL (single-use)} (rd.-150);
+\end{tikzpicture}
+\caption{Ticket-based WebSocket handshake, used identically by the chat, room,
+and notification services.}
+\label{fig:wsticket}
+\end{figure}
+
+\subsection{The \texorpdfstring{\code{\{action, payload\}}}{action/payload} envelope}
+
+Every real-time message the server pushes uses the same envelope: a JSON object
+with an \code{action} string and a \code{payload}. A chat client, for instance,
+receives \code{\{action:"NEW\_MESSAGE", payload:\{...\}\}},
+\code{\{action:"EDIT\_MESSAGE", ...\}}, or \code{\{action:"TYPING", ...\}}; a room
+client receives \code{PARTICIPANT\_JOINED}, \code{STATE\_CHANGED}, or
+\code{ROOM\_CLOSED}; a notification client receives \code{NEW\_NOTIFICATION}. This
+uniformity means every client can use one dispatch loop --- switch on
+\code{action}, handle the \code{payload} --- regardless of service, which
+noticeably simplifies the web and mobile code (Chapters~\ref{ch:web}
+and~\ref{ch:mobile}).
+
+STOMP \emph{destinations} follow an equally regular scheme: public broadcasts go
+to \route{/topic/...} (a channel, thread, or room), a user's private stream goes
+to \route{/user/queue/...} (errors, notifications), and clients send to
+\route{/app/...} application destinations. Subscriptions to sensitive topics are
+authorised by an interceptor that checks membership before allowing the
+\code{SUBSCRIBE}.
+
+\section{Polyglot Persistence}
+
+Each service stores its data in the technology that fits it best
+(Table~\ref{tab:services}):
+
+\begin{description}
+  \item[MySQL --- User service.] Accounts and verification requests are
+  structured, relational, and transactional; a relational database with JPA is
+  the natural home.
+  \item[PostgreSQL with Flyway --- Workspace service.] The workspace domain is
+  the most structurally rich in the system (workspaces, desks, teams, zones, map
+  layers, tilesets, invitations) with many foreign-key relationships and
+  optimistic-locking needs; PostgreSQL provides that, and Flyway migrations give
+  the schema first-class version control.
+  \item[MongoDB --- Chat, Room, Notifications.] Messages, rooms, and
+  notifications are high-volume, append-heavy documents whose shape varies
+  (mentions, attachments, arbitrary notification \code{data}); a document store
+  fits, and each service uses its own database on the shared instance.
+  \item[Redis --- Chat, Room, Notifications.] Ephemeral and latency-critical
+  state lives in Redis: WebSocket tickets, read-receipt cursors, room presence
+  and heartbeats, rate-limit counters, and idempotency claims. Keys are
+  namespaced per service (\code{read:*}, \code{room:*}, \code{notif:*}) to share
+  one instance safely.
+\end{description}
+
+\section{Technology Stack Summary}
+
+Table~\ref{tab:stack} consolidates the technologies used across the platform, by
+tier. The clients are covered in Chapters~\ref{ch:skyoffice}--\ref{ch:mobile}.
+
+\begin{table}[htbp]
+\centering
+\caption{Technology stack by tier.}
+\label{tab:stack}
+\small
+\begin{tabularx}{\textwidth}{L{3.2cm} X}
+\toprule
+\textbf{Tier} & \textbf{Technologies} \\
+\midrule
+Backend services & Java 21, Spring Boot (3.4.1--4.0.x), Spring Cloud Gateway, Spring Web/WebFlux, Spring Data JPA/Mongo/Redis, Spring AMQP, Spring WebSocket + STOMP, jjwt, MapStruct, Flyway \\
+Data \& messaging & MySQL, PostgreSQL, MongoDB, Redis, RabbitMQ \\
+Web client & React 18, MUI 7, Tailwind CSS, \code{@stomp/stompjs}, \code{agora-rtc-sdk-ng}, axios, React Router 7 \\
+Mobile client & Flutter / Dart, Provider, \code{http}, \code{stomp\_dart\_client}, \code{awesome\_notifications}, \code{shared\_preferences} \\
+2D office & TypeScript, Phaser 3, Colyseus, PeerJS/WebRTC, React + Redux Toolkit, Vite \\
+External services & Agora (media SFU), Gmail SMTP (e-mail) \\
+Build \& ops & Maven (multi-module), Docker Compose, health endpoints \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Deployment View}
+
+For development, each service runs on its documented port on \code{localhost},
+and its infrastructure dependencies (MySQL, PostgreSQL, MongoDB, Redis, RabbitMQ)
+are brought up through Docker Compose definitions shipped with the services.
+Spring Boot's Docker Compose integration lets a service start its own
+dependencies automatically. In a containerised deployment, the gateway is the
+only publicly exposed service; all others sit on an internal network, reachable
+only through the gateway or, for internal endpoints, only by peers holding the
+shared internal token. Service URLs are externalised as environment variables
+(for example \code{CHAT\_SERVICE\_URL}), so the same images run unchanged from a
+laptop to a cluster.
+
+The chapters that follow now open each of these boxes in turn: the backend
+services (Chapter~\ref{ch:backend}), the 2D office (Chapter~\ref{ch:skyoffice}),
+and the web and mobile clients (Chapters~\ref{ch:web} and~\ref{ch:mobile}).

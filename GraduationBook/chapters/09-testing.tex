@@ -1,0 +1,271 @@
+\chapter{Testing, Deployment, and Evaluation}
+\label{ch:testing}
+
+This chapter describes how \voname{} is tested and run, and then evaluates the
+system against the requirements of Chapter~\ref{ch:requirements}. In keeping with
+the rest of the book, the evaluation is honest: it records both what works
+end-to-end and what remains partial or unimplemented, so the account is a faithful
+picture of a substantial but still-evolving system.
+
+\section{Testing Strategy}
+
+\voname{} is tested at several levels, though not uniformly across services.
+
+\begin{description}
+  \item[Unit tests] exercise individual components in isolation --- service
+  methods, mappers, and validation logic. The workspace service is the most
+  rigorously tested: its build enforces a 90\% line-coverage threshold through
+  JaCoCo, so its business logic (role checks, invitation lifecycle, optimistic
+  layout updates) is well covered.
+  \item[Integration tests] verify a service together with its real
+  infrastructure. The Mongo/Redis-backed services (chat, room, notifications)
+  use \textbf{Testcontainers} to spin up genuine MongoDB, Redis, and RabbitMQ
+  instances inside the test run, so that database queries, index constraints,
+  Redis scripts, and message-broker round-trips are exercised against the real
+  technologies rather than mocks. The workspace service uses Failsafe-driven
+  integration tests against PostgreSQL with Flyway-migrated schemas.
+  \item[Contract documentation] takes the place of some cross-service testing:
+  each implemented service publishes an OpenAPI specification (rendered through a
+  Swagger UI in the workspace service), which fixes the request/response contract
+  that clients and other services code against.
+  \item[Manual and exploratory testing] covers the real-time and multi-client
+  behaviours that are hardest to automate --- proximity calls, presence updates,
+  notification delivery across app states --- and is supported by the
+  demonstration stack described next.
+\end{description}
+
+\section{Deployment and the Demonstration Stack}
+
+Every service ships with the container definitions for its own dependencies, and
+Spring Boot's Docker Compose integration allows a service to bring those
+dependencies up automatically on start. Service locations are externalised as
+environment variables, so the same artefacts run unchanged from a developer laptop
+to a container cluster; in a clustered deployment the gateway is the only publicly
+exposed process, with everything else on an internal network.
+
+The clearest evidence that the platform runs as an integrated whole is the
+\textbf{one-command demonstration stack}. A single script:
+
+\begin{enumerate}
+  \item starts the shared infrastructure (PostgreSQL, MongoDB, Redis, RabbitMQ)
+  in Docker;
+  \item launches the workspace, chat, room, and gateway services, together with
+  the Colyseus fork and the SkyOffice 2D client;
+  \item seeds \emph{two workspaces of five members each}, consistently across
+  every service --- the workspace service seeds (via a Flyway migration) a tile
+  map with a meeting-room zone, five desks near the spawn point, and computers and
+  whiteboards; the chat service seeds the canonical channel with those members and
+  some messages; the room service seeds a shared voice room;
+  \item mints a demonstration JWT and prints a ready-to-open URL for each of two
+  users.
+\end{enumerate}
+
+Opening the two URLs in separate browser sessions places two avatars in the same
+seeded office, close enough to fall into one proximity voice group, sharing a
+channel and a voice room --- so a reviewer can, in a single command, walk two
+avatars together to trigger proximity voice and exchange chat, all backed by the
+real microservices. All seeders are idempotent, so the stack can be restarted
+freely. This stack is both a testing aid and the canonical way to demonstrate the
+system.
+
+\section{Observability: Metrics and Dashboards}
+\label{sec:observability}
+
+Running a distributed system is only manageable if its runtime behaviour is
+visible. Beyond the per-service health endpoints and application logs, \voname{}
+exposes a \textbf{metrics} pipeline built on the standard Spring Boot stack and
+visualised in Grafana. It covers the five implemented services --- \svc{user}
+(\code{:8091}), \svc{workspace} (\code{:8087}), \svc{chat} (\code{:8084}),
+\svc{room} (\code{:8086}), and \svc{notifications} (\code{:8082}).
+
+\subsection{The Metrics Pipeline}
+
+Every service already depends on Spring Boot Actuator; adding a Micrometer
+Prometheus registry turns each one into a metrics source. Micrometer instruments
+the application automatically --- HTTP server timings, JVM and process internals,
+and the datastore and connection-pool clients --- and Actuator publishes the
+result as a Prometheus-format text endpoint at \route{/actuator/prometheus}. A
+single \textbf{Prometheus} server periodically \emph{scrapes} that endpoint on
+each service and stores the samples as time series; \textbf{Grafana} then queries
+Prometheus with PromQL and renders the dashboards. The flow is pull-based and
+one-directional, as shown in Figure~\ref{fig:observability}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize,
+  svc/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=3pt,align=center,
+              minimum height=0.68cm,text width=3.0cm,inner sep=3pt},
+  prom/.style={draw=voAccent!70!black,fill=voAccent!12,rounded corners=3pt,align=center,
+               minimum height=1.4cm,text width=2.3cm},
+  graf/.style={draw=voIndigo,fill=voIndigo!10,rounded corners=3pt,align=center,
+               minimum height=1.4cm,text width=2.7cm},
+  scr/.style={-{Stealth[]},voGray,thick},
+]
+\node[svc] (s1) at (0,3.6) {\svc{user}\, \code{:8091}};
+\node[svc] (s2) at (0,2.7) {\svc{workspace}\, \code{:8087}};
+\node[svc] (s3) at (0,1.8) {\svc{chat}\, \code{:8084}};
+\node[svc] (s4) at (0,0.9) {\svc{room}\, \code{:8086}};
+\node[svc] (s5) at (0,0.0) {\svc{notifications}\, \code{:8082}};
+\node[prom] (prom) at (5.6,1.8) {\textbf{Prometheus}\\[2pt]\scriptsize scrape \&\\\scriptsize store series};
+\node[graf] (graf) at (9.4,1.8) {\textbf{Grafana}\\[2pt]\scriptsize PromQL queries\\\scriptsize HTTP \& datastore\\\scriptsize dashboards};
+\foreach \s in {s1,s2,s3,s4,s5}{ \draw[scr] (\s.east) to[out=0,in=180] (prom.west); }
+\node[voGray,font=\scriptsize,align=center] at (3.35,3.95) {scrape (pull)\\\route{/actuator/prometheus}};
+\draw[scr] (prom) -- node[above,font=\scriptsize,voGray]{query} (graf);
+\end{tikzpicture}
+\caption{The metrics pipeline: each implemented service exposes a Prometheus
+endpoint; one Prometheus server scrapes all five and stores the series, and
+Grafana queries it to render the HTTP and datastore dashboards.}
+\label{fig:observability}
+\end{figure}
+
+Exposing the endpoint is a small, uniform change per service: the
+\code{micrometer-registry-prometheus} dependency on the classpath, and the
+endpoint added to the Actuator exposure list.
+
+\begin{lstlisting}[caption={Enabling the Prometheus endpoint in each service (\code{application.yml}).}]
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+\end{lstlisting}
+
+Prometheus is then pointed at the five services with a single scrape job.
+
+\begin{lstlisting}[caption={The Prometheus scrape job targeting the five services (\code{prometheus.yml}).}]
+scrape_configs:
+  - job_name: virtual-office
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["user:8091", "workspace:8087", "chat:8084",
+                  "room:8086", "notifications:8082"]
+\end{lstlisting}
+
+Because scraping is pull-based, the services need know nothing about Prometheus
+--- they simply expose the endpoint, so adding or removing a target is a change to
+Prometheus's configuration alone.
+
+\subsection{What the Dashboards Show}
+
+The Grafana dashboards concentrate on the two signals that matter most for this
+system's health: request behaviour at the edge of each service, and the state of
+the datastores behind them.
+
+\begin{description}
+  \item[HTTP request rate, latency, and errors] are derived from Micrometer's
+  \code{http.server.requests} timer, which records every handled request tagged
+  by \code{method}, \code{uri}, and response \code{status}. From it the dashboards
+  plot per-service throughput, latency percentiles (the timer captures a
+  distribution, so p95/p99 are available), and the error rate as the share of
+  \code{4xx}/\code{5xx} responses --- the quickest way to see a service slowing
+  down or failing a dependency.
+  \item[Datastore health] is read from the persistence clients each service
+  already uses. The two SQL services surface \textbf{HikariCP} connection-pool
+  gauges --- active, idle, and pending connections and acquisition time --- for
+  \svc{user}'s MySQL and \svc{workspace}'s PostgreSQL, making pool exhaustion or
+  slow queries visible before they surface as request errors; the Mongo/Redis
+  services (\svc{chat}, \svc{room}, \svc{notifications}) surface their MongoDB and
+  Redis client metrics on the equivalent panels.
+\end{description}
+
+Because every service is scraped uniformly, a dashboard can be read per-service or
+aggregated across the fleet, so a reviewer can watch the whole backend from one
+screen while exercising the demonstration stack of the previous section.
+
+\begin{notebox}
+\textbf{Scope.} Observability here is metrics-and-dashboards for the five
+implemented services; it deliberately does not yet include the API gateway or the
+unimplemented \svc{calendar}/\svc{tasks} scaffolds, and it stops short of
+distributed tracing and alerting. The Prometheus endpoint also carries the
+standard JVM and process metrics even though the current dashboards focus on HTTP
+and datastore health, so those panels can be added without any change to the
+services.
+\end{notebox}
+
+\section{Evaluation against Requirements}
+
+Table~\ref{tab:eval} assesses the functional requirement groups of
+Section~\ref{sec:fr}. The status column distinguishes fully working end-to-end
+capabilities from those that are partial (implemented on some clients or with
+known gaps) or unimplemented.
+
+\begin{table}[htbp]
+\centering
+\caption{Evaluation of functional requirement groups.}
+\label{tab:eval}
+\small
+\begin{tabularx}{\textwidth}{L{4.4cm} L{2.4cm} X}
+\toprule
+\textbf{Requirement group} & \textbf{Status} & \textbf{Notes} \\
+\midrule
+Identity \& accounts (FR-01--07) & Complete & Registration, login, JWT, OTP, profile, photo; events emitted. \\
+Workspaces, desks, teams (FR-08--15) & Complete & Full PostgreSQL/Flyway service with roles, invitations, map layout, and the internal session API. \\
+Messaging (FR-16--24) & Complete & Channels, DMs, threads, edits, mentions, read receipts, idempotency, event-driven channel provisioning; on both web and mobile. \\
+Meeting rooms \& proximity voice (FR-25--28) & Complete (backend) & Rooms, presence, Agora tokens, and the deterministic proximity-voice engine all implemented; consumed by the web client. \\
+2D office (FR-29--33) & Complete (client) & Movement, avatars, interactive objects, proximity media, in-world chat; integrated in the demo stack. \\
+Notifications (FR-34--37) & Complete & E-mail and in-app paths, real-time push, idempotency. The \code{TASK\_ASSIGNED} consumer awaits its producer. \\
+Web client (FR-38) & Complete & Full collaboration surface; some prototype-grade UX. \\
+Mobile client (FR-39) & Partial & Chat domain implemented to a high standard; no office/workspace admin/calling. \\
+Real-time auth (FR-40) & Complete & Ticket handshake and auto-reconnect on all clients. \\
+Tasks \& calendar & Not implemented & Scaffolds only; the notification consumer for tasks exists. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Non-functional Evaluation}
+
+Against the non-functional targets of Section~\ref{sec:nfr}, the design choices
+documented throughout the book meet the important ones:
+
+\begin{itemize}
+  \item \textbf{Performance (NFR-01)} is addressed structurally: avatar movement
+  uses client-side prediction with remote interpolation, and Colyseus transmits
+  only changed fields; chat delivery is push-based over persistent sockets.
+  \item \textbf{Scalability (NFR-02)} is met by keeping media off the application
+  servers entirely --- peer-to-peer in the office and an external SFU for rooms ---
+  so server load does not grow with audio/video volume.
+  \item \textbf{Security (NFR-03)} is enforced at the edge: the gateway validates
+  the JWT once, strips client-supplied identity headers, and blocks internal
+  endpoints, while internal calls carry a separate shared token.
+  \item \textbf{Reliability and consistency (NFR-04, 05)} come from durable,
+  idempotent, retried events and the fail-closed internal calls, giving eventual
+  consistency that clients tolerate.
+  \item \textbf{Maintainability and portability (NFR-06, 07)} follow from
+  per-service data ownership and the container definitions and demo stack.
+\end{itemize}
+
+The principal non-functional gaps are operational hardening rather than design
+flaws: secrets (the JWT signing key, mail credentials, the Agora certificate, and
+the internal token) are currently committed as configuration defaults and should
+move to a secret manager; platform-level role-based access control is not yet
+modelled (the gateway assigns every user the same platform role, with real
+authority resolved per workspace); and observability, while it now includes
+Prometheus metrics and Grafana dashboards for the five implemented services
+(Section~\ref{sec:observability}), does not yet extend to the gateway,
+distributed tracing, or alerting.
+
+\section{Limitations}
+
+Consolidating the honest notes made throughout the book, the current limitations
+are:
+
+\begin{enumerate}
+  \item The \textbf{tasks} and \textbf{calendar} services are unimplemented
+  scaffolds, and the \textbf{shared library} is an empty placeholder.
+  \item The \textbf{mobile} client covers only chat.
+  \item The \textbf{2D office} runs as an integrated demo but is not yet driven
+  fully live from the workspace service in steady-state operation.
+  \item Several \textbf{secrets} are configuration defaults rather than injected
+  at deploy time.
+  \item Some \textbf{web UX} is prototype-grade, and a few features (presence
+  roster, typing display, attachment upload) are partially wired.
+\end{enumerate}
+
+None of these undermines the core result: an integrated, multi-client, real-time
+collaboration platform whose central capabilities --- identity, workspaces,
+messaging, rooms, proximity communication, and notifications --- work together
+end-to-end. The next chapter reflects on that result and lays out the roadmap
+these limitations imply.

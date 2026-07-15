@@ -228,36 +228,7 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 
 ---
 
-### Slide 13 — The 2D Office: Why a Game Engine
-**Who:** Nadine
-**Time:** ~1m 30s · **Then hand to:** Khalwsh
-**How:**
-- Densest slide in the deck
-- Open with: *"a floor plan with people on it **is** a game loop"*
-- **The chat-vs-movement table is the whole slide** — if short on time, cut everything else and keep it
-**Say:**
-- Slide 9 was the *why*. This is the *how* — and it's the one part of the stack that isn't a normal web app.
-- **Phaser 3** — an actual 2D game engine, because a floor plan with people walking on it **is** a game loop: 60fps rendering, a **Tiled** tilemap with collision, sprite animation, a camera that follows your character. Building that from DOM elements would be a fight you lose; Phaser gives it away.
-- **Colyseus** — an authoritative multiplayer server. It runs as its **own Node service**, separate from the Spring backend.
-- **The question you will be asked — have this ready:** *"You already have WebSockets for chat. Why a second realtime stack?"* Because they are **opposite problems**:
-  | | Chat | Movement |
-  |---|---|---|
-  | Every event matters? | **Yes** — never lose a message | **No** — a late position is *garbage*, drop it |
-  | Order matters? | Yes | Only the newest one matters |
-  | Store it? | Forever, in MongoDB | Never |
-  | Rate | A few per minute | ~60 per second |
-  - So: **STOMP + MongoDB** for chat; **Colyseus** for the world. Pushing 60 positions/second through the chat broker would flood it with data nobody keeps. **Different guarantees demand different transports** — that's the answer, and it's a design decision, not an accident.
-- **How the world syncs:** the server owns `OfficeState`. `@type` decorators on the schema make Colyseus send **binary deltas** — only what changed, not the whole world. A `Player` carries `x, y, anim, status, floor`; the decorators *are* the network protocol.
-- **Multi-tenancy in one line:** `gameServer.define(WORKSPACE, SkyOffice).filterBy(['workspaceId'])` — everyone with the same `workspaceId` lands in the same room, and two companies can never see each other. One line, complete isolation.
-- **React and Phaser share the screen:** Phaser renders the canvas; a **React + Redux** HUD draws the UI on top of it. Two rendering systems, one page.
-- **Proximity becomes media** — walk up to someone, or into a meeting room, and the call connects (**Agora**, with PeerJS behind the earlier prototype). *That's the slide 9 promise, delivered: you don't dial anyone, you walk over.*
-- It works on a phone too — `react-joystick-component` for touch.
-
-**Show:** **Go live.** Walk the avatar across the floor, bump into a wall (collision is instant proof it's a real engine), enter a room, and let the call connect. Second best: the `OfficeState` schema — ten lines of `@type` decorators — beside the office screenshot, and say *"this is the entire network protocol."*
-
----
-
-### Slide 14 — Microservices Architecture
+### Slide 13 — Microservices Architecture
 **Who:** Khalwsh
 **Time:** ~1m 30s
 **How:**
@@ -275,7 +246,7 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 
 ---
 
-### Slide 15 — Identity: Decided Once, at the Edge
+### Slide 14 — Identity: Decided Once, at the Edge
 **Who:** Mousa
 **Time:** ~1m
 **How:**
@@ -299,7 +270,7 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 
 ---
 
-### Slide 16 — Tasks & Calendar: The Engineering
+### Slide 15 — Tasks & Calendar: The Engineering
 **Who:** Mousa
 **Time:** ~1m 15s · **Then hand to:** Sersawy
 **How:**
@@ -323,7 +294,7 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 
 ---
 
-### Slide 17 — Chat, Notifications & Rooms
+### Slide 16 — Chat, Notifications & Rooms
 **Who:** Khalwsh
 **Time:** ~1m 30s · **Then hand to:** Sersawy
 **How:**
@@ -359,7 +330,7 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 
 ---
 
-### Slide 18 — Workspace Service & the AI Bot
+### Slide 17 — Workspace Service & the AI Bot
 **Who:** Sersawy
 **Time:** ~1m 15s · **Then hand to:** Khalwsh
 **How:**
@@ -373,6 +344,35 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 - **Say the hard part out loud (examiners like this):** the real challenge was **context** — giving the model only the data that belongs to this user and this conversation, so the answer is accurate and grounded. We solved it with **function calling**: the model doesn't get a data dump, it calls the same APIs a user would, **using that user's own token** — so it can never see anything the person couldn't see themselves.
 
 **Show:** The Assistant creating a task from a sentence — type *"Create a high priority task for Karim to fix the analytics bug, due Thursday"* → then show the task appearing on the board. **That before/after is the strongest 15 seconds in the deck.**
+
+---
+
+### Slide 18 — The 2D Office: Why a Game Engine
+**Who:** Sersawy
+**Time:** ~1m 30s · **Then hand to:** Khalwsh
+**How:**
+- Densest slide in the deck
+- Open with: *"a floor plan with people on it **is** a game loop"*
+- **The chat-vs-movement table is the whole slide** — if short on time, cut everything else and keep it
+**Say:**
+- Slide 9 was the *why*. This is the *how* — and it's the one part of the stack that isn't a normal web app.
+- **Phaser 3** — an actual 2D game engine, because a floor plan with people walking on it **is** a game loop: 60fps rendering, a **Tiled** tilemap with collision, sprite animation, a camera that follows your character. Building that from DOM elements would be a fight you lose; Phaser gives it away.
+- **Colyseus** — an authoritative multiplayer server. It runs as its **own Node service**, separate from the Spring backend.
+- **The question you will be asked — have this ready:** *"You already have WebSockets for chat. Why a second realtime stack?"* Because they are **opposite problems**:
+  | | Chat | Movement |
+  |---|---|---|
+  | Every event matters? | **Yes** — never lose a message | **No** — a late position is *garbage*, drop it |
+  | Order matters? | Yes | Only the newest one matters |
+  | Store it? | Forever, in MongoDB | Never |
+  | Rate | A few per minute | ~60 per second |
+  - So: **STOMP + MongoDB** for chat; **Colyseus** for the world. Pushing 60 positions/second through the chat broker would flood it with data nobody keeps. **Different guarantees demand different transports** — that's the answer, and it's a design decision, not an accident.
+- **How the world syncs:** the server owns `OfficeState`. `@type` decorators on the schema make Colyseus send **binary deltas** — only what changed, not the whole world. A `Player` carries `x, y, anim, status, floor`; the decorators *are* the network protocol.
+- **Multi-tenancy in one line:** `gameServer.define(WORKSPACE, SkyOffice).filterBy(['workspaceId'])` — everyone with the same `workspaceId` lands in the same room, and two companies can never see each other. One line, complete isolation.
+- **React and Phaser share the screen:** Phaser renders the canvas; a **React + Redux** HUD draws the UI on top of it. Two rendering systems, one page.
+- **Proximity becomes media** — walk up to someone, or into a meeting room, and the call connects (**Agora**, with PeerJS behind the earlier prototype). *That's the slide 9 promise, delivered: you don't dial anyone, you walk over.*
+- It works on a phone too — `react-joystick-component` for touch.
+
+**Show:** **Go live.** Walk the avatar across the floor, bump into a wall (collision is instant proof it's a real engine), enter a room, and let the call connect. Second best: the `OfficeState` schema — ten lines of `@type` decorators — beside the office screenshot, and say *"this is the entire network protocol."*
 
 ---
 
@@ -532,10 +532,10 @@ Do **not** cut the demo or slide 9 (the 2D reveal). Those are the two slides peo
 |---|---|
 | Mousa | 1, 2, 3, 4, **15 — Identity**, **16 — Tasks & Calendar** |
 | Rokaya | 5, 6, 10, 11 |
-| Nadine | 9, 12, **13 — 2D engine** |
+| Nadine | 9, 12 |
 | Khalwsh | 14, 17 |
 | Khaled Qenawy | **20, 21, 22 — Mobile** |
-| Sersawy | 7, 8, **18 — AI**, **19 — Observability** |
+| Sersawy | 7, 8, **17 — AI**, **18 — 2D engine**, **19 — Observability** |
 | All | 23 — Demo |
 
 Mousa carries six, Khaled Qenawy three, Nadine two — but Nadine has slide 9, the 2D reveal — the moment the whole pitch turns on. Load is about weight, not count. If Mousa is stretched, slide 15 is the most natural one to hand to Khalwsh (it is backend engineering, and it pairs with his slide 17).

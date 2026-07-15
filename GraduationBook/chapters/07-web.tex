@@ -1,0 +1,209 @@
+\chapter{The Web Application}
+\label{ch:web}
+
+The web client is \voname{}'s primary collaboration surface: a Slack-style
+single-page application through which a member manages workspaces, chats in
+channels and direct messages, opens threads, joins room calls with live
+voice/video, and receives notifications. This chapter describes its architecture,
+its authentication and API strategy, its three-connection real-time layer, its
+Agora-based calling, and a feature-by-feature tour of the application.
+
+\section{Overview and Technology Stack}
+
+The client is a React~18 single-page application created with Create React App.
+It uses \textbf{MUI~7} and \textbf{Tailwind CSS} for its interface,
+\textbf{axios} and the browser \code{fetch} API for REST, \textbf{\code{@stomp/
+stompjs}} for real-time messaging, and \textbf{\code{agora-rtc-sdk-ng}} for
+voice and video. State management is deliberately minimal: there is no Redux or
+global context. Component-local state is lifted into the top-level chat page and
+passed down by props, session and theme live in \code{localStorage}, and the
+notification socket is a module singleton. This keeps the codebase small and the
+data flow easy to follow.
+
+\begin{notebox}
+The web client is the Slack-style collaboration app, \emph{not} the 2D office;
+the animated world (Chapter~\ref{ch:skyoffice}) is a separate client. Within the
+web app, the ``office'' metaphor is realised through workspaces and through
+\code{ROOM}-type channels that host Agora audio/video calls.
+\end{notebox}
+
+\section{Application Structure and Routing}
+
+The application boots by mounting the router inside a strict-mode root, with an
+early theme bootstrap that reads the saved (or system) colour scheme and toggles
+a dark-mode class on the document body --- the mechanism the whole app uses for
+theming. Routes divide into public and protected (Table~\ref{tab:web-routes}); a
+lightweight \code{PrivateRoute} guard redirects to login when no token is present.
+
+\begin{table}[htbp]
+\centering
+\caption{Web client routes.}
+\label{tab:web-routes}
+\small
+\begin{tabularx}{\textwidth}{L{3.4cm} L{2.0cm} X}
+\toprule
+\textbf{Path} & \textbf{Access} & \textbf{Purpose} \\
+\midrule
+\route{/login}, \route{/signup} & Public & Authentication \\
+\route{/verify-email} & Public & OTP e-mail verification \\
+\route{/chat} & Protected & The main application (workspaces, channels, rooms, DMs, threads, calls) \\
+\route{/chat/join/:channelId} & Protected & Invite-link landing; joins a channel then redirects \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Authentication and the API Layer}
+
+On login or registration the client stores the returned JWT in
+\code{localStorage} and navigates into the application. It reads the current
+user's numeric id by decoding the JWT payload on the client side --- that id is
+sent as the \code{X-User-Id} header on nearly every subsequent request. Two REST
+conventions coexist: an \textbf{axios instance} (used for auth and profile) whose
+interceptors attach the bearer token and, on any \code{401}, clear the session and
+redirect to login; and \textbf{raw \code{fetch}} calls (used for chat, workspace,
+rooms, and notifications) that set the identity headers by hand.
+
+During development, a proxy configuration doubles as the service map, forwarding
+each path prefix to the corresponding microservice port and, importantly, wiring
+the \emph{WebSocket upgrade} for the chat and room sockets
+(Table~\ref{tab:web-proxy}). In production these resolve to the gateway.
+
+\begin{table}[htbp]
+\centering
+\caption{Development proxy: the frontend's view of the backend.}
+\label{tab:web-proxy}
+\small
+\begin{tabularx}{\textwidth}{L{3.2cm} L{2.0cm} X}
+\toprule
+\textbf{Path prefix} & \textbf{Port} & \textbf{Service} \\
+\midrule
+\route{/api/auth}, \route{/api/users} & 8091 & User \\
+\route{/api/chat} (+WS) & 8084 & Chat \\
+\route{/api/rooms}, \route{/ws/rooms} & 8086 & Room \\
+\route{/api/workspace} & 8087 & Workspace \\
+\route{/api/notifications} & 8082 & Notifications \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{The Real-time Layer: Three STOMP Connections}
+
+The web client maintains \emph{three} independent STOMP connections, one to each
+real-time service, all following the ticket pattern of
+Section~\ref{sec:realtime-arch}: before every (re)connection a fresh single-use
+ticket is fetched, and a five-second reconnect delay provides automatic recovery.
+
+\begin{description}
+  \item[Chat (8084).] The core connection. The message list for the active
+  channel subscribes to \route{/topic/channel/\{id\}} and handles the
+  \code{NEW\_MESSAGE}, \code{EDIT\_MESSAGE}, and \code{DELETE\_MESSAGE} actions,
+  merging live events with fetched history by id. The composer publishes to
+  \route{/app/chat/send}. Threads use the parallel \route{/topic/thread/\{id\}}.
+  \item[Rooms (8086).] When the active channel is a room, the client subscribes
+  to \route{/topic/room/\{roomId\}} for call presence
+  (\code{PARTICIPANT\_JOINED}/\code{LEFT}, \code{STATE\_CHANGED}) and publishes its
+  own join/leave to \route{/app/room/state}, so the ``N in call'' indicator stays
+  live for everyone.
+  \item[Notifications (8082).] Implemented as a reference-counted module
+  singleton so the whole app shares one socket; it subscribes to
+  \route{/user/queue/notifications} and raises the unread badge on each
+  \code{NEW\_NOTIFICATION}.
+\end{description}
+
+Because every service uses the same \code{\{action, payload\}} envelope, each of
+these subscriptions is handled by the same simple pattern --- switch on the
+action, apply the payload --- which is a direct payoff of the architectural
+uniformity described in Chapter~\ref{ch:architecture}.
+
+\section{Voice and Video with Agora}
+
+Real-time media in the web client is room-scoped and handled by a single reusable
+hook that encapsulates the entire Agora engine. The flow to join a call
+(Figure~\ref{fig:web-call}) is:
+
+\begin{enumerate}
+  \item The user opens a \code{ROOM}-type channel and clicks \emph{Join Call}.
+  \item The client resolves the real room id and calls
+  \route{POST /api/rooms/\{id\}/join}, which returns the Agora channel name and a
+  freshly minted access token --- the room service is the token server
+  (Section~\ref{sec:be-room}).
+  \item The hook joins the Agora channel with that token, creates and publishes
+  the local microphone and camera tracks, and subscribes to remote participants
+  as they publish, rendering each into a video tile.
+  \item In parallel, the client broadcasts its presence over the rooms STOMP
+  connection so other members see the participant list update.
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize,
+  b/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=2pt,minimum height=0.7cm,
+            text width=2.1cm,align=center},
+  a/.style={-{Stealth[]},thick,voDark},note/.style={font=\scriptsize\itshape,voGray}]
+\node[b] (c) at (0,0) {Web client};
+\node[b] (r) at (4.4,0) {Room Svc};
+\node[b] (ag) at (9.2,0) {Agora SFU};
+% client <-> room service: two separated arcs
+\draw[a] (c.20) to[out=22,in=158] node[above,note]{POST /rooms/id/join} (r.160);
+\draw[a] (r.200) to[out=-158,in=-22] node[below,note]{channel + token} (c.-20);
+% client <-> Agora SFU: two arcs that bow clear of the Room Svc box
+\draw[a] (c.-42) to[out=-38,in=214] node[below,note,pos=0.5]{publish mic + camera} (ag.218);
+\draw[a] (ag.142) to[out=142,in=38] node[above,note,pos=0.5]{remote tracks} (c.42);
+\end{tikzpicture}
+\caption{Joining a room call: the room service mints the Agora token, media flows
+client-to-SFU.}
+\label{fig:web-call}
+\end{figure}
+
+Toggling the microphone or camera flips the enabled state of the local tracks;
+leaving closes the tracks, leaves the channel, and broadcasts departure. Crucially
+the media never traverses \voname{}'s own servers --- the backend's only role is
+to authorise the join by issuing a scoped token.
+
+\section{Feature Tour}
+
+The protected \route{/chat} route is the composition root and holds nearly all
+application state. Its responsive four-column layout --- workspace rail, channel
+sidebar, chat area, and (when open) thread panel and member list --- adapts down
+to a drawer-based mobile layout.
+
+\begin{description}
+  \item[Workspaces.] A vertical rail lists the user's workspaces (loaded from the
+  workspace service); if the user has none, a default workspace is created
+  automatically. A dialog creates new workspaces with a name, auto-generated slug,
+  description, and timezone.
+  \item[Channels, rooms, and DMs.] The sidebar lists group channels, room
+  channels, and direct messages for the active workspace, auto-provisioning a set
+  of starter channels for a brand-new workspace. Selecting a channel loads its
+  history and subscribes to its live topic; selecting a room additionally enables
+  the call interface. Direct messages are opened by target user id and guaranteed
+  unique per pair by the backend.
+  \item[Messaging.] The chat area renders the merged history-plus-live message
+  stream with date dividers, resolves sender names through a client-built user
+  map, and supports inline editing and deletion of one's own messages, replies,
+  mentions, an emoji picker, and a client-side message search. A ``reply in
+  thread'' action opens the slide-in thread panel, which creates or loads a thread
+  and subscribes to its topic.
+  \item[Rooms and calls.] For room channels, a call bar and a video grid layer the
+  Agora experience described above on top of the same message timeline, with a
+  live participant count driven by the rooms socket.
+  \item[Notifications.] A bell in the sidebar footer shows the unread count, opens
+  a list fed by REST plus the live notifications socket, and supports mark-read
+  and delete.
+  \item[Settings and invites.] A settings dialog handles avatar upload and
+  password change; channels can be shared by a copyable invite link that lands on
+  the \route{/chat/join/:channelId} route and auto-selects the joined channel.
+\end{description}
+
+\section{Design Observations}
+
+Several deliberate choices are worth noting for the evaluation in
+Chapter~\ref{ch:testing}. The ticket-based WebSocket authentication, refreshed on
+every reconnect, is a clean and robust solution to the browser's inability to set
+socket headers. The single \code{\{action, payload\}} dispatch pattern keeps the
+real-time code uniform across three sockets. On the other hand, the client is
+honestly at \emph{prototype} maturity in places: some creation flows use native
+browser prompts, presence beyond ``in this call'' is not yet backed by a server
+roster, the typing indicator is sent but not yet displayed, and message
+attachments are rendered but not yet uploadable. These are precisely the rough
+edges catalogued as future work.

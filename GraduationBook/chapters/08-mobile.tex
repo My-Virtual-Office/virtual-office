@@ -1,0 +1,186 @@
+\chapter{The Mobile Application}
+\label{ch:mobile}
+
+The mobile client brings \voname{}'s messaging to phones. It is a Flutter
+application focused on the chat domain --- channels, direct messages, threads,
+read receipts, typing indicators, and, importantly, push notifications that work
+whether the app is in the foreground, the background, or fully terminated. This
+chapter describes its clean-architecture layering, its Provider-based state
+management, its dual-transport networking, its real-time and notification stacks,
+and the engineering details that make it feel responsive and reliable.
+
+\section{Overview and Scope}
+
+The application is built with Flutter and Dart and uses a small, deliberate set of
+packages: \textbf{Provider} for state management, \code{http} for REST,
+\textbf{\code{stomp\_dart\_client}} for real-time messaging,
+\textbf{\code{awesome\_notifications}} for local/push notifications,
+\code{shared\_preferences} for persistence, and \code{uuid} for client-generated
+message ids. Its scope is intentionally the \emph{chat} experience: the mobile app
+does not implement the 2D office, workspace administration, or in-app calling.
+This focus lets it implement the messaging domain to a high standard --- optimistic
+delivery, reconnection catch-up, and cross-state notifications --- rather than
+implementing everything shallowly.
+
+\section{Architecture}
+
+The code follows a \textbf{feature-first, clean-architecture-inspired} layering
+in which dependencies flow strictly downward (Figure~\ref{fig:mob-layers}). The
+\emph{repository} is the linchpin: it is the single source of truth that merges
+the REST data source, the WebSocket data source, and an in-memory cache, and
+re-broadcasts consolidated state through its own streams that the providers
+consume.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize,
+  layer/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=3pt,minimum height=0.85cm,
+                text width=10.5cm,align=center},
+  a/.style={-{Stealth[]},thick,voGray}]
+\node[layer] (ui) at (0,4) {\textbf{Presentation} --- screens \& widgets (Consumer / context.watch)};
+\node[layer] (st) at (0,3) {\textbf{State} --- Providers (ChangeNotifier): Connection, Channel, Message, Thread};
+\node[layer] (repo) at (0,2) {\textbf{Repository} --- single source of truth: merges REST + WS + cache, owns notification logic};
+\node[layer,text width=5.1cm] (rest) at (-2.7,0.8) {\textbf{REST data source}\\ChatApiClient (http)};
+\node[layer,text width=5.1cm] (ws) at (2.7,0.8) {\textbf{WS data source}\\StompService};
+\node[layer] (mod) at (0,-0.2) {\textbf{Models} --- DTOs with fromJson / toJson};
+\draw[a] (ui)--(st); \draw[a] (st)--(repo);
+\draw[a] (repo)--(rest); \draw[a] (repo)--(ws);
+\draw[a] (rest)--(mod); \draw[a] (ws)--(mod);
+\end{tikzpicture}
+\caption{Mobile clean-architecture layering; data flows WS/REST $\to$ repository
+$\to$ providers $\to$ widgets.}
+\label{fig:mob-layers}
+\end{figure}
+
+Dependency injection is manual, through Provider's \code{MultiProvider}: a single
+root \code{ConnectionProvider} lazily constructs the repository (and its REST and
+WebSocket data sources) on a successful connection, and hands it down to
+feature-scoped providers created as screens are pushed.
+
+\section{State Management with Provider}
+
+Five \code{ChangeNotifier} providers structure the application's state:
+
+\begin{description}
+  \item[\code{ConnectionProvider}] (root) owns the server configuration and
+  connection status and the singleton repository. Its \code{connect()} normalises
+  the URLs, runs a health check, opens the socket, loads the workspace's channels
+  and DMs, and \emph{auto-subscribes to all of them} so that notifications arrive
+  app-wide even for conversations the user is not currently viewing.
+  \item[\code{ChannelProvider}] holds the channel and DM lists and per-channel
+  unread counts, and exposes load/join/create/leave operations.
+  \item[\code{MessageProvider}] manages one open conversation: a
+  \code{createdAt}-sorted message list, reply/edit state, and a debounced typing
+  indicator; it subscribes to the repository's message and typing streams filtered
+  to its channel and performs catch-up on reconnect.
+  \item[\code{ThreadProvider}] and \code{ThreadMessageProvider} mirror the channel
+  and message providers for threads.
+\end{description}
+
+A recurring correctness theme is safe disposal: providers guard against calling
+\code{notifyListeners} after disposal and cache the repository reference so that
+teardown never touches a \code{BuildContext} that may already be unmounted.
+
+\section{Networking: A Dual-Transport Repository}
+
+The repository speaks to the chat service over two transports and degrades
+gracefully between them.
+
+\paragraph{REST.} The \code{ChatApiClient} wraps the \code{http} package with the
+identity headers (\code{X-User-Id}, \code{X-User-Role}), a ten-second timeout, and
+typed error handling. It covers the full chat surface: channels and DMs, message
+history (with \code{before}/\code{after} cursors for pagination and catch-up),
+send/edit/delete, threads, and read receipts.
+
+\paragraph{Real-time.} The \code{StompService} connects to
+\route{/api/chat/connect?ticket=<t>} (the same ticket pattern as the web client),
+auto-reconnects, and exposes the incoming message and typing events as Dart
+streams. It subscribes to \route{/topic/channel/\{id\}} and its typing sibling,
+and to the thread equivalents, and publishes sends to \route{/app/chat/send}.
+
+\paragraph{Optimistic delivery.} Sending is optimistic
+(Figure~\ref{fig:mob-send}): the repository immediately inserts a temporary
+message keyed by a generated \code{clientMessageId}, attempts delivery over the
+WebSocket, and \emph{falls back to a REST \code{POST}} if the socket send throws.
+When the server's authoritative echo arrives --- matched by that same
+\code{clientMessageId} --- it replaces the placeholder; on total failure the
+optimistic message is rolled back. On reconnection the repository fetches any
+messages that arrived while it was offline (everything \code{after} the last known
+id), so no message is missed.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize,
+  b/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=2pt,minimum height=0.7cm,
+            text width=2.3cm,align=center},
+  a/.style={-{Stealth[]},thick,voDark},
+  f/.style={-{Stealth[]},thick,voAccent!60!black,densely dashed},
+  note/.style={font=\scriptsize\itshape,voGray}]
+\node[b] (ui) at (0,0) {UI};
+\node[b] (rp) at (3.5,0) {Repository};
+\node[b] (ws) at (7.2,0.8) {WebSocket};
+\node[b] (rs) at (7.2,-0.8) {REST};
+\draw[a] (ui) -- node[above,note]{send} (rp);
+\node[note,align=center] at (3.5,-0.7) {insert tmp\_<id>};
+\draw[a] (rp) -- node[above,note]{try first} (ws);
+\draw[f] (rp) -- node[below,note]{fallback} (rs);
+\draw[a] (ws) to[out=100,in=60] node[above,note]{echo (clientMessageId) reconciles} (rp.60);
+\end{tikzpicture}
+\caption{Optimistic send with WebSocket-first, REST-fallback, and echo
+reconciliation.}
+\label{fig:mob-send}
+\end{figure}
+
+\section{Identity on Mobile}
+
+The mobile app takes a pragmatic approach to identity suited to a development and
+demonstration client: rather than a full login screen, a \emph{connection screen}
+lets the user enter the server URLs, a numeric user id, and a role, which are
+persisted with \code{shared\_preferences} and sent as the \code{X-User-Id} and
+\code{X-User-Role} headers --- exactly the headers the gateway would otherwise
+inject after validating a JWT. The WebSocket still uses the proper single-use
+ticket handshake. This mirrors, on the client, the platform's server-side trust
+model (Chapter~\ref{ch:architecture}); wiring a real JWT login is a
+straightforward extension, since the backend already issues and validates the
+token.
+
+\section{Notifications Across App States}
+
+The notification system is the mobile client's most sophisticated piece. Built on
+\code{awesome\_notifications}, it defines four styled channels (channel messages,
+direct messages, thread replies, and system notices) and, critically, registers
+its lifecycle handlers as static, entry-point-annotated functions so they execute
+even when the app is \emph{backgrounded or terminated}.
+
+The decision of \emph{whether} to raise a notification lives in the repository: a
+notification fires only when a message is not from the current user \emph{and} the
+user is not currently viewing that channel or thread (tracked by ``active''
+sets updated as screens are entered and left). Each notification embeds a payload
+(channel id, thread id, DM flag, message id) so that tapping it deep-links to the
+right conversation. A small navigation bridge makes this reliable across all three
+app states: if the app is running, it navigates immediately; if it was terminated,
+the target route is stored and replayed once the app's navigator is ready on the
+first frame.
+
+\section{Data Models and Bootstrapping}
+
+The model layer is a set of null-safe DTOs with \code{fromJson}/\code{toJson} ---
+\code{ChannelResponse}, \code{MessageResponse} (with \code{deleted}, \code{threadId},
+\code{replyToId}, \code{mentions}, and \code{clientMessageId}),
+\code{ThreadResponse}, a generic \code{PaginatedResponse}, and the typing and
+error envelopes --- mirroring the chat service's contract. Application startup
+initialises the notification service (its channels, permissions, and background
+handlers) \emph{before} the app runs, then mounts the root provider and a
+\code{MaterialApp} that holds a global navigator key (so the notification bridge
+can navigate from outside the widget tree) and routes to the connection screen.
+
+\section{Engineering Highlights}
+
+For the evaluation in Chapter~\ref{ch:testing}, the mobile client demonstrates
+several production-grade patterns worth naming: optimistic UI with
+\code{clientMessageId} reconciliation; dual-transport delivery with graceful
+degradation; reconnection resilience with message catch-up; disposal safety; and
+correct notification behaviour across foreground, background, and terminated
+states. Its main limitation is one of \emph{breadth} rather than depth: it covers
+only the chat domain, leaving workspace administration, the 2D office, and in-app
+calling to the web and game clients.

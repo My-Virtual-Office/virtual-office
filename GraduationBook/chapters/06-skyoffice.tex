@@ -1,0 +1,285 @@
+\chapter{The 2D Virtual Office}
+\label{ch:skyoffice}
+
+The 2D office is what makes \voname{} a \emph{place} rather than a set of tools.
+This chapter describes it in full: its client/server split, the shared type
+contract that keeps the two in step, the multiplayer synchronisation model that
+keeps many avatars moving smoothly, the interactive objects that populate the
+world, and the peer-to-peer stack that carries proximity voice, video, and screen
+sharing. The component is an adapted fork of the open-source \emph{SkyOffice}
+project, extended and integrated as one of \voname{}'s three clients.
+
+\section{Overview and Structure}
+
+The 2D office is a small but complete \emph{multiplayer game}. It is organised as
+a monorepo of three workspaces (Table~\ref{tab:sky-structure}): a browser
+\emph{client} that renders the world and the user interface, an authoritative
+\emph{server} that holds the shared state, and a \emph{types} package of shared
+definitions imported by both. Its one-line technology summary is: Phaser for the
+game, React and Redux for the interface, Colyseus for multiplayer state, and
+PeerJS/WebRTC for media.
+
+\begin{table}[htbp]
+\centering
+\caption{Structure of the 2D office component.}
+\label{tab:sky-structure}
+\small
+\begin{tabularx}{\textwidth}{L{2.0cm} X L{3.6cm}}
+\toprule
+\textbf{Workspace} & \textbf{Role} & \textbf{Stack} \\
+\midrule
+\code{client/} & Renders the world and UI; captures input; runs media & TypeScript, Phaser~3, React~18, Redux Toolkit, PeerJS, Vite \\
+\code{server/} & Authoritative multiplayer state and message handling & TypeScript, Colyseus, Express, bcrypt \\
+\code{types/} & Shared enums, message codes, and state interfaces & TypeScript \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{The Shared Type Contract}
+
+Because client and server are separate programs that must agree exactly on the
+shape of the world and the messages they exchange, the \code{types/} package is
+the linchpin: both sides import it, so a change to a message code or a state field
+is enforced by the compiler across the whole system. Its central definitions are:
+
+\begin{itemize}
+  \item \code{IOfficeState} --- the synchronised room state: a map of
+  \code{players}, a map of \code{computers}, a map of \code{whiteboards}, and an
+  array of \code{chatMessages}.
+  \item \code{IPlayer} --- \code{\{name, x, y, anim, readyToConnect,
+  videoConnected\}}: everything replicated about an avatar.
+  \item \code{IComputer} / \code{IWhiteboard} --- each holds a set of the session
+  ids currently connected to it.
+  \item The \code{Message} enum --- the remote-procedure opcodes exchanged over
+  the socket (\code{UPDATE\_PLAYER}, \code{CONNECT\_TO\_COMPUTER},
+  \code{ADD\_CHAT\_MESSAGE}, and so on).
+  \item Small enums for \code{ItemType} (\code{CHAIR}, \code{COMPUTER},
+  \code{WHITEBOARD}, \code{VENDINGMACHINE}), \code{PlayerBehavior}
+  (\code{IDLE}, \code{SITTING}), \code{RoomType} (\code{LOBBY}, \code{PUBLIC},
+  \code{CUSTOM}), and day/night background mode.
+\end{itemize}
+
+\section{The Authoritative Server}
+
+The server is a Colyseus application. Its entry point creates an Express-backed
+Colyseus server and registers three room definitions: the built-in
+\code{LobbyRoom} (which tracks the live list of rooms), a persistent
+\code{PUBLIC} office room that is never disposed even when empty, and a
+\code{CUSTOM} room type for password-protectable private offices whose creation is
+broadcast to lobby clients in real time. A Colyseus monitor dashboard is mounted
+for live inspection.
+
+Each office is a \code{SkyOffice} room extending \code{Room<OfficeState>}. Its
+lifecycle hooks encode the rules of the world:
+
+\begin{description}
+  \item[\code{onCreate}] optionally bcrypt-hashes a room password, instantiates
+  the state, and populates it with a fixed set of five computers and three
+  whiteboards (keyed \code{"0"}\ldots\code{"4"} and \code{"0"}\ldots\code{"2"}),
+  then registers all message handlers.
+  \item[\code{onAuth}] for a protected room, compares the supplied password
+  against the stored hash, rejecting a mismatch with a \code{403}.
+  \item[\code{onJoin}] inserts a new \code{Player} keyed by the connection's
+  session id and sends that client the room's metadata.
+  \item[\code{onLeave}] removes the player and scrubs its session id from every
+  computer's and whiteboard's connected-user set, so occupancy stays correct.
+\end{description}
+
+State is mutated through the \textbf{command pattern} (\code{@colyseus/command}):
+a dispatcher runs small command objects --- \code{PlayerUpdateCommand} (write
+\code{x}, \code{y}, \code{anim}), the computer/whiteboard add-user and remove-user
+commands, and \code{ChatMessageUpdateCommand}, which appends a chat message and
+caps the history at the last 100 so late-joiners see recent context. A few trivial
+flag flips (marking a player ready, or relaying a ``stop screen share'' signal)
+bypass the dispatcher for directness.
+
+\section{The Client}
+
+The client runs two parallel worlds glued together by a shared Redux store and a
+Phaser event emitter: the \textbf{Phaser} game canvas (the animated office) and a
+\textbf{React} DOM overlay (dialogs, chat, buttons). Neither engine imports the
+other's render tree; they communicate only through the store and the event bus.
+
+\subsection{Scenes}
+
+Phaser organises a game into scenes. The office uses three:
+
+\begin{description}
+  \item[Bootstrap] preloads every asset --- the Tiled tile-map, the tilesets, the
+  item spritesheets, and the four character spritesheets (\emph{Adam}, \emph{Ash},
+  \emph{Lucy}, \emph{Nancy}) --- constructs the network service (opening the
+  WebSocket), and pre-checks media permissions.
+  \item[Background] draws a decorative parallax backdrop with a sun/moon and
+  drifting clouds, switching palette between a day and a night theme.
+  \item[Game] is the core scene. It builds the character animations and the
+  tile-map with its collision layer, spawns the local avatar and a
+  \emph{player-selector} probe, and reads the Tiled object layers to instantiate
+  chairs, computers, whiteboards, and vending machines as physics bodies. It then
+  registers colliders (avatar versus walls and objects) and two crucial
+  \emph{overlap} handlers --- the selector versus interactive items (which drive
+  the ``Press E/R'' prompts) and the local avatar versus other avatars (which
+  drives proximity calls) --- and wires up the network callbacks.
+\end{description}
+
+\subsection{Characters}
+
+Every avatar is a Phaser sprite with a companion container holding a floating name
+label and a transient speech bubble; its render depth is derived from its
+\code{y}-coordinate so that avatars correctly overlap in the 2.5D view. Three
+character classes specialise this base:
+
+\begin{description}
+  \item[\code{MyPlayer}] is the locally controlled avatar. Each frame it reads the
+  keyboard (WASD or arrows) and the on-screen joystick, moves at a normalised 200
+  pixels per second (so diagonals are not faster), plays the matching walk or idle
+  animation, and --- crucially --- sends an \code{UPDATE\_PLAYER} message whenever
+  its position or animation changes. Pressing \emph{E} near a chair snaps it into a
+  seated pose and state; pressing \emph{R} opens a computer, a whiteboard, or a
+  vending-machine link depending on what the selector has highlighted.
+  \item[\code{OtherPlayer}] is a remote avatar. It does not receive a continuous
+  stream of positions; instead it stores a \emph{target} position and interpolates
+  toward it each frame at the same 200 px/s, snapping if the gap is large or the
+  tab was backgrounded. It also owns the proximity-call trigger.
+  \item[\code{PlayerSelector}] is an invisible probe kept one tile ahead of the
+  local avatar in its facing direction; whatever interactive item it overlaps
+  becomes the current selection that \emph{E}/\emph{R} act upon.
+\end{description}
+
+\subsection{The React and Redux overlay}
+
+The React layer is a small state machine driven by Redux: with no room joined it
+shows the room-selection dialog; with a room but no login it shows the
+name-and-avatar picker; once in the world it renders the chat panel, a prompt to
+enable the webcam, and the mobile joystick, overlaying a computer or whiteboard
+dialog when the user is at one of those objects. Five Redux slices hold the shared
+UI state --- the user/session, the room list, the screen-share session, the
+whiteboard URLs, and the chat log --- and it is through these slices that the
+Phaser world and the React interface stay in agreement.
+
+\section{The Multiplayer Synchronisation Model}
+\label{sec:sky-sync}
+
+The heart of the component is how many moving avatars are kept in sync
+efficiently. Colyseus is \emph{authoritative}: it holds the one true
+\code{OfficeState}, every client holds a replica, and Colyseus transmits only the
+\emph{changed fields} as compact binary diffs --- moving one avatar never
+re-sends the whole world. On top of that, the client uses two classic
+game-networking techniques (Figure~\ref{fig:sky-sync}):
+
+\begin{description}
+  \item[Client-side prediction.] The local avatar moves \emph{immediately} in
+  response to input, without waiting for the server. Its new position is then sent
+  to the server, so the player never feels input lag.
+  \item[Remote interpolation.] Other avatars are not snapped to each incoming
+  position; each is eased smoothly from its current position toward the latest
+  target, so sparse network updates still produce fluid motion.
+\end{description}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize,
+  b/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=2pt,minimum height=0.7cm,
+            text width=2.3cm,align=center},
+  a/.style={-{Stealth[]},thick,voDark},note/.style={font=\scriptsize\itshape,voGray}]
+\node[b] (a1) at (0,0) {My client\\(prediction)};
+\node[b] (sv) at (4.4,0) {Colyseus\\(authoritative)};
+\node[b] (a2) at (9,0) {Other client\\(interpolation)};
+\draw[a] (a1) -- node[above,note]{UPDATE\_PLAYER} node[below,note]{\{x,y,anim\}} (sv);
+\draw[a] (sv) -- node[above,note]{binary diff} node[below,note]{onChange} (a2);
+\draw[a,voGray,densely dashed] (a1.-90) to[out=-90,in=-90] node[below,note]{move now, don't wait} (a1.-90);
+\end{tikzpicture}
+\caption{Movement synchronisation: local prediction, authoritative relay, remote
+interpolation. Only changed fields cross the wire.}
+\label{fig:sky-sync}
+\end{figure}
+
+The full loop is: \code{MyPlayer} moves locally and sends \code{UPDATE\_PLAYER};
+the server's \code{PlayerUpdateCommand} writes the change into that player's
+schema; Colyseus diffs it to every \emph{other} client, whose change-callback
+updates the corresponding \code{OtherPlayer}'s target; and that \code{OtherPlayer}
+interpolates toward it. A single elegant identity choice threads the whole system:
+the Colyseus \emph{session id} doubles as the key in every state map \emph{and} as
+the PeerJS peer id used for media, so one identifier follows a user everywhere.
+
+\section{Interactive Objects}
+
+The world is populated with objects that blend local responsiveness with
+server-authoritative shared state:
+
+\begin{description}
+  \item[Chairs] are purely local: pressing \emph{E} snaps the avatar into a
+  direction-specific seated pose. Because the resulting position and animation are
+  broadcast like any movement, everyone sees you sit --- but the chair itself
+  holds no server state.
+  \item[Computers] are screen-sharing stations with \emph{server-tracked
+  occupancy}. Pressing \emph{R} adds your session id to that computer's connected
+  set; the change propagates to all clients, updating an ``N~users'' label, and
+  anyone already at that computer receives your shared screen. This makes ``who is
+  at this computer'' consistent for everyone.
+  \item[Whiteboards] work the same way, and each carries a server-generated random
+  id that maps to a hosted collaborative whiteboard shown in an embedded frame, so
+  everyone at the same whiteboard shares one board.
+  \item[Vending machines] are a decorative touch that open an external link.
+\end{description}
+
+The design principle is a clean split: \emph{who is using} a shared object is
+authoritative server state (consistent for all), while \emph{what you can interact
+with right now} is decided by local physics (responsive, no round-trip).
+
+\section{Proximity Communication}
+
+The office's signature feature is that communication follows position. It is built
+on three mechanisms.
+
+\paragraph{Proximity voice and video (PeerJS/WebRTC).} When two avatars physically
+overlap, the game's overlap handler attempts a call. To avoid both sides dialling
+at once, only the peer with the greater session id initiates, after a short
+debounce and only if both peers have enabled their webcam and marked themselves
+ready; the other side auto-answers. Encrypted audio and video then flow directly
+peer-to-peer. When the avatars separate, the call is torn down --- except inside a
+designated private-meeting rectangle, where the call deliberately persists so a
+group can gather without staying pixel-perfectly overlapped.
+
+\paragraph{Screen sharing.} A \emph{second}, separate PeerJS peer (its id suffixed
+\code{-ss}) isolates screen media from webcam media. When a user shares their
+screen at a computer, the manager calls every user currently connected to that
+same computer object, and new arrivals are called as their connection propagates
+through the shared state; a ``stop sharing'' signal is relayed so remote tiles
+disappear cleanly.
+
+\paragraph{Text chat.} A sent message follows two paths from the server at once:
+it is appended to the synchronised, capped chat history (so late-joiners see it),
+and it is broadcast immediately as a transient speech bubble above the sender's
+avatar. The React chat panel shows the scrollback alongside synthetic
+``joined''/``left'' system lines.
+
+\section{Integration with the Wider Platform}
+
+The 2D office is a Colyseus-based fork, but it does not stand alone: the backend
+is deliberately shaped to drive a spatial client, and a demonstration stack wires
+the two together. On the backend side the seams are explicit. The workspace
+service exposes an internal \route{/session-config} endpoint that returns exactly
+the boot payload a Colyseus room needs --- the workspace, its active desks, and
+its active map objects (computers and whiteboards, each already carrying a stable
+\code{roomId}) --- and accepts avatar \route{/presence} updates. The room service
+consumes avatar position snapshots to compute proximity voice groups
+(Section~\ref{sec:be-room}), and both the chat and room services bind their
+channels to the same workspace.
+
+These seams are exercised concretely by a one-command \textbf{demonstration
+stack} (\code{backend/dev}). A single script brings up the infrastructure
+(PostgreSQL, MongoDB, Redis, RabbitMQ) in containers, starts the workspace, chat,
+room, and gateway services together with the Colyseus fork and the SkyOffice
+client, seeds two workspaces of five members each \emph{consistently across every
+service}, mints a demonstration JWT, and prints a URL per user. The workspace
+service seeds (through a Flyway migration) a tile map with a meeting-room zone and
+open floor, five active desks placed near the spawn so that two users land in the
+same proximity voice group, and computers and whiteboards; the chat and room
+services seed the matching canonical channel and a shared voice room for the same
+members. Opening the two printed URLs in separate browser sessions lets two
+avatars walk the same office, meet in proximity to trigger voice, and exchange
+chat --- all backed by the real, running microservices rather than by a static
+map. Deepening this binding (so that every avatar, desk, and object is served
+live from the workspace and every movement feeds the proximity engine in steady
+state) is the natural next step, identified in the future-work roadmap of
+Chapter~\ref{ch:conclusion}.

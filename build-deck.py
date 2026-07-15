@@ -54,6 +54,10 @@ TECH_COLOR = {
     "Tiled tilemap": "#8A9BA8", "shared_preferences": "#02569B", "stomp_dart_client": "#02569B",
     "awesome_notifications": "#02569B",
 }
+# A big brand mark, rotated, ghosted into the corner — the slide's "signature".
+MARKS = {11: "react", 12: "stomp", 13: "spring", 15: "spring", 16: "mongo",
+         17: "ai", 18: "phaser", 19: "grafana", 20: "flutter", 21: "flutter", 22: "flutter"}
+
 TECH = {
     3:  ["Slack", "Microsoft Teams", "Discord"],
     5:  ["Figma"],
@@ -173,6 +177,64 @@ DIAGRAMS = {
   <div class="dg-cap">Same APIs as the web. No mobile backend.</div>
 </div>''',
 }
+
+# ── 11 · reusable components + the axios interceptor ─────────────────────────
+DIAGRAMS[11] = f'''<div class="dg dg-code">
+  <div class="dg-tree">
+    <b>components/</b>
+    <div>├── <b>Button</b>.jsx</div><div>├── <b>Modal</b>.jsx</div>
+    <div>├── <b>Card</b>.jsx</div><div>└── <b>Nav</b>.jsx</div>
+    <div class="dg-tree-note">built once · used on every page</div>
+  </div>
+  <pre class="dg-pre"><span class="c">// one place for the token, every request</span>
+axios.interceptors.request.use(cfg =&gt; {{
+  cfg.headers.<b>Authorization</b> = `Bearer ${{token}}`
+  return cfg
+}})</pre>
+</div>'''
+
+# ── 15 · the scheduler that moves your status + the board ────────────────────
+DIAGRAMS[15] = f'''<div class="dg dg-code">
+  <pre class="dg-pre"><b>@Scheduled</b>(fixedDelay = 60_000)
+void <b>sync</b>() {{
+  applyForStartedMeetings(now);  <span class="c">// -&gt; "In a meeting"</span>
+  revertForEndedMeetings(now);   <span class="c">// only if our marker</span>
+}}
+<span class="c">// fails? don't set the flag. next tick retries.</span></pre>
+  <div class="dg-bands">
+    <div class="band od"><span>Overdue</span><b>2</b></div>
+    <div class="band td"><span>Today</span><b>6</b></div>
+    <div class="band up"><span>Upcoming</span><b>13</b></div>
+  </div>
+  <div class="dg-cap">Your calendar moves your status. You never say "I'm busy".</div>
+</div>'''
+
+# ── 16 · the ciphertext, and the queue ───────────────────────────────────────
+DIAGRAMS[16] = f'''<div class="dg dg-code">
+  <pre class="dg-pre term"><span class="p">&gt;</span> db.messages.find({{content: /^vo1:/}})
+<span class="ct">vo1:TzO44O2p++/WL3yy:YHdQoK4tYMtycnZBfodXR5RX8…</span>
+<span class="c">// what the server has. no key. that's the whole point.</span></pre>
+  <div class="dg-row dg-q">
+    {box("Task Service", C['spring'])}<i class="dg-a">publish →</i>
+    {box("RabbitMQ", C['rabbit'])}<i class="dg-a">→ consume</i>
+    {box("Notification", C['spring'])}
+  </div>
+  <div class="dg-cap">Task Service never waits for an email.</div>
+</div>'''
+
+# ── 19 · logs today, metrics next ────────────────────────────────────────────
+DIAGRAMS[19] = f'''<div class="dg dg-obs">
+  <div class="dg-row">{box("every container", C['docker'])}<i class="dg-a">stdout →</i>
+    {box("Promtail", C['loki'])}<i class="dg-a">→</i>{box("Loki", C['loki'])}<i class="dg-a">→</i>
+    {box("Grafana", C['grafana'])}</div>
+  <div class="dg-stats">
+    <div class="st"><b>4,015,209</b><span>errors, range</span></div>
+    <div class="st"><b>19</b><span>services reporting</span></div>
+    <div class="st"><b>5.59</b><span>lines / sec</span></div>
+  </div>
+  <div class="dg-next"><span class="dg-next-l">next</span>
+    {box("Prometheus", "#E6522C")}<i class="dg-a">metrics — logs say <b>what</b>, metrics say <b>how often</b></i></div>
+</div>'''
 
 # Two slides carry a table as their actual argument — render it, don't ask for a
 # screenshot of one. (Slide 13's table was being dropped by the parser entirely.)
@@ -333,6 +395,7 @@ def build():
             "notes": [md(h) for h in sl["how"]],
             "script": [md(b) for b in sl["say"]],
             "tech": [{"name": t, "color": TECH_COLOR.get(t, "#7A7A7A")} for t in TECH.get(n, [])],
+            "mark": MARKS.get(n),
             "visual": {"kind": kind, "desc": desc, "ratio": ratio, "table": TABLES.get(n),
                        "html": DIAGRAMS.get(n)},
             "next": None if not nxt or nxt == sl["who"] else {

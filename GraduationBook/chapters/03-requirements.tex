@@ -1,0 +1,397 @@
+\chapter{Requirements Analysis}
+\label{ch:requirements}
+
+This chapter turns the motivation of Chapter~\ref{ch:introduction} into a precise
+specification. It identifies the system's actors, enumerates its functional and
+non-functional requirements, expresses the key interactions as use cases (with
+UML diagrams and detailed descriptions), captures representative user stories,
+and presents the domain model as a class diagram. Because \voname{} is a
+multi-service, multi-client system, the requirements are organised by
+\emph{subsystem} so that they map cleanly onto the architecture and
+implementation chapters that follow.
+
+\section{Actors}
+\label{sec:actors}
+
+An \emph{actor} is any external entity that interacts with the system. \voname{}
+has both human and external-system actors, summarised in
+Table~\ref{tab:actors}.
+
+\begin{table}[htbp]
+\centering
+\caption{System actors.}
+\label{tab:actors}
+\small
+\begin{tabularx}{\textwidth}{L{3.4cm} L{2.2cm} X}
+\toprule
+\textbf{Actor} & \textbf{Type} & \textbf{Description} \\
+\midrule
+Guest & Human & An unauthenticated visitor who can register, log in, or accept an invitation. \\
+Member & Human & An authenticated user with a \emph{desk} in a workspace; the primary actor. Can chat, join rooms, move around the 2D office, and manage their own profile. \\
+Workspace Admin & Human & A member with the \code{ADMIN} role in a workspace; can manage teams, invite and remove members, and edit the office map layout. \\
+Workspace Owner & Human & The creator of a workspace, holding the \code{OWNER} role; has all admin powers plus the ability to archive the workspace. \\
+Colyseus Server & System & The 2D game server; synchronises avatar positions and pushes presence snapshots to the backend. \\
+Agora Platform & System & External real-time media (SFU) that transports room and proximity audio/video. \\
+Email/SMTP & System & External mail transport used to deliver transactional e-mails (sign-up, OTP, password reset). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The human actors form a role hierarchy: an Owner is an Admin is a Member is a
+(formerly) Guest. Authorisation throughout the system is expressed against the
+ranked workspace roles \code{GUEST < MEMBER < ADMIN < OWNER}.
+
+\section{Functional Requirements}
+\label{sec:fr}
+
+Functional requirements are grouped by subsystem. Each is given a stable
+identifier (\code{FR-\textit{xx}}) for traceability.
+
+\subsection{Identity and Accounts (User Service)}
+\begin{description}[leftmargin=1.6cm,style=nextline]
+  \item[FR-01] A guest shall register with first name, last name, e-mail,
+  phone number, and password; the system shall reject a duplicate e-mail.
+  \item[FR-02] A registered user shall log in with e-mail and password and
+  receive an authentication token valid for a bounded period.
+  \item[FR-03] The system shall hash all passwords and one-time passwords before
+  storage.
+  \item[FR-04] A user shall request a one-time password (OTP) for password reset
+  and verify it within a time limit.
+  \item[FR-05] A user shall change their password by supplying the current one.
+  \item[FR-06] A user shall view their profile and upload/retrieve a profile
+  picture.
+  \item[FR-07] The system shall emit an event on sign-up, OTP request, and
+  password change so that a confirmation e-mail is sent.
+\end{description}
+
+\subsection{Workspaces, Desks, and Teams (Workspace Service)}
+\begin{description}[leftmargin=1.6cm,style=nextline]
+  \item[FR-08] A member shall create a workspace, becoming its owner and
+  receiving an owner desk in the same transaction.
+  \item[FR-09] A workspace shall be invite-only; an admin shall invite users by
+  e-mail, and an invitation shall expire after a fixed period.
+  \item[FR-10] A guest shall accept or decline an invitation via a tokenised
+  link; acceptance shall create or reactivate the invitee's desk.
+  \item[FR-11] A member shall view the workspace member directory and edit their
+  own desk (profile, avatar, status, links, widgets, position).
+  \item[FR-12] An admin shall create, rename, and delete teams and assign members
+  to them.
+  \item[FR-13] An admin shall edit the 2D map layout (tilesets, layers, zones,
+  spawn points, map objects) with optimistic-concurrency protection.
+  \item[FR-14] The system shall expose an internal session-configuration API that
+  provides the game server with the full room boot payload (workspace, active
+  desks, active map objects).
+  \item[FR-15] The system shall accept avatar presence updates (online status,
+  position) from the game server and resolve a member's workspace role on
+  request.
+\end{description}
+
+\subsection{Messaging (Chat Service)}
+\begin{description}[leftmargin=1.6cm,style=nextline]
+  \item[FR-16] A member shall create and join group channels within a workspace
+  and leave them.
+  \item[FR-17] A member shall open a direct-message conversation with another
+  user; the system shall guarantee a single DM per user pair.
+  \item[FR-18] A member shall send text messages to a channel, DM, or thread and
+  receive them in real time.
+  \item[FR-19] A member shall reply to a message, mention other users, edit their
+  own messages, and soft-delete messages.
+  \item[FR-20] A member shall start a thread from a message and reply within it.
+  \item[FR-21] The system shall track per-user read position and report unread
+  counts for channels and threads.
+  \item[FR-22] The system shall broadcast typing indicators.
+  \item[FR-23] The system shall guarantee idempotent message delivery so that a
+  retried send is not duplicated.
+  \item[FR-24] The system shall create, update, and delete \code{ROOM}- and
+  workspace-level channels in response to events from the room and workspace
+  services.
+\end{description}
+
+\subsection{Meeting Rooms and Proximity Voice (Room Service)}
+\begin{description}[leftmargin=1.6cm,style=nextline]
+  \item[FR-25] A member shall create a voice/video room bound to a text channel,
+  and add or remove room members.
+  \item[FR-26] A member shall join a room and receive a media access token and
+  the current participant list; joins shall respect a capacity limit.
+  \item[FR-27] The system shall track live presence in a room (mute, camera,
+  screen-share state) and broadcast join/leave/state changes in real time.
+  \item[FR-28] The system shall compute proximity-based voice groups from avatar
+  positions: users within a zone or within hearing range shall be assigned to a
+  shared media channel.
+\end{description}
+
+\subsection{2D Virtual Office (SkyOffice)}
+\begin{description}[leftmargin=1.6cm,style=nextline]
+  \item[FR-29] A user shall appear as an avatar and move around a tile-mapped
+  office with keyboard or on-screen joystick, colliding with walls and objects.
+  \item[FR-30] A user shall see other users move in real time with smooth motion.
+  \item[FR-31] A user shall sit on chairs, and interact with computers
+  (screen-share stations) and whiteboards.
+  \item[FR-32] Proximity between two avatars shall automatically start and stop a
+  peer-to-peer video call; a designated area shall keep a call alive as a private
+  meeting space.
+  \item[FR-33] A user shall exchange in-world chat messages, shown both in a chat
+  panel and as transient speech bubbles.
+\end{description}
+
+\subsection{Notifications (Notification Service)}
+\begin{description}[leftmargin=1.6cm,style=nextline]
+  \item[FR-34] The system shall consume domain events and deliver transactional
+  e-mails from versioned HTML templates.
+  \item[FR-35] The system shall persist in-app notifications and push them to
+  online users in real time, backfilling for offline users.
+  \item[FR-36] A user shall list notifications, see an unread count, mark items
+  read (individually or all), and delete them.
+  \item[FR-37] Notification delivery shall be idempotent with respect to a unique
+  event identifier.
+\end{description}
+
+\subsection{Cross-cutting Client Requirements}
+\begin{description}[leftmargin=1.6cm,style=nextline]
+  \item[FR-38] The web client shall provide the full workspace, channel, DM,
+  thread, room-call, and notification experience.
+  \item[FR-39] The mobile client shall provide the messaging experience (channels,
+  DMs, threads) with push notifications across foreground, background, and
+  terminated states.
+  \item[FR-40] All real-time clients shall authenticate their WebSocket
+  connection using a single-use ticket and reconnect automatically.
+\end{description}
+
+\section{Non-functional Requirements}
+\label{sec:nfr}
+
+\begin{table}[htbp]
+\centering
+\caption{Non-functional requirements.}
+\label{tab:nfr}
+\small
+\begin{tabularx}{\textwidth}{L{2.2cm} L{3.0cm} X}
+\toprule
+\textbf{ID} & \textbf{Quality} & \textbf{Requirement} \\
+\midrule
+NFR-01 & Performance & Avatar movement and chat delivery shall feel instantaneous; movement shall use client-side prediction and interpolation, and state sync shall transmit only changed fields. \\
+NFR-02 & Scalability & Media (audio/video/screen) shall never traverse the application servers; it shall use peer-to-peer or an external SFU so that server load is independent of media volume. \\
+NFR-03 & Security & Authentication shall be validated once at the gateway; internal endpoints shall be unreachable from the edge; client-supplied identity headers shall be stripped. \\
+NFR-04 & Reliability & Event consumers shall retry with exponential backoff and process events idempotently; a service outage shall degrade gracefully rather than cascade. \\
+NFR-05 & Consistency & Cross-service state (e.g. room-to-chat channel binding) shall be eventually consistent via durable events, with clients tolerating brief propagation delay. \\
+NFR-06 & Maintainability & Each service shall own its data and schema; services shall be independently buildable and deployable. \\
+NFR-07 & Portability & Each service shall ship with a container/compose definition for its dependencies to enable local and containerised deployment. \\
+NFR-08 & Usability & Clients shall support light and dark themes and responsive layouts across desktop and mobile form factors. \\
+NFR-09 & Observability & Services shall expose health endpoints and structured logs for monitoring. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Use-Case Model}
+\label{sec:usecases}
+
+Figure~\ref{fig:usecase-overview} gives the top-level use-case diagram, grouping
+use cases by subsystem and relating them to the actors of
+Section~\ref{sec:actors}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    every node/.style={font=\small},
+    usecase/.style={draw=voPrimary,fill=voPrimary!8,ellipse,minimum width=3.2cm,
+                    minimum height=1.2cm,align=center,inner sep=1pt,text width=2.7cm},
+    actor/.style={align=center,font=\small},
+    sys/.style={draw=voLine,rounded corners=4pt,inner sep=10pt},
+]
+% ---- actor drawing macro ----
+\newcommand{\stick}[3]{% x, y, label
+  \begin{scope}[shift={(#1,#2)}]
+     \draw[voDark,thick] (0,0.55) circle (0.16);
+     \draw[voDark,thick] (0,0.39)--(0,-0.12);
+     \draw[voDark,thick] (-0.22,0.20)--(0.22,0.20);
+     \draw[voDark,thick] (0,-0.12)--(-0.18,-0.45);
+     \draw[voDark,thick] (0,-0.12)--(0.18,-0.45);
+     \node[align=center,font=\scriptsize] at (0,-0.75) {#3};
+  \end{scope}}
+
+% columns / rows
+\def\lx{4.8}\def\rx{8.9}
+
+% actors (left)
+\stick{0}{8.0}{Guest}
+\stick{0}{4.8}{Member}
+\stick{0}{1.4}{Workspace\\Admin/Owner}
+
+% actors (right, systems)
+\node[actor,right] at (12.5,7.2) {\textbf{[Agora]}\\media};
+\node[actor,right] at (12.5,4.8) {\textbf{[Colyseus]}\\game server};
+\node[actor,right] at (12.5,2.4) {\textbf{[SMTP]}\\e-mail};
+
+% system boundary
+\node[sys,fit={(2.7,-0.6) (12.0,8.9)},label={[voPrimary,font=\bfseries]above:Virtual Office}] (bnd) {};
+
+% use cases (rows pitch 1.6)
+\node[usecase] (uc1) at (\lx,8.0) {Register / Log in};
+\node[usecase] (uc2) at (\rx,8.0) {Accept invitation};
+\node[usecase] (uc3) at (\lx,6.4) {Manage profile};
+\node[usecase] (uc4) at (\rx,6.4) {Manage workspace \& teams};
+\node[usecase] (uc5) at (\lx,4.8) {Send / read messages};
+\node[usecase] (uc6) at (\rx,4.8) {Threads \& reactions};
+\node[usecase] (uc7) at (\lx,3.2) {Join meeting room};
+\node[usecase] (uc8) at (\rx,3.2) {Proximity voice/video};
+\node[usecase] (uc9) at (\lx,1.6) {Move avatar / interact};
+\node[usecase] (uc10) at (\rx,1.6) {Receive notifications};
+\node[usecase] (uc11) at (6.85,0.0) {Edit map layout};
+
+% associations - guest (arc the second link over uc1 to avoid the strike-through)
+\draw (0.3,8.0)--(uc1.west);
+\draw (0.3,8.2) to[out=28,in=150] (uc2.north west);
+% member - left column straight
+\draw (0.3,4.8)--(uc3.west); \draw (0.3,4.8)--(uc5.west);
+\draw (0.3,4.8)--(uc7.west); \draw (0.3,4.8)--(uc9.west);
+% member - right column, routed through the row gaps (not through the left ellipses)
+\draw (0.3,4.8) to[out=34,in=158] (uc6.north west);
+\draw (0.3,4.8) to[out=-34,in=200] (uc8.south west);
+\draw (0.3,4.8) to[out=-48,in=196] (uc10.west);
+% admin
+\draw (0.3,1.4) to[out=35,in=205] (uc4.west);
+\draw (0.3,1.4)--(uc11.west);
+% systems (secondary actors on the right; routed up the right corridor)
+\draw (uc8.east) to[out=0,in=250] (12.4,7.2);           % Agora    <- Proximity voice/video
+\draw (uc8.east) to[out=-10,in=200] (12.4,4.8);         % Colyseus <- Proximity (game world)
+\draw (uc10.east) to[out=0,in=180] (12.4,2.4);          % SMTP     <- Receive notifications
+\end{tikzpicture}
+\caption{Top-level use-case diagram for \voname{}.}
+\label{fig:usecase-overview}
+\end{figure}
+
+\subsection{Detailed Use Cases}
+
+Two representative use cases are specified in full to illustrate the level of
+interaction the system supports.
+
+\begin{table}[htbp]
+\centering
+\caption{Use case UC-05: Send a message to a channel.}
+\label{tab:uc-send}
+\small
+\begin{tabularx}{\textwidth}{L{3.0cm} X}
+\toprule
+\textbf{Field} & \textbf{Description} \\
+\midrule
+Use case & Send a message to a channel \\
+Actor & Member \\
+Preconditions & The member is authenticated and is a member of the target channel; a WebSocket connection is established. \\
+Main flow &
+1. The member types a message and presses send.
+2. The client generates a client message id and publishes the message over STOMP to \route{/app/chat/send}.
+3. The chat service verifies channel membership, persists the message (idempotent on the client id), and broadcasts a \code{NEW\_MESSAGE} event to \route{/topic/channel/\{id\}}.
+4. All subscribed clients, including the sender, render the message. \\
+Alternative flows &
+2a. If the socket send fails (mobile), the client falls back to a REST \code{POST} of the same message.
+3a. If the member is not a member of the channel, the service returns a \code{NOT\_A\_MEMBER} error on the member's private error queue. \\
+Postconditions & The message is stored and visible to all channel members; unread counts update for other members. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Use case UC-08: Proximity voice/video in the 2D office.}
+\label{tab:uc-prox}
+\small
+\begin{tabularx}{\textwidth}{L{3.0cm} X}
+\toprule
+\textbf{Field} & \textbf{Description} \\
+\midrule
+Use case & Start a proximity call \\
+Actor & Member (two members) \\
+Preconditions & Both members are in the same office room, have enabled their webcam, and are marked ready to connect. \\
+Main flow &
+1. Member A moves their avatar toward member B.
+2. When the avatars overlap, the client detects the proximity via physics and, to avoid double-calling, the member with the greater session id initiates a PeerJS call.
+3. The other member auto-answers; encrypted peer-to-peer audio/video flows directly between them.
+4. Each sees the other's video tile appear. \\
+Alternative flows &
+2a. If either member is not ready or has no webcam, no call is placed.
+4a. If the two avatars are inside the designated private-meeting rectangle, the call persists even after they stop overlapping. \\
+Postconditions & A live call exists until the members separate (outside the private area), at which point it is torn down. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{User Stories}
+\label{sec:userstories}
+
+The requirements can also be read as user stories, which capture intent from the
+user's perspective:
+
+\begin{itemize}
+  \item \emph{As a guest}, I want to register and be invited into a workspace so
+  that I can join my team's virtual office.
+  \item \emph{As a member}, I want to see my colleagues moving around the office
+  so that I know who is present and available.
+  \item \emph{As a member}, I want a conversation to start simply by walking up
+  to a colleague so that I can ask a quick question without scheduling a meeting.
+  \item \emph{As a member}, I want persistent channels, threads, and direct
+  messages so that important discussion is not lost when a call ends.
+  \item \emph{As a member}, I want to receive a notification on my phone when I am
+  mentioned so that I do not miss time-sensitive messages.
+  \item \emph{As an admin}, I want to invite and organise members into teams and
+  arrange the office map so that the space reflects how my organisation works.
+  \item \emph{As an owner}, I want confidence that only authorised users can join
+  my workspace's rooms and read its channels.
+\end{itemize}
+
+\section{Domain Model}
+\label{sec:domain}
+
+Figure~\ref{fig:domain} shows the core domain entities and their relationships,
+abstracted across services. It is a conceptual model: in the implementation these
+entities are owned by different services and stored in different databases (see
+Chapters~\ref{ch:architecture} and~\ref{ch:backend}), but conceptually they form
+a single connected model centred on the \emph{Workspace} and the \emph{User}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  entity/.style={draw=voPrimary,fill=white,rounded corners=2pt,align=left,
+                 font=\footnotesize,inner sep=5pt,text width=3.0cm,
+                 drop shadow={opacity=0.15,shadow xshift=1pt,shadow yshift=-1pt}},
+  rel/.style={voGray,-{Stealth[]},font=\scriptsize},
+  lbl/.style={font=\scriptsize,voDark,fill=white,inner sep=1.5pt},
+]
+\node[entity] (user) at (0,6) {\textbf{User}\\ \hrule id, name\\ email, password\\ phone, verified};
+\node[entity] (ws) at (5,6) {\textbf{Workspace}\\ \hrule id, name, slug\\ ownerId, status\\ map layout};
+\node[entity] (invite) at (9.7,6.7) {\textbf{Invitation}\\ \hrule email, token\\ status, expiry};
+\node[entity] (team) at (9.7,4.2) {\textbf{Team}\\ \hrule id, wsId\\ name};
+\node[entity] (desk) at (5,3.3) {\textbf{Desk}\\ \hrule userId, wsId\\ role, status\\ position (x,y)};
+\node[entity] (channel) at (0,3.3) {\textbf{Channel}\\ \hrule id, type\\ wsId, members\\ dmKey};
+\node[entity] (notif) at (9.9,1.6) {\textbf{Notification}\\ \hrule userId, type\\ body, read};
+\node[entity] (message) at (0,0.5) {\textbf{Message}\\ \hrule id, senderId\\ content, threadId\\ replyToId, mentions};
+\node[entity] (thread) at (4.0,0.6) {\textbf{Thread}\\ \hrule id, channelId\\ rootMessageId};
+\node[entity] (room) at (7.5,0.6) {\textbf{Room}\\ \hrule id, wsId\\ channelId\\ agoraChannel};
+
+% identity / space
+\draw[rel] (desk) -- node[lbl]{seats} (user.south east);
+\draw[rel] (desk) -- node[lbl,left]{in} (ws);
+\draw[rel] (invite) -- node[lbl,right]{to} (ws.east);
+\draw[rel] (team) -- node[lbl,above]{groups} (desk.east);
+\draw[rel] (channel.north) to[out=90,in=195] node[lbl,pos=0.65]{belongs to} (ws.west);
+% chat
+\draw[rel] (message) -- node[lbl,left]{in} (channel);
+\draw[rel] (message.east) to[out=18,in=162] node[lbl,above]{in} (thread.west);
+\draw[rel] (thread.west) to[out=-162,in=-18] node[lbl,below]{roots} (message.east);
+% room  (binds arcs high over the thread; membership curves right of the desk)
+\draw[rel] (room.north west) to[out=135,in=-28,looseness=1.15]
+      node[lbl,pos=0.5]{binds} (channel.south east);
+\draw[rel] (room.north) to[out=80,in=-25] node[lbl,right,pos=0.4]{in} (ws.south east);
+% notification (routed around the top-right corner, clear of all boxes)
+\draw[rel] (notif.east) to[out=0,in=-30] (11.9,7.8) to[out=150,in=35]
+      node[lbl,above,pos=0.85]{for} (user.north east);
+\end{tikzpicture}
+\caption{Conceptual domain model of \voname{} (cross-service view).}
+\label{fig:domain}
+\end{figure}
+
+The central relationship is that a \emph{User} takes a \emph{Desk} in a
+\emph{Workspace}; the desk carries the user's workspace-scoped role, profile, and
+avatar position. Everything else --- channels, rooms, teams, invitations --- is
+scoped to the workspace, and messaging (messages and threads) hangs off channels.
+This model is realised in the following chapters, where each entity's ownership,
+storage technology, and API are described in full.

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+<title>Virtual Office — Defense Deck</title>
+<style>
+  /* ============================== TOKENS ============================== */
+  :root{
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+
+    /* day office (light) */
+    --ground:#EEF0F8;
+    --surface:#FFFFFF;
+    --surface-2:#F5F6FC;
+    --ink:#161A2E;
+    --muted:#565D7E;
+    --faint:#8A90AE;
+    --line:#E0E3F0;
+    --line-strong:#CBD0E6;
+    --brand:#4453C6;
+    --brand-ink:#3341AE;
+    --accent:#D97D1E;      /* presence amber, tuned for light ground */
+    --accent-soft:#F4E7D3;
+    --live:#0E9384;
+    --dot:rgba(68,83,198,.10);
+    --glow:rgba(217,125,30,.16);
+    --shadow:0 1px 2px rgba(20,24,46,.06), 0 8px 30px rgba(20,24,46,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ground:#0D0F1E;
+      --surface:#161A31;
+      --surface-2:#1B2039;
+      --ink:#EDEFFA;
+      --muted:#A0A6C6;
+      --faint:#727AA0;
+      --line:#262C4A;
+      --line-strong:#333A5E;
+      --brand:#8B97FF;
+      --brand-ink:#A4AEFF;
+      --accent:#FFB23E;      /* warmer glow on night ground */
+      --accent-soft:#3A2E1A;
+      --live:#2DD4BF;
+      --dot:rgba(139,151,255,.10);
+      --glow:rgba(255,178,62,.14);
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 40px rgba(0,0,0,.45);
+    }
+  }
+  /* explicit toggle wins in both directions */
+  :root[data-theme="light"]{
+    --ground:#EEF0F8;--surface:#FFFFFF;--surface-2:#F5F6FC;--ink:#161A2E;--muted:#565D7E;--faint:#8A90AE;
+    --line:#E0E3F0;--line-strong:#CBD0E6;--brand:#4453C6;--brand-ink:#3341AE;--accent:#D97D1E;--accent-soft:#F4E7D3;
+    --live:#0E9384;--dot:rgba(68,83,198,.10);--glow:rgba(217,125,30,.16);--shadow:0 1px 2px rgba(20,24,46,.06),0 8px 30px rgba(20,24,46,.06);
+  }
+  :root[data-theme="dark"]{
+    --ground:#0D0F1E;--surface:#161A31;--surface-2:#1B2039;--ink:#EDEFFA;--muted:#A0A6C6;--faint:#727AA0;
+    --line:#262C4A;--line-strong:#333A5E;--brand:#8B97FF;--brand-ink:#A4AEFF;--accent:#FFB23E;--accent-soft:#3A2E1A;
+    --live:#2DD4BF;--dot:rgba(139,151,255,.10);--glow:rgba(255,178,62,.14);--shadow:0 1px 2px rgba(0,0,0,.4),0 12px 40px rgba(0,0,0,.45);
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;font-family:var(--sans);color:var(--ink);background:var(--ground);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow:hidden;
+  }
+  /* office-floor tile grid */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:radial-gradient(var(--dot) 1.4px, transparent 1.4px);
+    background-size:34px 34px;background-position:center;
+    -webkit-mask-image:radial-gradient(ellipse 120% 100% at 50% 40%, #000 55%, transparent 100%);
+            mask-image:radial-gradient(ellipse 120% 100% at 50% 40%, #000 55%, transparent 100%);
+  }
+
+  /* ============================== DECK ============================== */
+  .deck{position:relative;z-index:1;height:100vh;width:100vw}
+  .slide{
+    position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:clamp(28px,6vw,96px);padding-bottom:clamp(70px,9vh,120px);
+  }
+  .slide.is-active{display:flex}
+  @media (prefers-reduced-motion: no-preference){
+    .slide.is-active > .wrap{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+    @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  }
+  .wrap{width:100%;max-width:1120px;margin:0 auto}
+  .wrap.wide{max-width:1240px}
+
+  /* ---- shared type ---- */
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:.6em;font-family:var(--mono);font-size:clamp(.7rem,1.1vw,.8rem);
+    font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);margin:0 0 clamp(14px,2vh,22px)
+  }
+  .eyebrow .idx{color:var(--faint)}
+  .eyebrow::before{content:"";width:22px;height:2px;background:var(--accent);border-radius:2px}
+  h2.title{
+    font-size:clamp(1.9rem,4.6vw,3.5rem);line-height:1.02;font-weight:800;letter-spacing:-.022em;
+    margin:0;text-wrap:balance
+  }
+  .lead{font-size:clamp(1.02rem,1.7vw,1.35rem);line-height:1.5;color:var(--muted);max-width:60ch;margin:clamp(16px,2.4vh,26px) 0 0;text-wrap:pretty}
+  .lead strong{color:var(--ink);font-weight:650}
+
+  /* ---- bullets ---- */
+  ul.bullets{list-style:none;margin:clamp(20px,3vh,34px) 0 0;padding:0;display:flex;flex-direction:column;gap:clamp(11px,1.7vh,18px)}
+  ul.bullets li{position:relative;padding-left:1.7em;font-size:clamp(1rem,1.55vw,1.22rem);line-height:1.45;max-width:64ch;color:var(--ink)}
+  ul.bullets li::before{content:"";position:absolute;left:0;top:.5em;width:.62em;height:.62em;background:var(--accent);border-radius:2px;box-shadow:0 0 0 4px var(--glow)}
+  ul.bullets li b, ul.bullets li strong{font-weight:680}
+  ul.bullets li .sub{display:block;color:var(--muted);font-size:.86em;margin-top:.2em;line-height:1.4}
+  code, .mono{font-family:var(--mono)}
+  .k{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:.08em .42em;color:var(--brand-ink);white-space:nowrap}
+
+  /* ---- cards grid ---- */
+  .grid{display:grid;gap:clamp(12px,1.6vw,18px);margin-top:clamp(20px,3vh,32px)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:clamp(15px,1.5vw,22px);
+    box-shadow:var(--shadow);display:flex;flex-direction:column;gap:.35em;min-width:0
+  }
+  .card .lab{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;align-items:center;gap:.5em}
+  .card .chip{font-family:var(--mono);font-size:.7rem;color:var(--brand);background:var(--surface-2);border:1px solid var(--line);border-radius:100px;padding:.1em .6em}
+  .card h3{margin:.1em 0 0;font-size:clamp(1.02rem,1.4vw,1.22rem);font-weight:700;letter-spacing:-.01em}
+  .card p{margin:.15em 0 0;color:var(--muted);font-size:clamp(.85rem,1.1vw,.98rem);line-height:1.42}
+  .card.dashed{background:transparent;border-style:dashed;box-shadow:none}
+  .card.accent{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+  .card .top{width:26px;height:26px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;color:var(--brand);font-family:var(--mono);font-weight:700;font-size:.8rem}
+
+  /* ---- two-column split ---- */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,44px);align-items:start;margin-top:clamp(18px,2.6vh,30px)}
+  .split h4{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin:0 0 .9em;display:flex;align-items:center;gap:.5em}
+  .split h4 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .split h4.out .dot{background:var(--faint)}
+
+  /* ============================== TITLE SLIDE ============================== */
+  .title-slide .wrap{max-width:1180px}
+  .brandmark{display:flex;align-items:center;gap:.7em;font-family:var(--mono);font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:clamp(26px,5vh,54px)}
+  .avatars{display:flex}
+  .avatars i{width:16px;height:16px;border-radius:50%;border:2.5px solid var(--ground);margin-left:-6px;display:inline-block}
+  .avatars i:first-child{margin-left:0}
+  .av1{background:var(--brand)}.av2{background:var(--accent)}.av3{background:var(--live)}.av4{background:var(--brand-ink)}
+  h1.hero{font-size:clamp(2.9rem,9vw,6.4rem);line-height:.94;font-weight:800;letter-spacing:-.035em;margin:0;text-wrap:balance}
+  h1.hero .em{color:var(--brand);position:relative}
+  .hero-sub{font-size:clamp(1.1rem,2.3vw,1.7rem);color:var(--muted);margin:clamp(18px,3vh,30px) 0 0;max-width:34ch;line-height:1.32;font-weight:450;text-wrap:balance}
+  .hero-sub b{color:var(--ink);font-weight:650}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:clamp(26px,4vh,40px)}
+  .chips span{font-family:var(--mono);font-size:.76rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:100px;padding:.4em .85em;box-shadow:var(--shadow)}
+  .meta{margin-top:clamp(30px,5vh,54px);display:flex;flex-wrap:wrap;gap:clamp(18px,4vw,60px);padding-top:clamp(18px,3vh,28px);border-top:1px solid var(--line)}
+  .meta div{min-width:0}
+  .meta .ml{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:.4em}
+  .meta .mv{font-size:clamp(.95rem,1.3vw,1.1rem);font-weight:600;color:var(--ink)}
+  .edit{color:var(--accent)}
+
+  /* ============================== AGENDA ============================== */
+  .agenda{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(6px,1vh,10px) clamp(24px,5vw,64px);margin-top:clamp(22px,3vh,34px);counter-reset:ag}
+  .agenda a{
+    display:flex;align-items:baseline;gap:1em;text-decoration:none;color:var(--ink);padding:clamp(9px,1.3vh,14px) 4px;
+    border-bottom:1px solid var(--line);cursor:pointer;transition:color .15s,border-color .15s
+  }
+  .agenda a:hover,.agenda a:focus-visible{color:var(--brand);border-color:var(--line-strong)}
+  .agenda a .n{font-family:var(--mono);font-size:.85rem;color:var(--faint);font-variant-numeric:tabular-nums;min-width:2ch}
+  .agenda a:hover .n{color:var(--accent)}
+  .agenda a .t{font-size:clamp(1rem,1.35vw,1.18rem);font-weight:600;letter-spacing:-.01em}
+  .agenda a .t small{display:block;font-weight:400;color:var(--muted);font-size:.8em;letter-spacing:0}
+
+  /* ============================== TOPOLOGY DIAGRAM ============================== */
+  .topo{display:flex;flex-direction:column;gap:clamp(10px,1.6vh,18px);margin-top:clamp(18px,2.6vh,28px)}
+  .tier{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(11px,1.4vh,16px) clamp(12px,1.5vw,18px);box-shadow:var(--shadow);position:relative}
+  .tier .tl{position:absolute;top:-.72em;left:14px;font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);background:var(--ground);padding:0 .5em}
+  .tier .row{display:flex;flex-wrap:wrap;gap:8px}
+  .node{flex:1 1 0;min-width:120px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:.6em .8em;text-align:center}
+  .node b{display:block;font-size:clamp(.85rem,1.15vw,1rem);font-weight:680;letter-spacing:-.01em}
+  .node span{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+  .node.gw{background:color-mix(in srgb,var(--brand) 14%,var(--surface));border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}
+  .node.gw b{color:var(--brand-ink)}
+  .node.bus{background:color-mix(in srgb,var(--accent) 12%,var(--surface));border-color:color-mix(in srgb,var(--accent) 38%,var(--line))}
+  .node.soft{opacity:.62;border-style:dashed}
+  .link{align-self:center;color:var(--faint);font-family:var(--mono);font-size:1rem;text-align:center;letter-spacing:.3em}
+
+  /* ============================== STACK SLIDE ============================== */
+  .stack{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(12px,1.6vw,18px);margin-top:clamp(20px,3vh,30px)}
+  .stack .col{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:clamp(14px,1.5vw,20px);box-shadow:var(--shadow)}
+  .stack h4{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin:0 0 .8em;display:flex;align-items:center;gap:.55em}
+  .stack h4::before{content:"";width:9px;height:9px;border-radius:2px;background:var(--accent)}
+  .stack .tags{display:flex;flex-wrap:wrap;gap:7px}
+  .stack .tags span{font-family:var(--mono);font-size:.78rem;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:.28em .6em}
+
+  /* ============================== CLOSING ============================== */
+  .center{align-items:center;text-align:center}
+  .center .wrap{max-width:900px}
+  .qa{font-size:clamp(2.6rem,7vw,5rem);font-weight:800;letter-spacing:-.03em;margin:0;line-height:1}
+  .demo-note{margin-top:22px;display:inline-flex;align-items:center;gap:.6em;font-family:var(--mono);font-size:.82rem;color:var(--muted);border:1px dashed var(--line-strong);border-radius:100px;padding:.6em 1.2em}
+  .pulse{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+  @media (prefers-reduced-motion: no-preference){.pulse{animation:pulse 1.8s ease-in-out infinite}@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--glow)}50%{box-shadow:0 0 0 8px transparent}}}
+
+  /* ============================== CHROME (footer / nav / progress) ============================== */
+  .progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:40;transition:width .4s cubic-bezier(.2,.7,.2,1);box-shadow:0 0 12px var(--glow)}
+  .footer{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(12px,2vh,20px) clamp(20px,4vw,60px);pointer-events:none}
+  .footer .fmark{display:flex;align-items:center;gap:.55em;font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .footer .fmark .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+  .nav{display:flex;align-items:center;gap:6px;pointer-events:auto}
+  .nav button{
+    width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+    cursor:pointer;font-size:1rem;display:grid;place-items:center;box-shadow:var(--shadow);transition:border-color .15s,color .15s,transform .1s
+  }
+  .nav button:hover{border-color:var(--brand);color:var(--brand)}
+  .nav button:active{transform:translateY(1px)}
+  .nav .count{font-family:var(--mono);font-size:.8rem;font-variant-numeric:tabular-nums;color:var(--muted);padding:0 .6em;min-width:5.5ch;text-align:center}
+  .nav .count b{color:var(--ink)}
+  :focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+
+  /* ============================== OVERVIEW ============================== */
+  .ov-btn{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em}
+  .overview .deck{height:auto}
+  .overview .slide{position:relative;inset:auto;display:none}
+  .overview{overflow:auto;height:auto}
+  #ovpanel{position:fixed;inset:0;z-index:60;background:color-mix(in srgb,var(--ground) 94%,transparent);backdrop-filter:blur(6px);
+    display:none;padding:clamp(24px,5vw,60px);overflow:auto}
+  #ovpanel.open{display:block}
+  #ovpanel .ovhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;max-width:1200px;margin-inline:auto}
+  #ovpanel .ovhead h3{font-size:1.4rem;margin:0;letter-spacing:-.02em}
+  #ovgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;max-width:1200px;margin:0 auto}
+  #ovgrid .ov{
+    text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:14px 15px;cursor:pointer;
+    box-shadow:var(--shadow);transition:border-color .15s,transform .12s;display:flex;flex-direction:column;gap:.4em;min-height:96px
+  }
+  #ovgrid .ov:hover{border-color:var(--brand);transform:translateY(-2px)}
+  #ovgrid .ov .on{font-family:var(--mono);font-size:.72rem;color:var(--faint);font-variant-numeric:tabular-nums}
+  #ovgrid .ov .ot{font-size:.98rem;font-weight:650;letter-spacing:-.01em;line-height:1.2;text-wrap:balance}
+  #ovgrid .ov.current{border-color:var(--accent)}
+  #ovgrid .ov.current .on{color:var(--accent)}
+
+  .hint{position:fixed;bottom:clamp(12px,2vh,20px);left:50%;transform:translateX(-50%);z-index:25;font-family:var(--mono);
+    font-size:.68rem;letter-spacing:.06em;color:var(--faint);pointer-events:none;opacity:.85;transition:opacity .4s}
+  .hint b{color:var(--muted)}
+  @media (max-width:720px){.hint{display:none}}
+
+  /* ============================== RESPONSIVE ============================== */
+  @media (max-width:860px){
+    .g3,.g4,.stack,.agenda,.split,.g2{grid-template-columns:1fr}
+    .tier .row{flex-direction:column}
+    .node{min-width:0}
+    .meta{gap:16px}
+    .hero-sub{max-width:none}
+  }
+
+  /* ============================== PRINT (export to PDF) ============================== */
+  @media print{
+    :root{--shadow:none}
+    body{overflow:visible;background:#fff;color:#111}
+    body::before{display:none}
+    .footer,.progress,.hint,#ovpanel,.nav{display:none!important}
+    .deck{height:auto}
+    .slide{position:relative;inset:auto;display:flex!important;min-height:100vh;page-break-after:always;padding:8vh 8vw;break-inside:avoid}
+    .slide.is-active>.wrap{animation:none}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<main class="deck" id="deck">
+
+  <!-- ===================== 1 · TITLE ===================== -->
+  <section class="slide title-slide is-active" data-title="Title">
+    <div class="wrap">
+      <div class="brandmark">
+        <span class="avatars"><i class="av1"></i><i class="av2"></i><i class="av3"></i><i class="av4"></i></span>
+        Graduation Project · 2026
+      </div>
+      <h1 class="hero">Virtual&nbsp;<span class="em">Office</span></h1>
+      <p class="hero-sub">An all-in-one, <b>spatial</b> team-collaboration platform — one place instead of a dozen apps.</p>
+      <div class="chips">
+        <span>Microservices · Spring Boot</span>
+        <span>Phaser · Colyseus</span>
+        <span>React</span>
+        <span>Flutter</span>
+        <span>WebRTC · Agora</span>
+        <span>RabbitMQ</span>
+      </div>
+      <div class="meta">
+        <div><div class="ml">Presented by</div><div class="mv"><span class="edit">[ Your name &amp; team ]</span></div></div>
+        <div><div class="ml">Supervised by</div><div class="mv"><span class="edit">[ Supervisor ]</span></div></div>
+        <div><div class="ml">Department · University</div><div class="mv"><span class="edit">[ Department, University ]</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2 · AGENDA ===================== -->
+  <section class="slide" data-title="Agenda">
+    <div class="wrap wide">
+      <p class="eyebrow"><span class="idx">01</span> · Agenda</p>
+      <h2 class="title">What we'll walk through</h2>
+      <nav class="agenda" id="agenda"></nav>
+    </div>
+  </section>
+
+  <!-- ===================== 3 · PROBLEM ===================== -->
+  <section class="slide" data-title="The Problem">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">02</span> · Motivation</p>
+      <h2 class="title">Remote work broke the office into a dozen tabs</h2>
+      <p class="lead">The shift to remote &amp; hybrid work scattered the workplace across disconnected tools — one app for meetings, another for chat, others for tasks, calendars, and files.</p>
+      <ul class="bullets">
+        <li>This fragmentation erodes the two things a physical office gives a team for free:</li>
+        <li><b>Presence</b> — knowing who is around and available right now.<span class="sub">Status dots in five apps don't tell you the room is warm.</span></li>
+        <li><b>Spontaneity</b> — the ability to walk up to a colleague and just start talking.<span class="sub">Scheduling a call to ask a 20-second question kills the conversation.</span></li>
+        <li>Existing tools (Slack, Zoom, Gather) each solve a slice — none give a team a single, shared <b>place</b>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 4 · SOLUTION ===================== -->
+  <section class="slide" data-title="Our Solution">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">03</span> · The Idea</p>
+      <h2 class="title">A digital headquarters your team lives in</h2>
+      <p class="lead">Virtual Office puts the whole working day under one roof: a spatial world where teams appear as avatars, and messaging, meetings, tasks, and administration surround that space.</p>
+      <div class="grid g3">
+        <div class="card accent"><div class="lab">Walk up &amp; talk<span class="chip">spatial</span></div><h3>2D virtual office</h3><p>Avatars move around a tile-mapped office and fall into proximity voice, video &amp; screen-share the moment they get close.</p></div>
+        <div class="card"><div class="lab">Persistent<span class="chip">async</span></div><h3>Full collaboration surface</h3><p>Workspaces, channels, DMs, threads, room calls and a live notification centre — Slack-style, on web.</p></div>
+        <div class="card"><div class="lab">On the go<span class="chip">mobile</span></div><h3>In your pocket</h3><p>A Flutter app carries the conversation to phones with push notifications across every app state.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5 · OBJECTIVES & SCOPE ===================== -->
+  <section class="slide" data-title="Objectives &amp; Scope">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">04</span> · Objectives &amp; Scope</p>
+      <h2 class="title">One coherent product, built to hold together</h2>
+      <div class="split">
+        <div>
+          <h4><span class="dot"></span>Objectives</h4>
+          <ul class="bullets">
+            <li>Give a distributed team a single <b>place</b>, not a pile of apps.</li>
+            <li>Recreate <b>presence</b> and <b>proximity conversation</b> online.</li>
+            <li>Build it as a properly architected, multi-client <b>real-time</b> system.</li>
+            <li>Unify identity, workspaces, messaging, rooms &amp; notifications.</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="out"><span class="dot"></span>Scope boundaries</h4>
+          <ul class="bullets">
+            <li><b>In:</b> 2D office, chat, rooms, proximity media, workspaces, notifications — across web, mobile &amp; the game client.</li>
+            <li><b>Roadmap:</b> tasks &amp; calendar services are scaffolded; mobile covers chat first.</li>
+            <li><b>Out:</b> production-grade secret management &amp; platform-wide RBAC (noted honestly as future work).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 6 · SYSTEM OVERVIEW ===================== -->
+  <section class="slide" data-title="System Overview">
+    <div class="wrap wide">
+      <p class="eyebrow"><span class="idx">05</span> · System Overview</p>
+      <h2 class="title">Three clients over one distributed backend</h2>
+      <div class="topo">
+        <div class="tier"><span class="tl">Clients</span><div class="row">
+          <div class="node"><b>2D Office</b><span>Phaser · Colyseus</span></div>
+          <div class="node"><b>Web</b><span>React</span></div>
+          <div class="node"><b>Mobile</b><span>Flutter</span></div>
+        </div></div>
+        <div class="link">↓</div>
+        <div class="tier"><span class="tl">Edge</span><div class="row">
+          <div class="node gw"><b>API Gateway</b><span>single entry · validates JWT · injects identity headers</span></div>
+        </div></div>
+        <div class="link">↓</div>
+        <div class="tier"><span class="tl">Services · Spring Boot</span><div class="row">
+          <div class="node"><b>User</b><span>identity</span></div>
+          <div class="node"><b>Workspace</b><span>desks · map</span></div>
+          <div class="node"><b>Chat</b><span>messaging</span></div>
+          <div class="node"><b>Room</b><span>proximity</span></div>
+          <div class="node"><b>Notifications</b><span>events</span></div>
+          <div class="node soft"><b>Tasks · Calendar</b><span>roadmap</span></div>
+        </div></div>
+        <div class="link">↓</div>
+        <div class="tier"><span class="tl">Data &amp; messaging</span><div class="row">
+          <div class="node"><b>MySQL</b><span>users</span></div>
+          <div class="node"><b>PostgreSQL</b><span>workspace</span></div>
+          <div class="node"><b>MongoDB</b><span>messages</span></div>
+          <div class="node"><b>Redis</b><span>presence · tickets</span></div>
+          <div class="node bus"><b>RabbitMQ</b><span>event bus</span></div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 7 · ARCHITECTURE & SECURITY ===================== -->
+  <section class="slide" data-title="Architecture &amp; Security">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">06</span> · Architecture</p>
+      <h2 class="title">The gateway is the single front door</h2>
+      <p class="lead">A microservices style, chosen so each concern — identity, spatial state, messaging, media — evolves and scales independently behind one edge.</p>
+      <ul class="bullets">
+        <li><b>Edge-validated identity.</b> The gateway verifies the JWT once, then injects trusted headers — <span class="k">X-User-Id</span> <span class="k">X-User-Role</span> <span class="k">X-User-Email</span> — that every service downstream trusts.<span class="sub">Authentication logic removed from five services at a stroke; the edge strips any spoofable headers.</span></li>
+        <li><b>Per-service databases.</b> No shared schema — services own their data and cross reference by stored foreign keys.</li>
+        <li><b>Internal API</b> lets server-to-server calls (e.g. the office server → workspace) bypass the public edge, guarded by an <span class="k">X-Internal-Token</span>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 8 · CROSS-CUTTING PATTERNS ===================== -->
+  <section class="slide" data-title="Cross-cutting Patterns">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">07</span> · The Patterns That Hold It Together</p>
+      <h2 class="title">Four decisions, applied everywhere</h2>
+      <div class="grid g2">
+        <div class="card"><div class="lab">Real-time auth</div><h3>Ticket-based WebSocket handshake</h3><p>Sockets can't carry auth headers — so clients exchange a short-lived Redis ticket for a connection. One recipe reused by every client.</p></div>
+        <div class="card"><div class="lab">Message shape</div><h3>The <code>{action, payload}</code> envelope</h3><p>Every real-time message shares one uniform shape, so each client needs only a single dispatch loop.</p></div>
+        <div class="card"><div class="lab">Service decoupling</div><h3>Event-driven side effects</h3><p>Services emit events onto RabbitMQ instead of calling each other; delivery is idempotent, so retries never duplicate.</p></div>
+        <div class="card"><div class="lab">Boundaries</div><h3>Polyglot persistence</h3><p>Relational integrity for workspaces, documents for messages, Redis for ephemeral presence &amp; tickets — the store fits the data.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 9 · BACKEND MICROSERVICES ===================== -->
+  <section class="slide" data-title="Backend Microservices">
+    <div class="wrap wide">
+      <p class="eyebrow"><span class="idx">08</span> · Backend</p>
+      <h2 class="title">Cooperating Spring Boot services</h2>
+      <div class="grid g3">
+        <div class="card"><div class="lab">Edge<span class="chip">:8080</span></div><h3>Gateway API</h3><p>Single entry point; routes requests, validates identity, propagates user headers.</p></div>
+        <div class="card"><div class="lab">Identity<span class="chip">:8081</span></div><h3>User Service</h3><p>Authentication, accounts, JWT issuing. Backed by MySQL.</p></div>
+        <div class="card"><div class="lab">Space<span class="chip">:8087</span></div><h3>Workspace Service</h3><p>Companies, desks, teams, roles, invitations &amp; the editable 2D map. PostgreSQL.</p></div>
+        <div class="card"><div class="lab">Messaging<span class="chip">:8084</span></div><h3>Chat Service</h3><p>Channels, DMs, threads, mentions, edits, read receipts, typing. MongoDB.</p></div>
+        <div class="card"><div class="lab">Media<span class="chip">:8086</span></div><h3>Room Service</h3><p>Mints media tokens &amp; computes proximity voice groups — never carries media itself.</p></div>
+        <div class="card"><div class="lab">Events<span class="chip">:8082</span></div><h3>Notification Service</h3><p>Transactional e-mail + real-time in-app delivery, driven by RabbitMQ events.</p></div>
+      </div>
+      <ul class="bullets" style="margin-top:16px">
+        <li><b>Roadmap modules:</b> <span class="k">tasks</span> and <span class="k">calendar</span> are scaffolded; notifications already <i>consumes</i> their events, so completing them lights up end-to-end.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 10 · COMMUNICATION & DATA ===================== -->
+  <section class="slide" data-title="Communication &amp; Data">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">09</span> · How Services Talk</p>
+      <h2 class="title">Synchronous when you must, asynchronous when you can</h2>
+      <div class="split">
+        <div>
+          <h4><span class="dot"></span>Synchronous · internal REST</h4>
+          <ul class="bullets">
+            <li>Direct lookups &amp; validations behind the edge.<span class="sub">e.g. office server asks workspace for a member's desk &amp; status.</span></li>
+            <li>Guarded by the internal token, blocked at the gateway.</li>
+          </ul>
+        </div>
+        <div>
+          <h4><span class="dot"></span>Asynchronous · RabbitMQ bus</h4>
+          <ul class="bullets">
+            <li>Side effects flow as <span class="k">NotificationEvent</span>s.<span class="sub">Survives outages; buys resilience at the cost of eventual consistency.</span></li>
+            <li>Idempotent delivery — retries never double-fire.</li>
+          </ul>
+        </div>
+      </div>
+      <ul class="bullets" style="margin-top:6px">
+        <li><b>Polyglot persistence:</b> <span class="k">MySQL</span> users · <span class="k">PostgreSQL</span> workspace · <span class="k">MongoDB</span> messages · <span class="k">Redis</span> presence &amp; tickets.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 11 · 2D VIRTUAL OFFICE ===================== -->
+  <section class="slide" data-title="2D Virtual Office">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">10</span> · The 2D Virtual Office · SkyOffice</p>
+      <h2 class="title">A live world, not a video grid</h2>
+      <p class="lead">Built on the <b>Phaser</b> game engine with an <b>authoritative Colyseus</b> multiplayer server — the server owns the truth, the client predicts and interpolates.</p>
+      <ul class="bullets">
+        <li>Avatars walk a tile-mapped office across multiple floors, sit at <b>per-person desks</b>, and gather at whiteboards.</li>
+        <li><b>Client-side prediction</b> keeps your own movement instant; <b>remote interpolation</b> smooths everyone else.</li>
+        <li><b>Server-authoritative interactive objects</b> — computers &amp; whiteboards are claimed and released consistently for all players.</li>
+        <li>A React + Redux overlay renders the UI on top of the game canvas.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 12 · PROXIMITY COMMUNICATION ===================== -->
+  <section class="slide" data-title="Proximity Communication">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">11</span> · Proximity Communication</p>
+      <h2 class="title">Get close, and the conversation starts</h2>
+      <p class="lead">The defining interaction: move your avatar near someone and voice, video &amp; screen-share open automatically — the online version of walking over to a desk.</p>
+      <ul class="bullets">
+        <li>The <b>room service computes voice groups</b> from avatar positions — who can hear whom is a function of where you stand.</li>
+        <li>It <b>mints short-lived media tokens</b> but <b>never carries the media</b> — audio/video flow peer-to-peer.</li>
+        <li>Media transport uses <b>WebRTC</b> (office client) and <b>Agora</b> (web room calls).</li>
+        <li>Walk away, and the call quietly ends — no hang-up, no scheduling.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 13 · WEB CLIENT ===================== -->
+  <section class="slide" data-title="Web Client">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">12</span> · The Web Application</p>
+      <h2 class="title">A full Slack-style collaboration surface</h2>
+      <p class="lead">A <b>React</b> single-page app delivering the persistent, async half of the platform.</p>
+      <div class="grid g2">
+        <div class="card"><div class="lab">Real-time</div><h3>Three STOMP connections</h3><p>Separate live channels for chat, presence &amp; notifications, each over the shared ticket handshake.</p></div>
+        <div class="card"><div class="lab">Media</div><h3>Room calls over Agora</h3><p>Voice &amp; video meeting rooms with real-time media handled by Agora.</p></div>
+        <div class="card"><div class="lab">Messaging</div><h3>Workspaces &amp; channels</h3><p>Channels, direct messages, threads, mentions and edits — the everyday chat surface.</p></div>
+        <div class="card"><div class="lab">Awareness</div><h3>Live notification centre</h3><p>In-app alerts pushed the moment backend events fire.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 14 · MOBILE CLIENT ===================== -->
+  <section class="slide" data-title="Mobile Client">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">13</span> · The Mobile Application</p>
+      <h2 class="title">The conversation, in your pocket</h2>
+      <p class="lead">A <b>Flutter</b> client bringing the messaging experience to phones, with <b>Provider</b> for state.</p>
+      <ul class="bullets">
+        <li><b>Dual-transport repository</b> — one data layer speaks both REST and the real-time socket, hiding transport from the UI.</li>
+        <li><b>Optimistic delivery</b> — messages appear instantly and reconcile with the server, so the app feels fast on flaky networks.</li>
+        <li>Threads &amp; <b>read receipts</b>, matching the web semantics.</li>
+        <li><b>Push notifications across every app state</b> — foreground, background, and terminated.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 15 · TECH STACK ===================== -->
+  <section class="slide" data-title="Technology Stack">
+    <div class="wrap wide">
+      <p class="eyebrow"><span class="idx">14</span> · Technology Stack</p>
+      <h2 class="title">The stack at a glance</h2>
+      <div class="stack">
+        <div class="col"><h4>Clients</h4><div class="tags"><span>React</span><span>Redux</span><span>Flutter</span><span>Phaser</span><span>Colyseus</span><span>TypeScript</span></div></div>
+        <div class="col"><h4>Real-time &amp; media</h4><div class="tags"><span>WebSocket · STOMP</span><span>WebRTC</span><span>Agora</span><span>Colyseus rooms</span></div></div>
+        <div class="col"><h4>Backend</h4><div class="tags"><span>Java 21</span><span>Spring Boot</span><span>Spring Cloud Gateway</span><span>Maven</span><span>JWT</span></div></div>
+        <div class="col"><h4>Data &amp; messaging</h4><div class="tags"><span>MySQL</span><span>PostgreSQL</span><span>MongoDB</span><span>Redis</span><span>RabbitMQ</span></div></div>
+        <div class="col"><h4>Infrastructure</h4><div class="tags"><span>Docker</span><span>Docker Compose</span><span>Nginx</span><span>one-command stack</span></div></div>
+        <div class="col"><h4>Observability</h4><div class="tags"><span>Prometheus</span><span>Grafana</span><span>Loki</span><span>Promtail</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 16 · TESTING & OBSERVABILITY ===================== -->
+  <section class="slide" data-title="Testing &amp; Observability">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">15</span> · Testing &amp; Deployment</p>
+      <h2 class="title">Provable end-to-end, observable in flight</h2>
+      <ul class="bullets">
+        <li><b>One-command demo stack</b> — Docker Compose boots every service, database, the message bus and all three clients together.</li>
+        <li><b>Seeded demonstration</b> data drives the whole system through a realistic scenario end-to-end.</li>
+        <li><b>Metrics pipeline:</b> services expose Prometheus metrics; <b>Grafana</b> dashboards visualise them, with <b>Loki + Promtail</b> centralising logs.</li>
+        <li>Testing focused on the critical real-time flows — the ticket handshake, the message envelope, and proximity grouping.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 17 · DEMO ===================== -->
+  <section class="slide center" data-title="Live Demo">
+    <div class="wrap">
+      <p class="eyebrow" style="justify-content:center"><span class="idx">16</span> · Demonstration</p>
+      <h2 class="title">Let's step inside the office</h2>
+      <p class="lead" style="margin-inline:auto">Two avatars meet, a proximity call opens, a message lands on the phone as a push notification — the system working as one.</p>
+      <span class="demo-note"><span class="pulse"></span> Switch to the live demo · <span style="color:var(--muted)">or use recorded screenshots as a fallback</span></span>
+    </div>
+  </section>
+
+  <!-- ===================== 18 · EVALUATION ===================== -->
+  <section class="slide" data-title="Evaluation">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">17</span> · Evaluation</p>
+      <h2 class="title">What was delivered — honestly</h2>
+      <div class="split">
+        <div>
+          <h4><span class="dot"></span>Delivered</h4>
+          <ul class="bullets">
+            <li>Real-time multiplayer office with prediction, interpolation &amp; proximity P2P media.</li>
+            <li>Complete messaging — threads, mentions, edits, read receipts, idempotent delivery — on web <i>and</i> mobile.</li>
+            <li>Rich workspace &amp; identity layer with an editable 2D map.</li>
+            <li>Unified notifications spanning e-mail &amp; in-app.</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="out"><span class="dot"></span>Known limitations</h4>
+          <ul class="bullets">
+            <li>Tasks &amp; calendar are unimplemented scaffolds; shared library is a placeholder.</li>
+            <li>Mobile covers chat only; office runs as an integrated demo, not yet fully live in steady state.</li>
+            <li>Some secrets are config defaults; a few web features are partially wired.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 19 · LESSONS ===================== -->
+  <section class="slide" data-title="Lessons Learned">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">18</span> · Lessons Learned</p>
+      <h2 class="title">What the engineering taught us</h2>
+      <div class="grid g2">
+        <div class="card"><div class="lab">Consistency</div><h3>Uniform patterns pay compound dividends</h3><p>One ticket handshake + one envelope meant each new client needed only one connection recipe and one dispatch loop.</p></div>
+        <div class="card"><div class="lab">Trade-offs</div><h3>Async decoupling buys resilience, costs immediacy</h3><p>Event-driven binding survives outages — but clients must be designed to tolerate eventual consistency.</p></div>
+        <div class="card"><div class="lab">Security</div><h3>Security is easiest in one place</h3><p>Validate identity once at the edge and have every service trust it — provided the edge strips spoofable headers.</p></div>
+        <div class="card"><div class="lab">Data</div><h3>Fit the store to the data</h3><p>Relational, document &amp; in-memory stores each simplified the service that used them.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 20 · FUTURE WORK ===================== -->
+  <section class="slide" data-title="Future Work">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">19</span> · Future Work</p>
+      <h2 class="title">Breadth &amp; hardening — not a change of direction</h2>
+      <ul class="bullets">
+        <li><b>Complete tasks &amp; calendar</b> — the largest functional gaps; notifications already consume their events.</li>
+        <li><b>Fully integrate the office live</b> — boot rooms from workspace config, stream positions to the proximity engine in steady state.</li>
+        <li><b>Broaden mobile</b> beyond chat — workspaces, rooms, a real JWT login.</li>
+        <li><b>Harden for production</b> — secret manager, platform-level RBAC, server-side authorisation.</li>
+        <li><b>Reliability &amp; observability</b> — dead-letter queues, presence reaper, distributed tracing &amp; alerting.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 21 · CONCLUSION ===================== -->
+  <section class="slide" data-title="Conclusion">
+    <div class="wrap">
+      <p class="eyebrow"><span class="idx">20</span> · Conclusion</p>
+      <h2 class="title">We rebuilt what an office gives for free</h2>
+      <p class="lead">Avatars share a live space, conversations begin by proximity, and persistent messaging, rooms, workspaces &amp; notifications surround that space — across a web, a mobile, and a game client over a coherent microservices backend.</p>
+      <ul class="bullets">
+        <li>The project proves four very different concerns — a real-time game, a Slack-style chat system, a microservices identity layer, and peer-to-peer media — can integrate into <b>one coherent product</b>.</li>
+        <li>It stands as a demonstration, and as a foundation ready to be carried further.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== 22 · THANK YOU ===================== -->
+  <section class="slide center" data-title="Thank You">
+    <div class="wrap">
+      <div class="brandmark" style="justify-content:center">
+        <span class="avatars"><i class="av1"></i><i class="av2"></i><i class="av3"></i><i class="av4"></i></span>
+        Virtual Office
+      </div>
+      <p class="qa">Thank you.</p>
+      <p class="lead" style="margin-inline:auto">Questions &amp; discussion welcome.</p>
+      <span class="demo-note" style="border-style:solid"><span class="pulse"></span> <span class="edit">[ your.email@example.com ]</span></span>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== CHROME ===================== -->
+<div class="footer">
+  <div class="fmark"><span class="dot"></span> Virtual Office</div>
+  <div class="nav">
+    <button id="ov" class="ov-btn" title="Slide index (O)" aria-label="Open slide index">▤</button>
+    <button id="theme" title="Toggle theme (T)" aria-label="Toggle theme">◐</button>
+    <button id="prev" title="Previous (←)" aria-label="Previous slide">‹</button>
+    <span class="count"><b id="cur">1</b> / <span id="tot">22</span></span>
+    <button id="next" title="Next (→)" aria-label="Next slide">›</button>
+  </div>
+</div>
+
+<div class="hint" id="hint"><b>←</b> <b>→</b> navigate · <b>O</b> index · <b>T</b> theme · <b>F</b> fullscreen · <b>P</b> print</div>
+
+<div id="ovpanel" role="dialog" aria-label="Slide index">
+  <div class="ovhead"><h3>Slide index</h3><button id="ovclose" style="width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer">✕</button></div>
+  <div id="ovgrid"></div>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var i = 0;
+  var progress = document.getElementById('progress');
+  var curEl = document.getElementById('cur');
+  var hint = document.getElementById('hint');
+  document.getElementById('tot').textContent = total;
+
+  function show(n, push){
+    i = Math.max(0, Math.min(total-1, n));
+    slides.forEach(function(s,k){ s.classList.toggle('is-active', k===i); });
+    progress.style.width = ((i+1)/total*100) + '%';
+    curEl.textContent = i+1;
+    if(push !== false){ try{ history.replaceState(null,'','#'+(i+1)); }catch(e){} }
+    // mark current in overview
+    var ovs = document.querySelectorAll('#ovgrid .ov');
+    ovs.forEach(function(o,k){ o.classList.toggle('current', k===i); });
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+
+  // ---- theme toggle ----
+  var root = document.documentElement;
+  document.getElementById('theme').addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  });
+
+  // ---- fullscreen ----
+  function fs(){ if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||function(){})(); } else { document.exitFullscreen&&document.exitFullscreen(); } }
+
+  // ---- overview ----
+  var ovpanel = document.getElementById('ovpanel');
+  var ovgrid = document.getElementById('ovgrid');
+  slides.forEach(function(s,k){
+    var b = document.createElement('button');
+    b.className = 'ov';
+    b.innerHTML = '<span class="on">'+String(k+1).padStart(2,'0')+'</span><span class="ot">'+(s.getAttribute('data-title')||('Slide '+(k+1)))+'</span>';
+    b.addEventListener('click', function(){ closeOv(); show(k); });
+    ovgrid.appendChild(b);
+  });
+  function openOv(){ ovpanel.classList.add('open'); document.querySelectorAll('#ovgrid .ov')[i].classList.add('current'); }
+  function closeOv(){ ovpanel.classList.remove('open'); }
+  function toggleOv(){ ovpanel.classList.contains('open') ? closeOv() : openOv(); }
+  document.getElementById('ov').addEventListener('click', toggleOv);
+  document.getElementById('ovclose').addEventListener('click', closeOv);
+  ovpanel.addEventListener('click', function(e){ if(e.target===ovpanel) closeOv(); });
+
+  // ---- agenda (built from slide titles) ----
+  var agendaMap = [
+    [2,'The Problem','Why remote work fragments'],
+    [3,'Our Solution','Virtual Office'],
+    [4,'Objectives & Scope','Goals and boundaries'],
+    [5,'System Overview','Clients + backend'],
+    [6,'Architecture','Gateway & security model'],
+    [7,'Cross-cutting Patterns','What holds it together'],
+    [8,'Backend Microservices','The Spring Boot services'],
+    [9,'Communication & Data','REST, events, persistence'],
+    [10,'The 2D Virtual Office','Phaser + Colyseus'],
+    [11,'Proximity Communication','Get close, start talking'],
+    [12,'Web Client','React collaboration surface'],
+    [13,'Mobile Client','Flutter messaging'],
+    [14,'Technology Stack','The full stack'],
+    [15,'Testing & Observability','Demo stack & dashboards'],
+    [17,'Evaluation','Delivered vs. limitations'],
+    [18,'Lessons & Future Work','What we learned, what is next']
+  ];
+  var agenda = document.getElementById('agenda');
+  if(agenda){
+    agendaMap.forEach(function(row){
+      var a = document.createElement('a');
+      a.setAttribute('tabindex','0');
+      a.innerHTML = '<span class="n">'+String(row[0]).padStart(2,'0')+'</span><span class="t">'+row[1]+'<small>'+row[2]+'</small></span>';
+      a.addEventListener('click', function(){ show(row[0]); });
+      a.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); show(row[0]); } });
+      agenda.appendChild(a);
+    });
+  }
+
+  // ---- keyboard ----
+  document.addEventListener('keydown', function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    switch(e.key){
+      case 'ArrowRight': case 'PageDown': case ' ': e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'PageUp': e.preventDefault(); prev(); break;
+      case 'Home': e.preventDefault(); show(0); break;
+      case 'End': e.preventDefault(); show(total-1); break;
+      case 'o': case 'O': toggleOv(); break;
+      case 't': case 'T': document.getElementById('theme').click(); break;
+      case 'f': case 'F': fs(); break;
+      case 'p': case 'P': window.print(); break;
+      case 'Escape': closeOv(); break;
+      default:
+        if(/^[0-9]$/.test(e.key)){ /* no-op single digit */ }
+    }
+  });
+
+  // ---- deep link on load ----
+  var start = parseInt((location.hash||'').replace('#',''),10);
+  show(isNaN(start) ? 0 : start-1, false);
+
+  // fade the hint after a bit
+  setTimeout(function(){ if(hint) hint.style.opacity = '0'; }, 6000);
+})();
+</script>
+</body>
+</html>

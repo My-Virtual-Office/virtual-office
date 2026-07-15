@@ -1,0 +1,232 @@
+\chapter{Background and Related Work}
+\label{ch:background}
+
+This chapter situates \voname{} in its technical and product context. It first
+explains the concept of the \emph{virtual office} and why a spatial metaphor is
+well suited to remote collaboration. It then reviews the enabling technologies
+that make such a system possible --- real-time transport, peer-to-peer media,
+game engines, and microservices --- so that the design decisions in later
+chapters can be read against a shared vocabulary. Finally, it compares \voname{}
+with existing tools and identifies the gap it aims to fill.
+
+\section{The Virtual Office Concept}
+
+A \emph{virtual office} (sometimes called a spatial collaboration platform or a
+``metaverse office'') is a persistent, shared, two- or three-dimensional
+environment in which remote team members are represented by avatars. Rather than
+joining a meeting, a user \emph{enters a space}. Presence and communication are
+governed by \emph{spatial proximity}: two users who move their avatars close to
+one another can talk, exactly as they would in a physical room, and their
+conversation is private to the people nearby.
+
+This model differs fundamentally from conventional remote-collaboration tools in
+three ways:
+
+\begin{description}
+  \item[Continuous presence, not discrete sessions.] In a video-conferencing
+  tool, you are either in a call or not. In a virtual office, you are simply
+  \emph{present in the space} for as long as you keep it open, and others can see
+  where you are and what you are doing. Communication is a continuous ambient
+  possibility rather than a scheduled event.
+
+  \item[Proximity as the routing rule.] Who hears whom is determined by
+  position. Walking toward a colleague opens a channel; walking away closes it.
+  This reproduces the natural way conversations form and dissolve in a physical
+  workplace, and it makes group boundaries (a meeting room, a huddle, a quiet
+  corner) visible and intuitive.
+
+  \item[Spatial memory and identity.] People associate activities with places ---
+  ``the meeting room,'' ``my desk,'' ``the whiteboard by the window.'' A
+  persistent map gives a distributed team the same spatial anchors, which aids
+  orientation, belonging, and informal coordination.
+\end{description}
+
+The trade-off is engineering complexity. A virtual office is, at its heart, a
+small \emph{multiplayer game}: it must synchronise the positions of many moving
+avatars in real time, manage shared interactive objects, and start and stop live
+media according to where those avatars are --- all while remaining responsive.
+The remainder of this book is, in large part, an account of how \voname{} meets
+that complexity.
+
+\section{Enabling Technologies}
+
+\subsection{Real-time Transport: WebSockets and STOMP}
+
+Ordinary web traffic follows a request--response pattern over HTTP: the client
+asks, the server answers, and the connection is (logically) done. This is a poor
+fit for collaboration, where the server must \emph{push} events --- a new
+message, a colleague moving, a notification --- to the client without being
+asked. \textbf{WebSockets} solve this by upgrading an HTTP connection into a
+persistent, bidirectional channel over which either side can send frames at any
+time.
+
+On top of raw WebSockets, \voname{} uses \textbf{STOMP} (Simple Text Oriented
+Messaging Protocol), a lightweight publish/subscribe protocol. STOMP gives the
+raw socket a structure of \emph{destinations}: clients \code{SUBSCRIBE} to
+topics such as \route{/topic/channel/42} and \code{SEND} messages to application
+destinations such as \route{/app/chat/send}, while the server broadcasts to
+subscribers or to a specific user's private queue. This maps cleanly onto the
+domain --- a channel is a topic, a user's error stream is a personal queue ---
+and it is supported natively by Spring on the server and by client libraries in
+JavaScript (\code{@stomp/stompjs}) and Dart (\code{stomp\_dart\_client}), both of
+which \voname{} uses.
+
+\begin{infobox}[title=The WebSocket Authentication Problem]
+A browser cannot attach custom headers (such as an \code{Authorization} bearer
+token) to a WebSocket handshake. \voname{} solves this uniformly across its
+real-time services with a \emph{ticket} pattern: the client makes an
+authenticated REST call to obtain a short-lived, single-use ticket, then opens
+the socket with the ticket as a query parameter. This recurring pattern is
+described in detail in Chapter~\ref{ch:architecture}.
+\end{infobox}
+
+\subsection{Peer-to-peer Media: WebRTC, PeerJS, and Agora}
+
+Carrying live audio and video is expensive and latency-sensitive. Routing every
+stream through the application's own servers would be costly and would not scale.
+The industry standard for browser media is \textbf{WebRTC}, which establishes
+direct, encrypted, peer-to-peer connections between clients for audio, video,
+and arbitrary data, using the application server only for the initial
+\emph{signalling} (helping peers discover and describe each other).
+
+\voname{} uses two complementary media stacks:
+
+\begin{itemize}
+  \item In the 2D office, proximity calls are built on \textbf{PeerJS}, a thin
+  wrapper over WebRTC that assigns each peer an id and simplifies the
+  call/answer handshake. The office reuses the multiplayer session id as the
+  PeerJS id, so one identity threads both systems.
+
+  \item In the web client's meeting rooms, media is handled by \textbf{Agora}, a
+  commercial real-time-communication platform whose Selective Forwarding Unit
+  (SFU) relays streams efficiently. Here the application server acts as a
+  \emph{token server}, minting short-lived, privilege-scoped access tokens so
+  that only authorised users can join a room's media channel --- while the media
+  itself never touches the application's servers.
+\end{itemize}
+
+The distinction matters: peer-to-peer (PeerJS/WebRTC) is simple and free but
+scales poorly beyond small groups, whereas an SFU (Agora) scales to larger rooms
+at the cost of a third-party dependency. \voname{} deliberately uses each where
+it fits.
+
+\subsection{Game Engines and Authoritative Servers}
+
+The animated office is a real game, and it is built with a real game engine.
+\textbf{Phaser} is a mature 2D HTML5 game framework providing sprite rendering,
+tile-map support, arcade physics (for collisions and overlap detection),
+animations, and camera control --- everything needed to render a walkable,
+collision-aware office in the browser.
+
+Multiplayer state is managed by \textbf{Colyseus}, an authoritative multiplayer
+server framework. ``Authoritative'' means the server holds the single source of
+truth for the shared world state; clients send their intentions and receive the
+resulting state. Colyseus's schema system serialises only the \emph{changed
+fields} of the state as compact binary diffs, so moving one avatar does not
+require re-sending the entire world. This is the key to keeping many simultaneous
+players responsive, and Chapter~\ref{ch:skyoffice} examines the resulting
+synchronisation model, including client-side prediction and remote interpolation,
+in detail.
+
+\subsection{Microservices Architecture}
+
+Rather than a single large application (a \emph{monolith}), \voname{}'s backend
+is decomposed into independent \textbf{microservices}, each owning one business
+capability (identity, chat, rooms, workspaces, and so on) and its own database.
+Services communicate through well-defined interfaces --- synchronous REST for
+queries that need an immediate answer, and asynchronous events over a message
+broker for changes that other services should react to but need not wait for.
+
+This style brings several benefits that recur through the book: each service can
+use the persistence technology that best fits its data (a theme called
+\emph{polyglot persistence}); services can be developed, deployed, and scaled
+independently; and a failure in one service can be contained rather than taking
+down the whole system. It also introduces challenges --- distributed data
+consistency, cross-service authentication, and operational complexity --- whose
+solutions form much of Chapter~\ref{ch:architecture}. The supporting cast of
+technologies includes \textbf{Spring~Boot} and \textbf{Spring Cloud Gateway}
+(the service and gateway framework), \textbf{RabbitMQ} (the message broker for
+events), and a mix of \textbf{PostgreSQL}, \textbf{MongoDB}, and \textbf{Redis}
+for storage.
+
+\section{Related Work and Existing Tools}
+
+\voname{} sits at the intersection of two product categories --- spatial/virtual
+offices and unified team-collaboration suites --- and borrows from both. The
+most relevant points of comparison are summarised below.
+
+\begin{description}
+  \item[Gather (gather.town).] The best-known commercial virtual office: a 2D,
+  game-like map with avatars and proximity video, aimed at remote teams and
+  events. Gather validated the spatial model at scale. \voname{} adopts the same
+  core interaction (avatars, proximity media, interactive objects) but pairs it
+  with a full, self-hosted collaboration backend rather than being purely a
+  meeting space.
+
+  \item[SkyOffice.] An open-source Phaser + Colyseus virtual-office project.
+  \voname{}'s 2D world is an adapted fork of SkyOffice, which provides a strong,
+  well-architected base for avatar movement, interactive computers and
+  whiteboards, and proximity communication. The contribution of \voname{} is not
+  the 2D engine in isolation but its integration into a broader, multi-client,
+  microservices platform with real identity, workspaces, and persistent chat.
+
+  \item[Slack and Microsoft Teams.] The dominant unified-collaboration suites.
+  They excel at persistent, searchable messaging (channels, DMs, threads) and
+  integrate calls, files, and apps --- but they are fundamentally
+  \emph{list-based}, not spatial: presence is a coloured dot and communication is
+  a discrete call or message. \voname{}'s chat subsystem is deliberately modelled
+  on the Slack workspace/channel/thread structure (as later chapters show), but
+  it is embedded in a spatial world that these tools lack.
+
+  \item[Discord.] Combines persistent text channels with always-available voice
+  ``rooms'' that users drop into and out of. \voname{}'s room service is
+  explicitly Discord-like: a room bundles a persistent text channel with a
+  joinable voice/video space. The difference again is the spatial layer and the
+  workspace-centric organisation.
+
+  \item[Zoom / Google Meet.] Best-in-class scheduled video conferencing, but
+  session-based and non-persistent: there is no shared space, no ambient
+  presence, and no spontaneous encounter. \voname{} treats real-time media as one
+  capability among many rather than the whole product.
+\end{description}
+
+Table~\ref{tab:comparison} positions \voname{} against these tools along the
+dimensions that matter for the problem stated in Chapter~\ref{ch:introduction}.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of \voname{} with representative existing tools.}
+\label{tab:comparison}
+\small
+\begin{tabularx}{\textwidth}{L{3.0cm} C{1.7cm} C{1.7cm} C{1.9cm} C{1.7cm} L{2.4cm}}
+\toprule
+\textbf{Capability} & \textbf{Gather} & \textbf{Slack / Teams} & \textbf{Discord} & \textbf{Zoom} & \textbf{\voname{}} \\
+\midrule
+Spatial 2D world       & \checkmark & --- & --- & --- & \checkmark \\
+Proximity media        & \checkmark & --- & partial & --- & \checkmark \\
+Persistent channels    & partial & \checkmark & \checkmark & --- & \checkmark \\
+Threads \& mentions    & --- & \checkmark & partial & --- & \checkmark \\
+Meeting rooms          & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+Tasks \& calendar      & --- & \checkmark & --- & --- & planned \\
+Self-hosted backend    & --- & --- & --- & --- & \checkmark \\
+Native mobile client   & \checkmark & \checkmark & \checkmark & \checkmark & partial \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{The Gap and This Project's Position}
+
+Existing tools each solve part of the problem. Spatial offices deliver presence
+and spontaneity but are typically thin on persistent, structured collaboration
+and are closed, hosted products. Unified suites deliver excellent messaging and
+integration but are list-based and lack a sense of place. Video tools deliver
+media quality but nothing else.
+
+\voname{} occupies the intersection: a spatial, game-like office \emph{and} a
+full, self-hosted collaboration backend --- messaging, rooms, workspaces, and the
+scaffolding for tasks and calendars --- surfaced through multiple clients. The
+engineering value of the project lies in showing how these very different
+concerns (a real-time multiplayer game, a Slack-style chat system, a
+microservices identity and workspace layer, and peer-to-peer media) can be
+integrated into one coherent platform. The chapters that follow describe that
+integration from requirements through architecture to implementation.

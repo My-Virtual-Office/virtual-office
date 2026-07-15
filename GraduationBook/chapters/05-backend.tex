@@ -1,0 +1,492 @@
+\chapter{Backend Implementation}
+\label{ch:backend}
+
+This chapter documents each backend service in depth. For every implemented
+service it describes the responsibility, technology stack, data model, REST and
+WebSocket API, event interactions, and the notable business logic that gives the
+service its character. The two unimplemented scaffolds and the placeholder shared
+library are described honestly for completeness. Throughout, the cross-cutting
+patterns of Chapter~\ref{ch:architecture} --- gateway-injected identity,
+ticket-based sockets, the \code{\{action, payload\}} envelope, and idempotent
+event handling --- appear in their concrete form.
+
+\section{Gateway API}
+\label{sec:be-gateway}
+
+The gateway (\code{gateway-api}, port 8080) is a reactive Spring Cloud Gateway
+application with no datastore. Its routing table maps public path prefixes to
+downstream services (Table~\ref{tab:gw-routes}), each target overridable by an
+environment variable for containerised deployment.
+
+\begin{table}[htbp]
+\centering
+\caption{Gateway routing rules.}
+\label{tab:gw-routes}
+\small
+\begin{tabularx}{\textwidth}{L{3.4cm} X L{3.2cm}}
+\toprule
+\textbf{Route} & \textbf{Path predicate} & \textbf{Target (default)} \\
+\midrule
+user-service & \route{/api/auth/**}, \route{/api/otp/**}, \route{/api/users/**} & \code{localhost:8091} \\
+workspace-service & \route{/api/workspace/**} & \code{localhost:8087} \\
+chat-service & \route{/api/chat/**} & \code{localhost:8084} \\
+room-service & \route{/api/rooms/**} & \code{localhost:8086} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The security core is a single global filter, \code{AuthGatewayFilter}, ordered
+ahead of routing. Its logic captures the trust model of the whole platform:
+
+\begin{lstlisting}[language=Java,caption={Representative gateway security filter (the platform's trust boundary).}]
+// order -1: runs before routing
+public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    ServerHttpRequest req = exchange.getRequest();
+    String path = req.getURI().getPath();
+
+    // 1. anti-spoofing: never let a client set identity headers
+    ServerHttpRequest cleaned = req.mutate()
+        .headers(h -> { h.remove("X-User-Id"); h.remove("X-User-Role"); })
+        .build();
+
+    // 2. internal endpoints are unreachable from the edge
+    if (path.startsWith("/api/internal/"))
+        return forbidden(exchange);            // 403
+
+    // 3. public passthrough
+    if (path.endsWith("/health") || isPublicPrefix(path))
+        return chain.filter(exchange.mutate().request(cleaned).build());
+
+    // 4. authenticate: require + verify Bearer JWT, inject trusted identity
+    return jwtService.verifyAndExtractUserId(bearer(req))
+        .map(userId -> cleaned.mutate()
+            .header("X-User-Id", userId.toString())
+            .header("X-User-Role", "USER")
+            .build())
+        .map(r -> chain.filter(exchange.mutate().request(r).build()))
+        .orElse(unauthorized(exchange));       // 401
+}
+\end{lstlisting}
+
+The JWT itself is verified with HS256 using a shared secret (\code{jwt.secret})
+identical to the one the user service signs with; the filter reads only the
+\code{userId} claim. A \code{CorsWebFilter} runs even earlier so that preflight
+\code{OPTIONS} requests never reach the auth filter. Because the gateway hard-codes
+the injected role to \code{USER}, platform-level RBAC is not yet modelled; all
+role decisions happen per-workspace in the workspace service
+(Section~\ref{sec:be-workspace}).
+
+\section{User Service}
+\label{sec:be-user}
+
+\paragraph{Responsibility.} The user service (port 8091) is the identity
+authority: registration, login and JWT issuance, profile and profile-picture
+management, password change, and OTP-based verification. It is the origin of
+every JWT in the system and the producer of user-lifecycle notification events.
+
+\paragraph{Stack.} Spring Boot with Web, Data JPA, Security, and AMQP; a MySQL
+datastore; \code{jjwt} for tokens; and BCrypt for password and OTP hashing. It
+has no WebSocket surface and sends no e-mail itself --- that is delegated to the
+notification service via events.
+
+\paragraph{Data model.} Two JPA entities (Table~\ref{tab:user-entities}). A
+\code{User} owns many \code{VerificationRequest}s; the profile picture is stored
+inline as a \code{LONGBLOB} with its MIME type.
+
+\begin{table}[htbp]
+\centering
+\caption{User service entities.}
+\label{tab:user-entities}
+\scriptsize
+\begin{tabularx}{\textwidth}{L{2.4cm} X}
+\toprule
+\textbf{Entity (table)} & \textbf{Fields} \\
+\midrule
+\code{User} (\code{users}) & \code{id}, \code{firstName}, \code{lastName}, \code{email} (unique), \code{phoneNumber}, \code{password} (BCrypt), \code{accountStatus} (\code{ACTIVE}/\code{INACTIVE}/\code{PENDING\_REPORT\_REVIEW}/\code{SUSPENDED}), \code{isEmailVerified}, \code{isPhoneVerified}, \code{isDisabled}, \code{profilePicture} (\code{byte[]}), \code{profilePictureType} \\
+\code{Verification\-Request} (\code{verification\_requests}) & \code{id}, \code{otp} (BCrypt hash), \code{status} (\code{PENDING}/\code{APPROVED}), \code{createdAt}, \code{expiresAt} (+10\,min), \code{type} (\code{PASSWORD\_RESET}/\code{EMAIL\_VERIFICATION}/\code{CHANGE\_EMAIL}), \code{user} (\code{@ManyToOne}) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{API.} The REST surface (Table~\ref{tab:user-api}) splits into public
+authentication endpoints and protected profile endpoints; the latter are guarded
+by the service's own \code{JwtAuthFilter} for defence in depth, in addition to
+the gateway.
+
+\begin{table}[htbp]
+\centering
+\caption{User service REST API.}
+\label{tab:user-api}
+\scriptsize
+\begin{tabularx}{\textwidth}{L{1.2cm} L{3.6cm} X}
+\toprule
+\textbf{Method} & \textbf{Path} & \textbf{Purpose} \\
+\midrule
+POST & \route{/api/auth/register} & Register, hash password, issue JWT, emit \code{SIGNUP\_SUCCESS}; \code{409} if e-mail exists \\
+POST & \route{/api/auth/login} & Authenticate and issue JWT; \code{401} on failure \\
+POST & \route{/api/auth/otp/request} & Generate and e-mail an OTP; emit \code{OTP} \\
+POST & \route{/api/auth/otp/verify} & Verify an OTP, mark \code{APPROVED} \\
+PUT & \route{/api/users/me/password} & Change password (checks old); emit \code{PASSWORD\_RESET\_SUCCESS} \\
+GET & \route{/api/users/me} & Current profile \\
+POST/GET & \route{/api/users/me/photo} & Upload / return profile picture ($\le$10\,MB) \\
+GET & \route{/api/users} & List users (id, name, e-mail) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Authentication internals.} On login, after a BCrypt password check,
+\code{JwtUtil} mints an HS256 token whose subject is the e-mail, with a custom
+\code{userId} claim and a 24-hour expiry. This is the token the gateway later
+verifies. Security is stateless (no server session); a
+\code{CustomUserDetailsService} loads users by e-mail and rejects disabled
+accounts, mapping a \code{SUSPENDED} status onto a locked account. A
+\code{GlobalExceptionHandler} maps authentication failures to \code{401},
+integrity violations (duplicate e-mail) to \code{409}, and validation errors to
+\code{400}.
+
+\paragraph{Events produced.} On the three lifecycle actions, the service
+publishes a \code{NotificationEvent} to the \code{notifications.exchange}:
+
+\begin{lstlisting}[language=json,caption={A \code{NotificationEvent} (OTP request).}]
+{ "eventId": "9f1c...-uuid", "type": "OTP", "occurredAt": "2026-07-10T12:00:00Z",
+  "payload": { "email": "user@x.com", "firstName": "Sara",
+               "otp": "418306", "expiresInMinutes": 10 } }
+\end{lstlisting}
+
+\paragraph{Housekeeping.} A scheduled task runs hourly to bulk-delete expired
+verification requests, keeping the table small. Configuration points MySQL at
+\code{virtual\_office}, uses JPA \code{ddl-auto=update} (a convenience with a
+known schema-drift risk in production), and connects to RabbitMQ on the default
+port.
+
+\section{Workspace Service}
+\label{sec:be-workspace}
+
+\paragraph{Responsibility.} The workspace service (port 8087) is the spatial and
+organisational backbone of the platform. It owns \emph{workspaces} (companies),
+\emph{desks} (a user's seat, profile, position, and workspace role),
+\emph{teams}, \emph{invitations}, and the editable \emph{2D map layout}
+(tilesets, layers, zones, spawn points, map objects). It is also the authority on
+\emph{workspace roles}, and it exposes an internal API that boots and
+synchronises the Colyseus game sessions.
+
+\paragraph{Stack.} The most conventionally ``enterprise'' service: Spring Web,
+Data JPA, Validation, AOP, and AMQP over \textbf{PostgreSQL}, with
+\textbf{Flyway} owning the schema (\code{ddl-auto=validate}), \textbf{MapStruct}
+for DTO mapping, and \textbf{springdoc-openapi} publishing a Swagger UI. Its
+build enforces 90\% test coverage via JaCoCo.
+
+\paragraph{Data model.} The richest schema in the system
+(Table~\ref{tab:ws-entities}); Figure~\ref{fig:ws-er} sketches the central
+relationships. The \code{Workspace} carries an optimistic-locking
+\code{layoutVersion}; the \code{Desk} is the join between a user and a workspace
+and holds the workspace-scoped \code{role}.
+
+\begin{table}[htbp]
+\centering
+\caption{Principal workspace-service entities (PostgreSQL).}
+\label{tab:ws-entities}
+\scriptsize
+\begin{tabularx}{\textwidth}{L{2.2cm} X}
+\toprule
+\textbf{Entity} & \textbf{Key fields} \\
+\midrule
+\code{Workspace} & \code{id}, \code{name}, \code{slug} (unique), \code{ownerId}, \code{status}, \code{visibility} (\code{INVITE\_ONLY}), \code{inviteToken}, \code{tileSize}, \code{mapWidth/Height}, \code{mapGeometry} (jsonb), \code{layoutVersion} (\code{@Version}) \\
+\code{Desk} & \code{userId}, \code{workspaceId}, \code{fullName}, \code{avatarCharacter}, \code{status}, \code{statusEmoji}, \code{positionX/Y}, \code{isOnline}, \code{lastSeenAt}, \code{role} (\code{GUEST}$<$\code{MEMBER}$<$\code{ADMIN}$<$\code{OWNER}), \code{teamId}, \code{inviteStatus}, \code{isActive} --- unique on \code{(userId, workspaceId)} \\
+\code{Team} & \code{id}, \code{workspaceId}, \code{name} --- unique on \code{(workspaceId, name)} \\
+\code{WorkspaceInvitation} & \code{token} (UUID), \code{email}, \code{status}, 7-day expiry --- one \code{PENDING} per \code{(workspaceId, email)} \\
+\code{Zone} & \code{type}, \code{x}, \code{y}, \code{width}, \code{height}, \code{voiceRoomId} (unique), \code{proximityRadius} --- read by the room service \\
+\code{MapObject} & \code{type} (\code{COMPUTER}/\code{WHITEBOARD}), \code{positionX/Y}, \code{roomId} (stable UUID), \code{capacity}, \code{isActive} \\
+\code{MapLayer}, \code{Tileset}, \code{SpawnPoint} & The Tiled map: gid layer matrices (jsonb), tilesets (unique \code{firstGid}), spawn points \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\scriptsize,
+  e/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=2pt,minimum height=0.7cm,
+            text width=1.9cm,align=center},
+  rel/.style={voGray,-{Stealth[]}}]
+\node[e] (u) at (0,2) {User\\(external)};
+\node[e] (w) at (3,2.8) {Workspace};
+\node[e] (d) at (3,0.9) {Desk};
+\node[e] (t) at (6,2.8) {Team};
+\node[e] (i) at (6,0.9) {Invitation};
+\node[e] (z) at (9,2.8) {Zone};
+\node[e] (m) at (9,0.9) {MapObject};
+\draw[rel] (d) -- node[above,font=\tiny]{1} (u);
+\draw[rel] (d) -- node[right,font=\tiny]{$*$..1} (w);
+\draw[rel] (t) -- node[above,font=\tiny]{groups} (d);
+\draw[rel] (i) -- node[left,font=\tiny]{to} (w);
+\draw[rel] (z) -- (w); \draw[rel] (m) -- (w);
+\end{tikzpicture}
+\caption{Workspace-service core relationships. A Desk joins a User to a Workspace
+and carries the workspace role.}
+\label{fig:ws-er}
+\end{figure}
+
+\paragraph{API highlights.} Beyond CRUD on workspaces, teams, desks, and map
+objects, three areas stand out. \emph{Invitations}: an admin invites by e-mail
+(creating a \code{PENDING} invitation and desk and an e-mail event); the invitee
+accepts via a tokenised link, which creates or reactivates their desk and fires a
+``member added'' event to the chat service. \emph{Layout editing}: replacing the
+map is guarded by optimistic concurrency --- the client submits the version it
+edited, and a mismatch is rejected --- after which child rows (layers, tilesets,
+zones) are validated and replaced atomically. \emph{Internal session API}: under
+\route{/api/internal/**} (gateway-blocked, \code{X-Internal-Token}-guarded), the
+service serves the Colyseus game server a full \route{/session-config} boot
+payload, validates joins, resolves \route{/members/\{userId\}/role} (consumed by
+the chat and room services), and ingests avatar \route{/presence} updates.
+
+\paragraph{Events produced.} On workspace creation and membership change, a
+\code{WorkspaceChannelEvent} is published --- \emph{after the database
+transaction commits} --- to the \code{workspace.exchange}, so the chat service can
+maintain a single canonical ``general'' channel per workspace. Publishing
+after-commit ensures the chat service never reacts to a change that was later
+rolled back, and a broker outage is logged rather than allowed to fail the
+user's request.
+
+\section{Chat Service}
+\label{sec:be-chat}
+
+\paragraph{Responsibility.} The chat service (port 8084) is the real-time
+messaging core: channels (group, direct, and room-bound), messages (with edit,
+soft-delete, reply, mention, and idempotent send), threads, and read
+receipts/unread counts. It delivers over WebSocket and provisions channels in
+response to events from the room and workspace services.
+
+\paragraph{Stack.} Spring Web, WebSocket, Data Mongo, Data Redis, AMQP, and
+Validation over \textbf{MongoDB} (documents) and \textbf{Redis} (cursors,
+tickets, rate limits). It consumes events but produces none.
+
+\paragraph{Data model.} Three collections (Table~\ref{tab:chat-entities}). A
+subtle but important distinction is \code{threadId} (``this message lives inside a
+thread'') versus \code{replyToId} (``this message quote-replies another'') --- the
+two are independent. Message identity uses MongoDB \code{ObjectId}s, while
+channels and threads use integer ids from a sequence-counter collection.
+
+\begin{table}[htbp]
+\centering
+\caption{Chat service collections.}
+\label{tab:chat-entities}
+\scriptsize
+\begin{tabularx}{\textwidth}{L{1.9cm} X}
+\toprule
+\textbf{Collection} & \textbf{Fields} \\
+\midrule
+\code{channels} & \code{id}, \code{name}, \code{type} (\code{GROUP}/\code{DIRECT}/\code{ROOM}), \code{workspaceId}, \code{members} (\code{int[]}), \code{dmKey} (``\code{minId\_maxId}''), \code{canonical}, \code{createdBy}, timestamps \\
+\code{messages} & \code{id} (ObjectId), \code{channelId}, \code{senderId}, \code{senderRole} (captured at send), \code{content}, \code{type} (\code{TEXT}/\code{SYSTEM}), \code{threadId}, \code{replyToId}, \code{mentions}, \code{clientMessageId} (idempotency), \code{deleted}, timestamps \\
+\code{threads} & \code{id}, \code{channelId}, \code{rootMessageId} (unique), \code{name}, \code{createdBy}, \code{creatorRole}, \code{deleted}, timestamps \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Carefully chosen indexes make the store correct and fast: a unique
+\code{(senderId, clientMessageId)} index enforces idempotent sends; a unique,
+sparse \code{dmKey} index enforces exactly one direct-message channel per user
+pair; and a \emph{partial} unique \code{(workspaceId, name)} index that applies
+only to \code{GROUP} channels lets room channels reuse names freely.
+
+\paragraph{Authorisation.} Every channel- or thread-scoped operation checks
+membership (\code{403} otherwise). Editing is restricted to the author. Deletion
+follows a nuanced rule that survives later role changes because the author's role
+is \emph{captured on the message}: the owner may always delete; an \code{ADMIN}
+may delete others' messages \emph{except} those authored by another \code{ADMIN}.
+Before creating a channel or room-bound resource, the service confirms the
+caller's workspace role by calling the workspace service's internal role
+endpoint, failing closed if it is unreachable.
+
+\paragraph{Read receipts.} Rather than store a read row per message, the service
+keeps a single forward-only cursor per user per channel in Redis
+(\code{read:\{channelId\}:\{userId\}}), advanced with a Lua script and expiring
+after thirty days; the unread count is then simply the number of messages whose
+id exceeds the cursor.
+
+\paragraph{Real-time API.} The WebSocket endpoint is \route{/api/chat/connect},
+authenticated by the ticket pattern of Section~\ref{sec:realtime-arch}. A
+subscription interceptor authorises each \code{SUBSCRIBE} to
+\route{/topic/channel/\{id\}} or \route{/topic/thread/\{id\}} against membership,
+returning a typed error (\code{NOT\_A\_MEMBER}, \code{CHANNEL\_NOT\_FOUND},
+\code{INVALID\_PAYLOAD}) on the user's private \route{/user/queue/errors} stream.
+Clients \code{SEND} to \route{/app/chat/send} and \route{/app/chat/typing}; the
+server persists and broadcasts, using the uniform envelope with actions
+\code{NEW\_MESSAGE}, \code{EDIT\_MESSAGE}, \code{DELETE\_MESSAGE},
+\code{THREAD\_DELETED}, and \code{TYPING}. Figure~\ref{fig:chat-send} traces a
+send.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize,
+  b/.style={draw=voPrimary,fill=voPrimary!8,rounded corners=2pt,minimum height=0.7cm,
+            text width=1.9cm,align=center},
+  a/.style={-{Stealth[]},thick,voDark},r/.style={-{Stealth[]},densely dashed,voGray},
+  note/.style={font=\scriptsize\itshape,voGray}]
+\node[b] (s) at (0,0) {Sender};
+\node[b] (c) at (3.6,0) {Chat Svc};
+\node[b] (m) at (7,0) {MongoDB};
+\node[b] (o) at (10.6,0) {Other\\members};
+\draw[a] (s) -- node[above,note]{/app/chat/send} (c);
+\draw[a] (c) -- node[above,note]{persist} (m);
+\node[note] at (3.6,-0.7) {check membership,};
+\node[note] at (3.6,-1.0) {idempotent on clientMessageId};
+\draw[a] (c) to[out=-30,in=210] node[below,note]{NEW\_MESSAGE @ /topic/channel/id} (o);
+\draw[r] (c) to[out=150,in=30] node[above,note]{echo} (s);
+\end{tikzpicture}
+\caption{Message-send flow in the chat service.}
+\label{fig:chat-send}
+\end{figure}
+
+\paragraph{Events consumed.} Two listeners keep the channel space in sync with
+the rest of the platform. A \code{RoomChannelEvent} (from the room service)
+creates, deletes, or edits the membership of a \code{ROOM}-type channel; a
+\code{WorkspaceChannelEvent} (from the workspace service) maintains the single
+canonical group channel of each workspace. Both are idempotent on \code{eventId}
+and retried with backoff, so redelivery is safe and a transient failure
+self-heals.
+
+\section{Room Service}
+\label{sec:be-room}
+
+\paragraph{Responsibility.} The room service (port 8086) coordinates
+voice/video rooms and the proximity-voice layer of the 2D office. It owns room
+identity and membership (in MongoDB) and live presence (in Redis), mints Agora
+media tokens, pushes presence over WebSocket, computes proximity voice groups
+from avatar positions, and publishes room-channel events to the chat service. It
+is explicitly a \emph{coordinator}, not a media server --- audio and video never
+touch it.
+
+\paragraph{Data model.} A \code{Room} document binds three identities: its own
+\code{ObjectId}, the \code{channelId} of the chat channel it is bound to
+(generated by the room service and published to chat), and a deterministic
+\code{agoraChannelName} (\code{room-<hex>}). Live presence is entirely ephemeral
+in Redis: a participants hash per room (each participant's mute, camera, and
+screen-share state), a short-lived ``alive'' key per participant refreshed by
+heartbeats, and the WebSocket ticket. A capacity limit (default 25) is enforced
+\emph{atomically at join} by a Lua script that adds the participant only if the
+room is not full.
+
+\begin{lstlisting}[language=Java,caption={Representative atomic capacity check at join (Redis Lua).}]
+-- KEYS[1] = room:{id}:participants   ARGV[1] = userId   ARGV[2] = max
+if redis.call('HLEN', KEYS[1]) >= tonumber(ARGV[2]) then
+    return 0                                   -- ROOM_FULL
+end
+redis.call('HSET', KEYS[1], ARGV[1], ARGV[3])  -- ARGV[3] = state json
+return 1
+\end{lstlisting}
+
+\paragraph{API.} Rooms are created, listed, updated, and deleted under
+\route{/api/rooms}; members are added and removed; and the central action is
+\route{POST /api/rooms/\{id\}/join}, which re-checks workspace membership,
+registers presence, \textbf{mints an Agora token}, broadcasts
+\code{PARTICIPANT\_JOINED}, and returns the room, the Agora channel name, the
+token, and the current participant list. Over WebSocket (\route{/ws/rooms}),
+clients send \route{/app/room/state} (mute/camera/screen changes, rebroadcast as
+\code{STATE\_CHANGED}) and \route{/app/room/heartbeat} (to refresh their alive
+key), and subscribe to \route{/topic/room/\{roomId\}} for
+\code{PARTICIPANT\_JOINED}/\code{LEFT}, \code{ROOM\_UPDATED}, and
+\code{ROOM\_CLOSED}.
+
+\paragraph{Agora token minting.} The service builds an Agora AccessToken~v2
+by hand: it packs the app id, channel, uid, privileges (join, publish audio,
+publish video, data) and expiry, signs the message with HMAC-SHA256 using the app
+certificate, and zlib-compresses the result into the familiar ``\code{007}\ldots''
+token. The media then flows client-to-Agora directly; the backend never sees it.
+
+\paragraph{Proximity-voice engine.} The most novel piece of the service turns
+avatar positions into voice groups deterministically. On each position snapshot
+from the game server (pushed to the internal \route{/positions} endpoint), the
+engine assigns any avatar standing inside a zone that has a \code{voiceRoomId} to
+that zone's private channel, and clusters the remaining open-area avatars by a
+union-find over mutual hearing radius; a cluster of two or more becomes an ad-hoc
+channel named \code{prox-<workspaceId>-<smallestUserId>}, while a lone avatar
+gets no channel. Only avatars whose group changed are notified, via a
+\code{VOICE\_GROUP\_CHANGED} broadcast, and the endpoint returns the mapping of
+each user to their Agora channel. This is the \emph{signalling} layer that decides
+\emph{who should hear whom}; Agora carries the actual audio.
+
+\paragraph{Events produced.} On room create/delete and membership change, a
+\code{RoomChannelEvent} is published to the \code{room.exchange}; the chat service
+consumes it to materialise or update the bound \code{ROOM} channel. Room creation
+even \emph{rolls back} if the event cannot be published, so a room never exists
+without its channel eventually appearing.
+
+\section{Notification Service}
+\label{sec:be-notif}
+
+\paragraph{Responsibility.} The notification service (port 8082) has two jobs:
+sending transactional \textbf{e-mails} (sign-up, login, OTP, password reset) from
+versioned HTML templates, and delivering \textbf{in-app notifications} (currently
+\code{TASK\_ASSIGNED}) by persisting them and pushing them over WebSocket. It is a
+pure consumer of events and never publishes.
+
+\paragraph{Stack.} Spring Web, Data Mongo, Data Redis, AMQP, Mail, and WebSocket.
+An in-app \code{Notification} document records \code{userId}, \code{type},
+\code{title}, \code{body}, an arbitrary \code{data} map, \code{read} state, and a
+unique \code{eventId} for idempotency; e-mail events are not persisted.
+
+\paragraph{Delivery.} A single \code{@RabbitListener} on
+\code{notifications.queue} dispatches on the event type. E-mail events take an
+idempotency claim in Redis (\code{SETNX notif:processed:\{eventId\}}, 24-hour
+TTL), render the matching HTML template by \code{\{\{placeholder\}\}}
+substitution, and send via SMTP --- releasing the claim on failure so a retry can
+re-attempt. The \code{TASK\_ASSIGNED} event instead builds a notification, saves
+it to MongoDB (the unique \code{eventId} making the insert idempotent), and pushes
+a \code{\{action:"NEW\_NOTIFICATION", ...\}} envelope to the recipient's private
+queue via Spring's user-destination routing. Consumption retries five times with
+exponential backoff and then drops the message (there is no dead-letter queue in
+this version).
+
+\paragraph{Inbox API.} The web client reads history through
+\route{GET /api/notifications} (paged), an \route{/unread-count}, and mark-read
+and delete operations, plus the usual \route{/ws-ticket} for the socket. Because
+offline users cannot receive a push, the persisted history backfills them on their
+next inbox load --- push is best-effort, storage is the source of truth.
+
+\section{The Unimplemented Modules}
+\label{sec:be-stubs}
+
+For an accurate account, three modules must be described as the placeholders they
+are.
+
+\begin{description}
+  \item[Calendar service (port 8083).] A Maven scaffold containing only a POM,
+  a minimal \code{application.properties}, and a README describing intended
+  features (event scheduling, meeting invites, calendar sync). It has no Java
+  source and is not wired into the gateway.
+  \item[Tasks service (port 8085).] Likewise a scaffold. It is the intended
+  future \emph{producer} of the \code{TASK\_ASSIGNED} events that the notification
+  service already knows how to consume --- so the consumer side of task
+  notifications exists and waits for this producer.
+  \item[Shared library.] Declared as a module and intended to hold common DTOs,
+  utilities, and exception handling, but currently containing no Java classes.
+  Each service therefore defines its own exception handler, user-context helper,
+  and DTOs independently.
+\end{description}
+
+These gaps are the clearest signposts for future work (Chapter~\ref{ch:conclusion}).
+
+\section{Cross-service Consistency in Practice}
+
+It is worth closing the chapter by watching the patterns of
+Chapter~\ref{ch:architecture} act together in a single scenario:
+\emph{a user accepts a workspace invitation}.
+
+\begin{enumerate}
+  \item The invitee opens the tokenised accept link; the request reaches the
+  workspace service through the gateway with a validated \code{X-User-Id}.
+  \item The workspace service marks the invitation \code{ACCEPTED} and creates
+  (or reactivates) the invitee's \code{Desk} in one transaction.
+  \item \emph{After} that transaction commits, it publishes a
+  \code{WorkspaceChannelEvent} (member added) to RabbitMQ and returns success ---
+  the user's request does not wait for anything downstream.
+  \item The chat service, subscribed to that exchange, consumes the event
+  (idempotently on \code{eventId}) and adds the user to the workspace's canonical
+  channel, so their new channel appears a moment later.
+\end{enumerate}
+
+No service reached into another's database; identity was validated once; the
+cross-service change was asynchronous, durable, and idempotent; and the user
+experienced an immediate response with the rest catching up behind it. That
+combination --- edge-validated identity, per-service data ownership, and
+event-driven eventual consistency --- is the through-line of the entire backend.

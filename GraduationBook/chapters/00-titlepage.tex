@@ -1,0 +1,59 @@
+% ---------------- Title Page (matches the reference design) ----------------
+\definecolor{accent}{HTML}{0E7C66}
+\newcommand{\dotrule}[3]{% color, half-width, extra: line -- dot -- line
+  {\color{#1}\rule[0.42ex]{#2}{#3}}\;{\color{#1}\footnotesize$\bullet$}\;{\color{#1}\rule[0.42ex]{#2}{#3}}}
+\newcommand{\sectrule}{{\color{voLine}\rule{0.6\textwidth}{0.4pt}}}
+
+% symmetric margins so the cover is centred on the physical page
+% (the book body uses asymmetric inner/outer margins)
+\newgeometry{hmargin=2.3cm,vmargin=1.5cm}
+\begin{titlepage}
+\thispagestyle{empty}
+\sffamily\centering
+\vspace*{0.2cm}
+
+% ---- logos with a vertical divider ----
+\begin{tabular}{@{}c@{\hspace{0.55cm}}c@{\hspace{0.55cm}}c@{}}
+  \includegraphics[height=2.15cm]{figures/university-logo.jpeg} &
+  \textcolor{voLine}{\rule{0.5pt}{1.9cm}} &
+  \includegraphics[height=2.15cm]{figures/faculty-logo.jpg}
+\end{tabular}\\[0.7cm]
+
+% ---- university ----
+{\color{voDark}\fontsize{25}{29}\selectfont\bfseries Menoufia University}\\[0.35cm]
+\dotrule{accent}{0.8cm}{1pt}\\[0.35cm]
+{\color{voGray}\normalsize Faculty of Electronic Engineering in Menouf}\\[0.12cm]
+{\color{voGray}\normalsize Department of Computer Science \& Engineering}\\[0.7cm]
+
+\sectrule\\[0.7cm]
+
+% ---- title ----
+{\color{voPrimary}\fontsize{52}{56}\selectfont\bfseries Virtual Office}\\[0.28cm]
+{\color{voDark}\fontsize{15}{19}\selectfont A Spatial, All-in-One Team Collaboration Platform}\\[0.28cm]
+{\color{voGray}\small Graduation Project \ \textbullet\ \ Final Documentation}\\[0.7cm]
+
+\sectrule\\[0.65cm]
+
+% ---- supervisor ----
+{\color{voPrimary}\fontsize{15}{19}\selectfont\bfseries Supervised by}\\[0.28cm]
+{\color{voDark}\fontsize{15}{19}\selectfont Prof. Dr. Nermeen Abdelwahab El-Behnsawy}\\[0.6cm]
+
+\sectrule\\[0.55cm]
+
+% ---- team ----
+{\color{voPrimary}\fontsize{15}{19}\selectfont\bfseries Team}\\[0.45cm]
+{\renewcommand{\arraystretch}{1.35}%
+ \begin{tabular}{p{5.6cm}p{5.6cm}}
+   \centering\arraybackslash {\color{voDark}\bfseries Abdelrahman Sersawy}\newline {\color{voPrimary}\small 15210161} &
+   \centering\arraybackslash {\color{voDark}\bfseries Ahmed Mousa}\newline {\color{voPrimary}\small 1523051} \\
+   \centering\arraybackslash {\color{voDark}\bfseries Khaled Qenawy}\newline {\color{voPrimary}\small 15210114} &
+   \centering\arraybackslash {\color{voDark}\bfseries Khalid Labib}\newline {\color{voPrimary}\small 15210113} \\
+   \centering\arraybackslash {\color{voDark}\bfseries Rokaya Othman}\newline {\color{voPrimary}\small 15210124} &
+   \centering\arraybackslash {\color{voDark}\bfseries Nadine Mohsen}\newline {\color{voPrimary}\small 15210356} \\
+ \end{tabular}}
+
+\vspace{1.1cm}
+\dotrule{voPrimary}{1.3cm}{1pt}\\[0.5cm]
+{\color{voGray}\small Academic Year 2025 / 2026 \ \textbullet\ \ Menouf, Egypt}
+\end{titlepage}
+\restoregeometry

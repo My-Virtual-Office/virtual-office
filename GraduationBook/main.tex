@@ -1,0 +1,44 @@
+% ============================================================
+%  VIRTUAL OFFICE
+%  An All-in-One, Microservices-based Team Collaboration Platform
+%  Graduation Book
+%
+%  Compile:  pdflatex main  ->  pdflatex main  (twice for TOC/refs)
+% ============================================================
+\documentclass[11pt,oneside,openany]{book}
+
+\input{preamble}
+
+\begin{document}
+
+% ---------- Front matter ----------
+\frontmatter
+\pagenumbering{roman}
+\input{chapters/00-titlepage}
+
+\clearpage
+\input{chapters/00-abstract}
+
+\clearpage
+\pdfbookmark[0]{Contents}{toc}
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+
+% ---------- Main matter ----------
+\mainmatter
+
+\input{chapters/01-introduction}
+\input{chapters/02-background}
+\input{chapters/03-requirements}
+\input{chapters/04-architecture}
+\input{chapters/05-backend}
+\input{chapters/06-skyoffice}
+\input{chapters/07-web}
+\input{chapters/08-mobile}
+\input{chapters/09-testing}
+\input{chapters/10-conclusion}
+
+\end{document}

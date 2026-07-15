@@ -1,0 +1,229 @@
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Overview}
+
+Work no longer happens in one place. Over the last decade, and dramatically so
+after 2020, teams have moved from a shared physical office to a distributed
+arrangement in which colleagues may be in different homes, cities, or time
+zones. The tools that grew up to support this transition are powerful but
+\emph{disjoint}: a team may hold meetings in one application, chat in a second,
+track tasks in a third, keep its calendar in a fourth, and store files in a
+fifth. Each tool is a silo with its own identity, its own notifications, and its
+own mental model. The result is a workday spent switching between browser tabs
+and losing the two things a real office provides for free: an ambient sense of
+\emph{who is present and available}, and the \emph{spontaneous} conversations
+that begin simply because two people happen to be near each other.
+
+\voname{} is a graduation project that responds to this problem with a single
+idea: give a distributed team a \emph{place} rather than a collection of tools.
+That place is a two-dimensional, game-like office --- a digital headquarters ---
+in which every member is represented by an animated avatar. Users walk around a
+tile-mapped floor, see their colleagues moving in real time, sit down at desks,
+gather around whiteboards, and slip into meeting corners. When two avatars move
+close together, a proximity-based voice and video call opens automatically, just
+as a hallway conversation would; when they move apart, it ends. Around this
+spatial core, \voname{} folds in the rest of the collaboration stack ---
+persistent chat channels and direct messages, threaded discussions, task
+assignment, calendar scheduling, room-based meetings, and a unified notification
+system --- so that the entire working day can happen inside one product.
+
+Delivering this experience is a substantial distributed-systems undertaking. The
+platform comprises an animated multiplayer world, a full-featured web client, a
+native-quality mobile client, and a backend of nine cooperating microservices,
+all bound together by real-time messaging over WebSockets, event-driven
+communication over a message bus, and a shared identity model enforced at the
+gateway. This book is a complete engineering account of that system.
+
+\section{Motivation}
+
+The motivation for \voname{} rests on three observations about modern
+distributed work.
+
+\begin{description}
+  \item[Tool fragmentation is expensive.] The average knowledge worker
+  now moves between many single-purpose applications during a day. Each context
+  switch carries a cognitive cost, and each additional tool multiplies the
+  surfaces on which information can be lost. Consolidating presence,
+  communication, tasks, and scheduling into one platform removes friction and
+  gives a team a single source of truth for ``what is happening right now.''
+
+  \item[Video calls kill spontaneity.] Scheduled video meetings are excellent
+  for planned discussion but hostile to the unplanned. In a physical office,
+  most valuable communication is incidental --- a question asked in passing, an
+  overheard problem, a quick huddle at a desk. Grid-of-faces video conferencing
+  has no equivalent: you cannot ``walk past'' someone in a Zoom call. A spatial
+  interface, where being near a colleague is enough to start talking, restores
+  this incidental channel.
+
+  \item[Presence is a first-class need.] Knowing who is online, who is busy, and
+  who is deep in focus is information a physical office broadcasts continuously
+  and effortlessly. Most remote tools reduce this to a coloured dot. A spatial
+  office makes presence \emph{legible}: you can literally see where people are,
+  whether they are at their desk, in a meeting room, or gathered with others.
+\end{description}
+
+Commercial products such as Gather and other ``metaverse office'' tools have
+validated that a spatial approach resonates with users. \voname{} is motivated
+by the goal of building such a platform from first principles --- not as a thin
+demo, but as a properly architected, multi-client, microservices-based system ---
+and, in doing so, of learning and demonstrating the engineering that a real
+real-time collaboration product requires.
+
+\section{Problem Statement}
+
+The project sets out to answer a single engineering question:
+
+\begin{infobox}[title=Problem Statement]
+How can a distributed team be given a unified digital workplace that reproduces
+the \emph{presence} and \emph{spontaneity} of a physical office, while
+consolidating the fragmented tools of remote work --- messaging, meetings,
+tasks, scheduling, and workspace administration --- into one coherent,
+real-time, multi-client platform?
+\end{infobox}
+
+Answering it well requires solving several sub-problems that recur throughout
+this book:
+
+\begin{enumerate}
+  \item \textbf{Real-time spatial state.} Many users must see each other move
+  around a shared world with low latency and without the network cost of
+  broadcasting every pixel of movement to everyone.
+
+  \item \textbf{Proximity-driven communication.} Voice, video, and screen
+  sharing must start and stop based on where avatars are, and must scale without
+  routing media through the application's own servers.
+
+  \item \textbf{Reliable messaging.} Chat must deliver instantly, survive
+  disconnections, avoid duplicates, and preserve history --- across both a web
+  and a mobile client.
+
+  \item \textbf{A coherent identity and permission model} that is enforced once,
+  at the edge, and trusted by every internal service.
+
+  \item \textbf{Loose coupling between services} so that features such as
+  notifications and room--chat binding can evolve independently and survive
+  partial outages.
+\end{enumerate}
+
+\section{Objectives}
+
+The concrete objectives of the \voname{} project are:
+
+\begin{enumerate}
+  \item To design and implement an \textbf{immersive 2D virtual office} in which
+  multiple users, represented as avatars, move and interact in real time within
+  a shared, persistent space.
+
+  \item To provide \textbf{proximity-based real-time communication} --- voice,
+  video, and screen sharing --- that begins and ends according to spatial
+  closeness, using an external media infrastructure so the platform's own
+  servers never carry audio or video streams.
+
+  \item To build a \textbf{full-featured messaging system} supporting workspace
+  channels, direct messages, threaded conversations, mentions, replies, edits,
+  soft deletion, read receipts, and typing indicators, delivered over WebSockets
+  with a REST fallback.
+
+  \item To implement a \textbf{workspace and identity layer} that models
+  companies, teams, desks (user seats), roles, and invitations, and that issues
+  and validates authentication centrally.
+
+  \item To add the surrounding \textbf{collaboration services} --- task
+  assignment and tracking, calendar scheduling, meeting rooms, and a unified
+  notification centre (both e-mail and in-app).
+
+  \item To expose the platform through \textbf{three clients} --- a 2D
+  multiplayer world, a React web application, and a Flutter mobile application ---
+  that share the same backend.
+
+  \item To realise all of the above on a \textbf{microservices architecture}
+  that demonstrates sound distributed-systems practice: an API gateway, per-service
+  data ownership, event-driven decoupling, and consistent cross-cutting patterns
+  for security and real-time communication.
+\end{enumerate}
+
+\section{Scope of the Project}
+
+\voname{} is a large system, and it is important to state clearly what this book
+documents and where the boundaries lie.
+
+\paragraph{In scope.} The book covers the full breadth of the delivered system:
+the nine backend microservices and their data models, APIs, and message flows;
+the 2D multiplayer office (client and server); the React web client; and the
+Flutter mobile client. It covers the cross-cutting mechanisms that make the
+platform work as a whole --- gateway authentication, token-based WebSocket
+handshakes, the event bus, and the real-time messaging protocol.
+
+\paragraph{Boundaries and honest limitations.} \voname{} is a graduation
+project, and several parts of the system are at differing levels of maturity. As
+this book documents faithfully, some capabilities are implemented end-to-end
+(chat, workspaces, the 2D office, rooms), some are implemented on one client but
+not another (the mobile app implements only the chat domain), some backend
+services are more complete than others, and some features are deliberately left
+as ``version~2'' hardening (for example, server-side minting of media tokens, or
+role-based authorisation checks that are currently trusted to the client).
+Rather than gloss over these, the book records them as they are; they are
+valuable both as an accurate description of the system and as a guide to future
+work.
+
+\section{Main Contributions}
+
+The principal contributions of the project, and of this book, are:
+
+\begin{itemize}
+  \item A complete, working design for a \textbf{spatial collaboration platform}
+  that unifies a real-time 2D office with a full messaging, tasks, calendar, and
+  workspace stack.
+
+  \item A \textbf{nine-service microservices backend} built on Spring~Boot,
+  demonstrating an API gateway with centralised authentication, polyglot
+  persistence (PostgreSQL, MongoDB, Redis), and event-driven decoupling over
+  RabbitMQ.
+
+  \item A set of \textbf{reusable real-time patterns} --- ticket-based WebSocket
+  authentication, a uniform \code{\{action, payload\}} broadcast envelope, and
+  proximity-triggered peer-to-peer media --- applied consistently across
+  services and clients.
+
+  \item Three \textbf{distinct client implementations} (2D game, web, mobile)
+  over one backend, illustrating how a single platform can be surfaced through
+  very different technologies.
+
+  \item A thorough \textbf{engineering write-up} that can serve as a reference
+  for building real-time, multi-client collaboration systems.
+\end{itemize}
+
+\section{Organisation of the Book}
+
+The remainder of this book is organised as follows.
+
+\begin{description}
+  \item[Chapter~\ref{ch:background}] surveys the background and related work: the
+  concept of the virtual office, the enabling technologies (WebSockets, WebRTC,
+  microservices, game engines), and a comparison with existing tools.
+
+  \item[Chapter~\ref{ch:requirements}] presents the requirements analysis ---
+  actors, functional and non-functional requirements, user stories, and use-case
+  and domain models expressed in UML.
+
+  \item[Chapter~\ref{ch:architecture}] describes the overall system
+  architecture: the microservices, the gateway, the data and messaging
+  infrastructure, and the cross-cutting patterns that unify them.
+
+  \item[Chapter~\ref{ch:backend}] documents each backend microservice in
+  depth --- its responsibility, data model, REST and WebSocket API, and its
+  event interactions with the rest of the system.
+
+  \item[Chapter~\ref{ch:skyoffice}] details the 2D virtual office: its
+  client/server split, the multiplayer synchronisation model, interactive
+  objects, and the proximity-based communication stack.
+
+  \item[Chapter~\ref{ch:web}] and Chapter~\ref{ch:mobile} cover the web and
+  mobile clients respectively, including their architecture, real-time
+  integration, and feature sets.
+
+  \item[Chapter~\ref{ch:testing}] discusses the testing and evaluation
+  approach, and Chapter~\ref{ch:conclusion} concludes with an assessment of the
+  project and a roadmap for future work.
+\end{description}
