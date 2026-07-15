@@ -356,6 +356,73 @@ services:
       gateway-api: {condition: service_started}
 
   # ===========================================================================
+  # Demo data seeder (one-shot, opt-in)
+  #
+  # Not started by a plain `docker compose up` — it lives behind the "seed"
+  # profile. Registers the Northstar Software demo company (15 users, workspace,
+  # channels, projects, ~48 tasks, rooms, messages) through the gateway, then
+  # exits. Waits for every service it touches to be healthy first.
+  #
+  #   docker compose --profile seed up seed        # run the seeder
+  #
+  # See seed/credentials.md for the login emails + password.
+  # ===========================================================================
+  seed:
+    <<: *service-defaults
+    build:
+      context: ./seed
+      dockerfile: Dockerfile
+    profiles: ["seed"]
+    restart: "no"
+    volumes:
+      # Share the host timezone so "today's" seeded calendar events land on the
+      # same local day the browser filters by.
+      - /etc/localtime:/etc/localtime:ro
+      # Staging area for the generated chat-history script (read by seed-history).
+      - seed-out:/seedout
+    environment:
+      GATEWAY_URL: http://gateway-api:8080
+      SEED_PASSWORD: ${SEED_PASSWORD:-Northstar@2026}
+      FORCE: ${SEED_FORCE:-0}
+      SEED_OUT: /seedout
+      # desk.personalImageUrl has no write API — set directly in Postgres.
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+    depends_on:
+      gateway-api: {condition: service_healthy}
+      user-service: {condition: service_healthy}
+      workspace-service: {condition: service_healthy}
+      chat-service: {condition: service_healthy}
+      room-service: {condition: service_healthy}
+      tasks-service: {condition: service_healthy}
+      postgres: {condition: service_healthy}
+
+  # Loads the 3-month chat history (~1.8k messages / 88 threads) straight into
+  # MongoDB. The REST API cannot backdate a message (createdAt is server-set) and
+  # the channel view paginates by _id, so each message is inserted with an
+  # ObjectId built from its historical timestamp. Uses the mongo image because it
+  # ships mongosh. Runs only after `seed` has finished successfully.
+  seed-history:
+    <<: *service-defaults
+    image: mongo:7
+    profiles: ["seed"]
+    restart: "no"
+    volumes:
+      - seed-out:/seedout:ro
+    entrypoint: ["bash", "-c"]
+    command:
+      - >-
+        if [ -f /seedout/history-run.js ]; then
+          mongosh "mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/?authSource=admin" --quiet --file /seedout/history-run.js;
+        else
+          echo "no /seedout/history-run.js — nothing to load"; fi
+    depends_on:
+      mongo: {condition: service_healthy}
+      seed: {condition: service_completed_successfully}
+
+  # ===========================================================================
   # Observability (centralized logging: Loki + Promtail + Grafana)
   # ===========================================================================
 
@@ -406,6 +473,8 @@ volumes:
   rabbitmq-data:
   loki-data:
   grafana-data:
+  # Hand-off between `seed` (renders the history script) and `seed-history` (runs it).
+  seed-out:
 
 networks:
   vo:

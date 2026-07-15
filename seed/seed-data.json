@@ -1,0 +1,1191 @@
+{
+  "workspace": {
+    "name": "Northstar Software",
+    "slug": "northstar-software",
+    "description": "B2B SaaS company building PulseDesk — a virtual workspace for remote and hybrid teams.",
+    "timezone": "Africa/Cairo"
+  },
+  "users": [
+    {
+      "ref": "maya",
+      "firstName": "Maya",
+      "lastName": "Hassan",
+      "email": "maya.hassan@northstar.io",
+      "phone": "+201000000001",
+      "wsRole": "OWNER",
+      "title": "Chief Executive Officer",
+      "team": "leadership",
+      "status": "ACTIVE",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "omar",
+      "firstName": "Omar",
+      "lastName": "Nabil",
+      "email": "omar.nabil@northstar.io",
+      "phone": "+201000000002",
+      "wsRole": "ADMIN",
+      "title": "Chief Technology Officer",
+      "team": "leadership",
+      "status": "CUSTOM",
+      "statusEmoji": "📅",
+      "statusText": "In a meeting"
+    },
+    {
+      "ref": "lina",
+      "firstName": "Lina",
+      "lastName": "Farouk",
+      "email": "lina.farouk@northstar.io",
+      "phone": "+201000000003",
+      "wsRole": "ADMIN",
+      "title": "Product Manager",
+      "team": "product-design",
+      "status": "ACTIVE",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "karim",
+      "firstName": "Karim",
+      "lastName": "Adel",
+      "email": "karim.adel@northstar.io",
+      "phone": "+201000000004",
+      "wsRole": "MEMBER",
+      "title": "Senior Backend Engineer",
+      "team": "backend-platform",
+      "status": "FOCUS_MODE",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "salma",
+      "firstName": "Salma",
+      "lastName": "Youssef",
+      "email": "salma.youssef@northstar.io",
+      "phone": "+201000000005",
+      "wsRole": "MEMBER",
+      "title": "Backend Engineer",
+      "team": "backend-platform",
+      "status": "ACTIVE",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "ahmed",
+      "firstName": "Ahmed",
+      "lastName": "Samir",
+      "email": "ahmed.samir@northstar.io",
+      "phone": "+201000000006",
+      "wsRole": "MEMBER",
+      "title": "Senior Frontend Engineer",
+      "team": "frontend",
+      "status": "ACTIVE",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "nour",
+      "firstName": "Nour",
+      "lastName": "Ali",
+      "email": "nour.ali@northstar.io",
+      "phone": "+201000000007",
+      "wsRole": "MEMBER",
+      "title": "Frontend Engineer",
+      "team": "frontend",
+      "status": "AWAY",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "hana",
+      "firstName": "Hana",
+      "lastName": "Mostafa",
+      "email": "hana.mostafa@northstar.io",
+      "phone": "+201000000008",
+      "wsRole": "MEMBER",
+      "title": "Product Designer",
+      "team": "product-design",
+      "status": "FOCUS_MODE",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "youssef",
+      "firstName": "Youssef",
+      "lastName": "Tarek",
+      "email": "youssef.tarek@northstar.io",
+      "phone": "+201000000009",
+      "wsRole": "MEMBER",
+      "title": "DevOps & Platform Engineer",
+      "team": "backend-platform",
+      "status": "ACTIVE",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "mariam",
+      "firstName": "Mariam",
+      "lastName": "Khaled",
+      "email": "mariam.khaled@northstar.io",
+      "phone": "+201000000010",
+      "wsRole": "MEMBER",
+      "title": "Quality Assurance Engineer",
+      "team": "quality-data",
+      "status": "CUSTOM",
+      "statusEmoji": "🧪",
+      "statusText": "Testing"
+    },
+    {
+      "ref": "daniel",
+      "firstName": "Daniel",
+      "lastName": "Reed",
+      "email": "daniel.reed@northstar.io",
+      "phone": "+201000000011",
+      "wsRole": "MEMBER",
+      "title": "Data & Analytics Engineer",
+      "team": "quality-data",
+      "status": "AWAY",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "sara",
+      "firstName": "Sara",
+      "lastName": "Mahmoud",
+      "email": "sara.mahmoud@northstar.io",
+      "phone": "+201000000012",
+      "wsRole": "MEMBER",
+      "title": "Customer Success Manager",
+      "team": "revenue-ops",
+      "status": "CUSTOM",
+      "statusEmoji": "📞",
+      "statusText": "In a customer call"
+    },
+    {
+      "ref": "adam",
+      "firstName": "Adam",
+      "lastName": "Wilson",
+      "email": "adam.wilson@northstar.io",
+      "phone": "+201000000013",
+      "wsRole": "MEMBER",
+      "title": "Sales & Partnerships Manager",
+      "team": "revenue-ops",
+      "status": "ACTIVE",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "reem",
+      "firstName": "Reem",
+      "lastName": "Fawzy",
+      "email": "reem.fawzy@northstar.io",
+      "phone": "+201000000014",
+      "wsRole": "MEMBER",
+      "title": "People Operations Specialist",
+      "team": "revenue-ops",
+      "status": "AWAY",
+      "statusEmoji": "",
+      "statusText": ""
+    },
+    {
+      "ref": "ziad",
+      "firstName": "Ziad",
+      "lastName": "Emad",
+      "email": "ziad.emad@northstar.io",
+      "phone": "+201000000015",
+      "wsRole": "MEMBER",
+      "title": "Junior Software Engineer",
+      "team": "frontend",
+      "status": "ACTIVE",
+      "statusEmoji": "",
+      "statusText": ""
+    }
+  ],
+  "teams": [
+    {
+      "ref": "leadership",
+      "name": "Leadership",
+      "description": "Company strategy, budget and product direction."
+    },
+    {
+      "ref": "product-design",
+      "name": "Product & Design",
+      "description": "Roadmap, requirements, user research and UI/UX."
+    },
+    {
+      "ref": "backend-platform",
+      "name": "Backend & Platform",
+      "description": "Backend services, APIs, databases and infrastructure."
+    },
+    {
+      "ref": "frontend",
+      "name": "Frontend",
+      "description": "Web app, chat interface and mobile experience."
+    },
+    {
+      "ref": "quality-data",
+      "name": "Quality & Data",
+      "description": "Release testing, product quality and analytics."
+    },
+    {
+      "ref": "revenue-ops",
+      "name": "Revenue & Operations",
+      "description": "Sales, customer success, partnerships and people ops."
+    }
+  ],
+  "spaces": [
+    {
+      "ref": "prj1",
+      "name": "PulseDesk 2.9 Release"
+    },
+    {
+      "ref": "prj2",
+      "name": "Calendar Sync Stabilization"
+    },
+    {
+      "ref": "prj3",
+      "name": "Workspace Analytics V2"
+    },
+    {
+      "ref": "prj4",
+      "name": "Enterprise SSO & Audit Logs"
+    },
+    {
+      "ref": "prj5",
+      "name": "Customer Onboarding Automation"
+    },
+    {
+      "ref": "prj6",
+      "name": "Internal Developer Experience"
+    },
+    {
+      "ref": "internal",
+      "name": "Internal & Operations"
+    }
+  ],
+  "channels": [
+    {
+      "ref": "announcements",
+      "name": "announcements",
+      "visibility": "PUBLIC",
+      "owner": "maya",
+      "members": [
+        "ALL"
+      ],
+      "description": "Company-wide announcements, releases and policy updates."
+    },
+    {
+      "ref": "general",
+      "name": "general",
+      "visibility": "PUBLIC",
+      "owner": "maya",
+      "members": [
+        "ALL"
+      ],
+      "description": "General company conversation and daily updates."
+    },
+    {
+      "ref": "random",
+      "name": "random",
+      "visibility": "PUBLIC",
+      "owner": "reem",
+      "members": [
+        "ALL"
+      ],
+      "description": "Memes, games, music and weekend chatter."
+    },
+    {
+      "ref": "wins",
+      "name": "wins",
+      "visibility": "PUBLIC",
+      "owner": "maya",
+      "members": [
+        "ALL"
+      ],
+      "description": "Milestones, closed deals and shout-outs."
+    },
+    {
+      "ref": "help",
+      "name": "help",
+      "visibility": "PUBLIC",
+      "owner": "youssef",
+      "members": [
+        "ALL"
+      ],
+      "description": "Ask for technical or operational help."
+    },
+    {
+      "ref": "engineering",
+      "name": "engineering",
+      "visibility": "PUBLIC",
+      "owner": "omar",
+      "members": [
+        "ALL"
+      ],
+      "description": "Technical discussions and architecture decisions."
+    },
+    {
+      "ref": "devops",
+      "name": "devops",
+      "visibility": "PUBLIC",
+      "owner": "youssef",
+      "members": [
+        "ALL"
+      ],
+      "description": "Deployments, staging status and production monitoring."
+    },
+    {
+      "ref": "developer-experience",
+      "name": "developer-experience",
+      "visibility": "PUBLIC",
+      "owner": "youssef",
+      "members": [
+        "ALL"
+      ],
+      "description": "Local setup, Docker, tooling and CI performance."
+    },
+    {
+      "ref": "bugs",
+      "name": "bugs",
+      "visibility": "PUBLIC",
+      "owner": "mariam",
+      "members": [
+        "ALL"
+      ],
+      "description": "Bug reports, reproduction steps and fix verification."
+    },
+    {
+      "ref": "product",
+      "name": "product",
+      "visibility": "PUBLIC",
+      "owner": "lina",
+      "members": [
+        "ALL"
+      ],
+      "description": "Product roadmap, feature discussions and research."
+    },
+    {
+      "ref": "design-review",
+      "name": "design-review",
+      "visibility": "PUBLIC",
+      "owner": "hana",
+      "members": [
+        "ALL"
+      ],
+      "description": "Design feedback, Figma links and UI screenshots."
+    },
+    {
+      "ref": "data-insights",
+      "name": "data-insights",
+      "visibility": "PUBLIC",
+      "owner": "daniel",
+      "members": [
+        "ALL"
+      ],
+      "description": "Product metrics, dashboards and usage patterns."
+    },
+    {
+      "ref": "customer-voice",
+      "name": "customer-voice",
+      "visibility": "PUBLIC",
+      "owner": "sara",
+      "members": [
+        "ALL"
+      ],
+      "description": "Customer feedback, support trends and feature requests."
+    },
+    {
+      "ref": "sales",
+      "name": "sales",
+      "visibility": "PUBLIC",
+      "owner": "adam",
+      "members": [
+        "ALL"
+      ],
+      "description": "Sales pipeline, demos and pricing discussions."
+    },
+    {
+      "ref": "people-ops",
+      "name": "people-ops",
+      "visibility": "PUBLIC",
+      "owner": "reem",
+      "members": [
+        "ALL"
+      ],
+      "description": "Leave reminders, company activities and policies."
+    },
+    {
+      "ref": "backend-platform",
+      "name": "backend-platform",
+      "visibility": "PRIVATE",
+      "owner": "karim",
+      "members": [
+        "omar",
+        "karim",
+        "salma",
+        "youssef",
+        "daniel",
+        "ziad"
+      ],
+      "description": "Backend APIs, databases, infra and performance."
+    },
+    {
+      "ref": "frontend",
+      "name": "frontend",
+      "visibility": "PRIVATE",
+      "owner": "ahmed",
+      "members": [
+        "ahmed",
+        "nour",
+        "ziad",
+        "hana",
+        "mariam"
+      ],
+      "description": "React development, UI bugs and component reviews."
+    },
+    {
+      "ref": "incident-response",
+      "name": "incident-response",
+      "visibility": "PRIVATE",
+      "owner": "omar",
+      "members": [
+        "omar",
+        "karim",
+        "youssef",
+        "mariam",
+        "maya"
+      ],
+      "description": "Production incidents, outages and rollback decisions."
+    },
+    {
+      "ref": "release-2-9",
+      "name": "release-2-9",
+      "visibility": "PRIVATE",
+      "owner": "lina",
+      "members": [
+        "lina",
+        "omar",
+        "karim",
+        "salma",
+        "ahmed",
+        "nour",
+        "hana",
+        "youssef",
+        "mariam",
+        "daniel",
+        "ziad"
+      ],
+      "description": "PulseDesk 2.9 release progress, blockers and QA readiness."
+    },
+    {
+      "ref": "calendar-sync",
+      "name": "calendar-sync",
+      "visibility": "PRIVATE",
+      "owner": "salma",
+      "members": [
+        "salma",
+        "karim",
+        "youssef",
+        "mariam"
+      ],
+      "description": "Calendar synchronization, webhook bugs and retries."
+    },
+    {
+      "ref": "enterprise-security",
+      "name": "enterprise-security",
+      "visibility": "PRIVATE",
+      "owner": "omar",
+      "members": [
+        "maya",
+        "omar",
+        "karim",
+        "youssef",
+        "mariam",
+        "adam"
+      ],
+      "description": "SSO, audit logs and enterprise security requirements."
+    },
+    {
+      "ref": "customer-onboarding",
+      "name": "customer-onboarding",
+      "visibility": "PRIVATE",
+      "owner": "sara",
+      "members": [
+        "sara",
+        "reem",
+        "salma",
+        "nour"
+      ],
+      "description": "Customer onboarding progress, training and setup."
+    },
+    {
+      "ref": "revenue-operations",
+      "name": "revenue-operations",
+      "visibility": "PRIVATE",
+      "owner": "maya",
+      "members": [
+        "maya",
+        "sara",
+        "adam",
+        "reem"
+      ],
+      "description": "Sales ops, renewals and internal business operations."
+    },
+    {
+      "ref": "leadership-private",
+      "name": "leadership-private",
+      "visibility": "PRIVATE",
+      "owner": "maya",
+      "members": [
+        "maya",
+        "omar",
+        "lina"
+      ],
+      "description": "Strategy, hiring and budget discussions."
+    },
+    {
+      "ref": "hiring-panel",
+      "name": "hiring-panel",
+      "visibility": "PRIVATE",
+      "owner": "maya",
+      "members": [
+        "maya",
+        "omar",
+        "reem"
+      ],
+      "description": "Candidate feedback, interview schedules and offers."
+    }
+  ],
+  "rooms": [
+    {
+      "name": "Daily Standup",
+      "capacity": 20
+    },
+    {
+      "name": "Product Planning Room",
+      "capacity": 12
+    },
+    {
+      "name": "Backend Pairing Room",
+      "capacity": 8
+    },
+    {
+      "name": "Frontend Pairing Room",
+      "capacity": 8
+    },
+    {
+      "name": "Design Review Room",
+      "capacity": 10
+    },
+    {
+      "name": "Testing Lab",
+      "capacity": 8
+    },
+    {
+      "name": "Customer Demo Room",
+      "capacity": 30
+    },
+    {
+      "name": "Incident War Room",
+      "capacity": 10
+    },
+    {
+      "name": "Leadership Room",
+      "capacity": 6
+    },
+    {
+      "name": "Focus Room",
+      "capacity": 10
+    },
+    {
+      "name": "Coffee Lounge",
+      "capacity": 20
+    }
+  ],
+  "tasks": [
+    {
+      "title": "Finalize PulseDesk 2.9 release scope",
+      "assignee": "lina",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-01T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Investigate duplicate notification reports",
+      "assignee": "karim",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-01T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Prepare mobile navigation prototype",
+      "assignee": "hana",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-01T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Add idempotency key to calendar webhook handler",
+      "assignee": "salma",
+      "space": "prj2",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-02T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Review mobile sidebar design",
+      "assignee": "ahmed",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-02T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Create analytics event naming document",
+      "assignee": "daniel",
+      "space": "prj3",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-02T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Add thread-notification preference API",
+      "assignee": "karim",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-03T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Implement notification settings layout",
+      "assignee": "nour",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-03T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Prepare regression test plan for version 2.9",
+      "assignee": "mariam",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-03T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Reduce Docker development image size",
+      "assignee": "youssef",
+      "space": "prj6",
+      "status": "COMPLETE",
+      "priority": "LOW",
+      "due": "2026-07-04T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Document local PostgreSQL setup",
+      "assignee": "ziad",
+      "space": "prj6",
+      "status": "COMPLETE",
+      "priority": "LOW",
+      "due": "2026-07-04T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Fix mobile channel-list scrolling",
+      "assignee": "ahmed",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-05T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Validate calendar duplicate-event fix",
+      "assignee": "mariam",
+      "space": "prj2",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-05T15:00:00Z",
+      "description": "Reopened: duplicate events still appeared when two webhook requests arrived within the same second."
+    },
+    {
+      "title": "Contact BetaWorks about onboarding schedule",
+      "assignee": "sara",
+      "space": "prj5",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-05T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Add database constraint for external calendar ID",
+      "assignee": "salma",
+      "space": "prj2",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-06T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Design empty state for analytics dashboard",
+      "assignee": "hana",
+      "space": "prj3",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-06T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Prepare enterprise feature comparison sheet",
+      "assignee": "adam",
+      "space": "prj4",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-06T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Optimize thread reply query",
+      "assignee": "karim",
+      "space": "prj1",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-07T15:00:00Z",
+      "description": "In review."
+    },
+    {
+      "title": "Add active-user chart component",
+      "assignee": "ahmed",
+      "space": "prj3",
+      "status": "IN_PROGRESS",
+      "priority": "NORMAL",
+      "due": "2026-07-07T15:00:00Z",
+      "description": "In review."
+    },
+    {
+      "title": "Run accessibility audit on settings pages",
+      "assignee": "nour",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-07T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Add API tests for notification preferences",
+      "assignee": "ziad",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-08T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Create release monitoring dashboard",
+      "assignee": "youssef",
+      "space": "prj1",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-08T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Review customer onboarding email sequence",
+      "assignee": "sara",
+      "space": "prj5",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-08T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Investigate delayed analytics events",
+      "assignee": "daniel",
+      "space": "prj3",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-09T15:00:00Z",
+      "description": "Blocked: the production event queue does not include the required workspace identifier for older events."
+    },
+    {
+      "title": "Add browser test for mobile navigation",
+      "assignee": "mariam",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-09T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Update employee onboarding checklist",
+      "assignee": "reem",
+      "space": "internal",
+      "status": "COMPLETE",
+      "priority": "LOW",
+      "due": "2026-07-09T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Add workspace ID to analytics events",
+      "assignee": "karim",
+      "space": "prj3",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-10T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Prepare PulseDesk 2.9 release announcement",
+      "assignee": "maya",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "NORMAL",
+      "due": "2026-07-10T15:00:00Z",
+      "description": "Draft."
+    },
+    {
+      "title": "Complete SAML provider technical research",
+      "assignee": "omar",
+      "space": "prj4",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-10T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Add retry metrics for calendar webhooks",
+      "assignee": "salma",
+      "space": "prj2",
+      "status": "IN_PROGRESS",
+      "priority": "NORMAL",
+      "due": "2026-07-11T15:00:00Z",
+      "description": "In review."
+    },
+    {
+      "title": "Update mobile navigation based on QA feedback",
+      "assignee": "ahmed",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-11T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Prepare customer training presentation",
+      "assignee": "sara",
+      "space": "prj5",
+      "status": "IN_PROGRESS",
+      "priority": "NORMAL",
+      "due": "2026-07-11T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Upgrade staging Kubernetes cluster",
+      "assignee": "youssef",
+      "space": "prj6",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-12T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Fix incorrect guest settings button",
+      "assignee": "nour",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-12T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Review security copy for SSO settings",
+      "assignee": "hana",
+      "space": "prj4",
+      "status": "IN_PROGRESS",
+      "priority": "LOW",
+      "due": "2026-07-12T15:00:00Z",
+      "description": "In review."
+    },
+    {
+      "title": "Run full version 2.9 regression suite",
+      "assignee": "mariam",
+      "space": "prj1",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-13T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Add channel engagement aggregation job",
+      "assignee": "daniel",
+      "space": "prj3",
+      "status": "IN_PROGRESS",
+      "priority": "NORMAL",
+      "due": "2026-07-13T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Fix search result timestamp formatting",
+      "assignee": "ziad",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "LOW",
+      "due": "2026-07-13T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Review release readiness report",
+      "assignee": "omar",
+      "space": "prj1",
+      "status": "COMPLETE",
+      "priority": "HIGH",
+      "due": "2026-07-14T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Confirm BetaWorks onboarding participants",
+      "assignee": "sara",
+      "space": "prj5",
+      "status": "COMPLETE",
+      "priority": "NORMAL",
+      "due": "2026-07-14T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Prepare pricing proposal for NovaTech",
+      "assignee": "adam",
+      "space": "prj4",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-14T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Organize monthly team social event",
+      "assignee": "reem",
+      "space": "internal",
+      "status": "IN_PROGRESS",
+      "priority": "LOW",
+      "due": "2026-07-14T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Resolve remaining critical release bugs",
+      "assignee": "karim",
+      "space": "prj1",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-15T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Validate analytics data against production samples",
+      "assignee": "daniel",
+      "space": "prj3",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-15T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Complete version 2.9 release notes",
+      "assignee": "lina",
+      "space": "prj1",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-15T15:00:00Z",
+      "description": "In review."
+    },
+    {
+      "title": "Run calendar synchronization load test",
+      "assignee": "salma",
+      "space": "prj2",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "due": "2026-07-15T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Review junior engineer pull request",
+      "assignee": "ahmed",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "NORMAL",
+      "due": "2026-07-15T15:00:00Z",
+      "description": ""
+    },
+    {
+      "title": "Prepare staging release candidate",
+      "assignee": "youssef",
+      "space": "prj1",
+      "status": "TODO",
+      "priority": "HIGH",
+      "due": "2026-07-15T15:00:00Z",
+      "description": ""
+    }
+  ],
+  "comment_events": "A shared TEAM calendar for TODAY — the calendar list endpoint returns every workspace event in the day window, so these appear on everyone's 'Today's Agenda'. Times are LOCAL wall-clock (HH:MM:SS); the seeder stamps them onto the current LOCAL date with the local UTC offset so the agenda is always populated for the viewer's day. One distinct event per meeting (no per-person duplicates).",
+  "events": [
+    {
+      "owner": "maya",
+      "title": "Leadership sync",
+      "start": "09:00:00",
+      "end": "09:30:00",
+      "description": "Weekly leadership standup",
+      "attendees": [
+        "omar",
+        "lina"
+      ]
+    },
+    {
+      "owner": "karim",
+      "title": "Backend standup",
+      "start": "09:30:00",
+      "end": "09:45:00",
+      "description": "Daily backend & platform sync",
+      "attendees": [
+        "salma",
+        "youssef",
+        "ziad"
+      ]
+    },
+    {
+      "owner": "ahmed",
+      "title": "Frontend standup",
+      "start": "09:30:00",
+      "end": "09:45:00",
+      "description": "Daily frontend sync",
+      "attendees": [
+        "nour",
+        "ziad",
+        "hana"
+      ]
+    },
+    {
+      "owner": "karim",
+      "title": "Thread-query pairing",
+      "start": "10:00:00",
+      "end": "11:00:00",
+      "description": "Optimize the thread reply query",
+      "attendees": [
+        "salma"
+      ]
+    },
+    {
+      "owner": "omar",
+      "title": "Release readiness review",
+      "start": "11:00:00",
+      "end": "12:00:00",
+      "description": "Go/no-go for PulseDesk 2.9",
+      "attendees": [
+        "lina",
+        "mariam",
+        "youssef"
+      ]
+    },
+    {
+      "owner": "sara",
+      "title": "Customer call — BetaWorks",
+      "start": "12:00:00",
+      "end": "12:30:00",
+      "description": "Onboarding check-in"
+    },
+    {
+      "owner": "ahmed",
+      "title": "Mobile nav review",
+      "start": "12:30:00",
+      "end": "13:15:00",
+      "description": "Walk through QA feedback",
+      "attendees": [
+        "nour",
+        "hana",
+        "mariam"
+      ]
+    },
+    {
+      "owner": "salma",
+      "title": "Calendar sync load test",
+      "start": "13:00:00",
+      "end": "14:00:00",
+      "description": "Run the synchronization load test",
+      "attendees": [
+        "mariam"
+      ]
+    },
+    {
+      "owner": "lina",
+      "title": "2.9 release notes review",
+      "start": "14:00:00",
+      "end": "14:45:00",
+      "description": "Final pass on the release notes",
+      "attendees": [
+        "maya"
+      ]
+    },
+    {
+      "owner": "sara",
+      "title": "Onboarding training",
+      "start": "14:00:00",
+      "end": "15:00:00",
+      "description": "Customer training session",
+      "attendees": [
+        "reem"
+      ]
+    },
+    {
+      "owner": "hana",
+      "title": "Design review",
+      "start": "15:00:00",
+      "end": "15:45:00",
+      "description": "Analytics dashboard empty states"
+    },
+    {
+      "owner": "youssef",
+      "title": "Cut staging release candidate",
+      "start": "15:00:00",
+      "end": "16:00:00",
+      "description": "Prepare the 2.9 RC on staging",
+      "attendees": [
+        "omar"
+      ]
+    },
+    {
+      "owner": "ahmed",
+      "title": "Junior PR review",
+      "start": "16:00:00",
+      "end": "16:30:00",
+      "description": "Review Ziad's pull request",
+      "attendees": [
+        "ziad"
+      ]
+    },
+    {
+      "owner": "daniel",
+      "title": "Analytics data validation",
+      "start": "16:30:00",
+      "end": "17:15:00",
+      "description": "Validate V2 metrics vs production"
+    },
+    {
+      "owner": "maya",
+      "title": "Board update prep",
+      "start": "17:00:00",
+      "end": "18:00:00",
+      "description": "Prep the quarterly board deck"
+    }
+  ],
+  "comment_chat": "Chat history lives in conversations.json (1804 messages / 88 threads over 3 months) and is loaded straight into MongoDB by load-history.js with backdated ObjectIds — the REST API cannot backdate a message."
+}
