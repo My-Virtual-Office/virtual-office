@@ -91,6 +91,14 @@ TECH = {
 # Hand-built diagrams. Anything that isn't a real screenshot of the product is
 # drawn here in HTML/CSS — a dashed box saying "draw this" is a promise, not a
 # slide. Components carry their tech's brand colour.
+def svg(name: str) -> str:
+    """Inline a rendered mermaid diagram. Source: diagrams/<name>.mmd."""
+    raw = (ROOT / "shots" / f"{name}.svg").read_text()
+    raw = re.sub(r"<\?xml.*?\?>", "", raw, flags=re.S)          # drop the XML prolog
+    raw = re.sub(r'\s(width|height)="[^"]*"', "", raw, count=2)  # let CSS size it
+    return raw
+
+
 def box(label, tech=None, cls="", port=None):
     """port: the port the thing actually listens on (read off docker-compose.yml)."""
     t = f'<i class="dg-t" style="--c:{tech}"></i>' if tech else ""
@@ -318,6 +326,19 @@ DIAGRAMS[24] = '''<div class="dg dg-run">
   </ol>
   <div class="dg-cap">Backup video ready. If a step stalls, move on — never debug on stage.</div>
 </div>'''
+
+# ── 13 · the service topology (diagrams/topology.mmd) ───────────────────────
+DIAGRAMS[13] = f'''<div class="dg dg-graph">{svg("topology")}
+  <div class="dg-cap"><b>Each service owns its own store.</b> Services talk over the
+    gateway or the broker — no shared tables, no back doors.</div></div>'''
+
+# ── 16 · the ciphertext, then async integration (diagrams/rabbitmq.mmd) ─────
+DIAGRAMS[16] = f'''<div class="dg dg-graph">
+  <pre class="dg-pre term"><span class="p">&gt;</span> db.messages.find({{content: /^vo1:/}})
+<span class="ct">vo1:TzO44O2p++/WL3yy:YHdQoK4tYMtycnZBfodXR5RX8…</span></pre>
+  {svg("rabbitmq")}
+  <div class="dg-cap"><b>Two consumers own the topology</b> — notifications and chat.
+    Every other service only produces.</div></div>'''
 
 # Two slides carry a table as their actual argument — render it, don't ask for a
 # screenshot of one. (Slide 13's table was being dropped by the parser entirely.)

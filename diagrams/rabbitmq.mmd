@@ -1,0 +1,51 @@
+%% Asynchronous integration — exchanges, queues and bindings read straight off
+%% the running broker (rabbitmqctl list_exchanges / list_queues / list_bindings),
+%% producers and consumers verified in the Java source.
+%% NOTE: workspace is drawn twice (wsA/wsB) because it produces into BOTH flows.
+%% NOTE: LOGIN_SUCCESS is deliberately absent. NotificationListener has a case
+%% for it, but no service publishes it — it is a dead edge, so it is not drawn.
+graph LR
+  subgraph N ["notifications-service consumes"]
+    direction LR
+    user["user"]:::svc
+    wsA["workspace"]:::svc
+    tasks["tasks"]:::svc
+    calendar["calendar"]:::svc
+    chatP["chat"]:::svc
+    nx["notifications.exchange"]:::ex
+    nq["notifications.queue"]:::q
+    notif["notifications-service"]:::consumer
+
+    user -->|"SIGNUP_SUCCESS / OTP / PASSWORD_RESET_SUCCESS"| nx
+    wsA -->|"WORKSPACE_INVITE"| nx
+    tasks -->|"TASK_ASSIGNED / TASK_REMINDER"| nx
+    calendar -->|"MEETING_REMINDER"| nx
+    chatP -->|"MENTION"| nx
+    nx -->|"routing.key"| nq
+    nq --> notif
+  end
+
+  subgraph C ["chat-service consumes"]
+    direction LR
+    wsB["workspace"]:::svc
+    room["room"]:::svc
+    wx["workspace.exchange"]:::ex
+    rx["room.exchange"]:::ex
+    wq["workspace.channel.queue"]:::q
+    rq["room.channel.queue"]:::q
+    chatC["chat-service"]:::consumer
+
+    wsB -->|"WORKSPACE_CHANNEL_*"| wx
+    wx -->|"workspace.channel.event"| wq
+    wq --> chatC
+    room -->|"ROOM_CHANNEL_*"| rx
+    rx -->|"room.channel.event"| rq
+    rq --> chatC
+  end
+
+  classDef svc fill:#ffffff,stroke:#6DB33F,stroke-width:1.5px,color:#1d1c1d
+  classDef ex fill:#fff3e8,stroke:#FF6600,stroke-width:2px,color:#1d1c1d
+  classDef q fill:#f8f8f8,stroke:#8a8a8a,stroke-width:1.2px,color:#3c3b3c
+  classDef consumer fill:#f3e9f3,stroke:#3f0e40,stroke-width:2px,color:#1d1c1d
+  style N fill:#ffffff,stroke:#e8e8e8,stroke-width:1px
+  style C fill:#ffffff,stroke:#e8e8e8,stroke-width:1px

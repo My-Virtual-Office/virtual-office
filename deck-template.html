@@ -240,6 +240,51 @@ tbody tr:last-child th,tbody tr:last-child td{background:#1164a30d;font-weight:7
 .dg-bands .dg-band.td{border-color:#1164a344;background:#1164a30a;color:var(--blue)}
 .dg-bands .dg-band.up{color:var(--muted)}
 
+/* rendered mermaid graphs — let them fill the slot, keep the text crisp */
+.dg.dg-graph{width:100%;gap:.5em}
+.dg-graph svg{width:100%;height:auto;max-height:74vh;display:block}
+.dg-graph .dg-pre{width:100%}
+
+/* 13 · topology — service cards carrying their own datastore */
+.dg.dg-topo{gap:.3em;width:100%}
+.tp-gate{width:100%;border:1px solid var(--aubergine)55;border-radius:6px;background:#3f0e400a;
+  padding:.45em;display:flex;flex-direction:column;align-items:center;gap:.15em}
+.tp-gate small{font:500 .68em/1.3 var(--mono);color:var(--muted);text-align:center}
+.tp-gate small code{color:var(--aubergine);font-weight:700}
+.tp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.3em;width:100%}
+.tp-svc{border:1px solid var(--rule);border-radius:5px;background:#fff;padding:.35em .4em;
+  display:flex;flex-direction:column;align-items:center;gap:.1em;box-shadow:0 1px 0 #1d1c1d0a}
+.tp-svc b{font-size:.8em;color:var(--ink);line-height:1.1;text-align:center}
+.tp-svc code{font:500 .64em/1 var(--mono);color:#8a8a8a}
+.tp-dbs{display:flex;flex-wrap:wrap;gap:.15em;justify-content:center;margin-top:.15em}
+.tp-db{font:600 .58em/1 var(--mono);font-style:normal;color:var(--c);border:1px solid var(--c);
+  border-radius:3px;padding:.18em .3em;white-space:nowrap}
+.tp-bus{width:100%;display:flex;align-items:center;justify-content:center;gap:.6em;
+  border:1px dashed #FF660066;border-radius:6px;background:#FF66000a;padding:.35em}
+.tp-bus small{font:500 .7em/1 var(--mono);color:var(--muted)}
+
+/* 16 · exchanges, queues, and who consumes */
+.dg.dg-mq{gap:.5em;width:100%;align-items:stretch}
+.mq-flow{display:flex;flex-direction:column;gap:.28em;width:100%}
+.mq-line{display:flex;align-items:center;gap:.3em;flex-wrap:wrap;border:1px solid var(--rule);
+  border-radius:5px;background:var(--wash);padding:.35em .45em}
+.mq-line .dg-a{font-size:.7em}
+.mq-p{font:600 .68em/1 var(--mono);color:var(--muted)}
+.mq-x{font:700 .68em/1 var(--mono);color:#FF6600;background:#FF66000f;border:1px solid #FF660040;
+  border-radius:3px;padding:.22em .38em}
+.mq-q{font:600 .68em/1 var(--mono);color:var(--ink);background:#fff;border:1px solid var(--rule);
+  border-radius:3px;padding:.22em .38em}
+.mq-c{font-size:.78em;color:var(--aubergine)}
+.mq-route{display:flex;flex-direction:column;gap:.22em;width:100%}
+.mq-r{display:flex;align-items:center;justify-content:space-between;gap:.5em;
+  border-bottom:1px solid var(--rule);padding:.28em .1em}
+.mq-t{font:600 .68em/1.2 var(--mono);color:var(--ink)}
+.mq-r b{font:700 .62em/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  border-radius:99px;padding:.24em .5em;white-space:nowrap}
+.mq-r .em{color:#1164a3;background:#1164a30f;border:1px solid #1164a340}
+.mq-r .ia{color:#2bac76;background:#2bac760f;border:1px solid #2bac7640}
+.mq-r .bo{color:var(--aubergine);background:#3f0e400f;border:1px solid #3f0e4040}
+
 /* 5 · research pipeline */
 .dg.dg-pipe{gap:.3em;width:100%}
 .dg-stage{width:100%;border:1px solid var(--rule);border-radius:6px;background:var(--wash);padding:.5em .6em;

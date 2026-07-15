@@ -1,0 +1,69 @@
+%% Service topology — every fact here was verified against the running stack
+%% (docker-compose.yml, each service's application.yml, and rabbitmqctl).
+%% Rendered by build-diagrams.sh into shots/. Do not hand-edit the SVG.
+graph TD
+  web["Web app"]:::client
+  office["2D Office client"]:::client
+  colyseus["Colyseus server<br/>:2567"]:::node
+
+  gw["Spring Cloud Gateway<br/>:8080"]:::gate
+
+  web -->|"HTTPS + JWT"| gw
+  office -->|"JWT"| gw
+  office -.->|"STOMP ticket"| room
+
+  user["user :8091"]:::svc
+  calendar["calendar :8083"]:::svc
+  tasks["tasks :8085"]:::svc
+  chat["chat :8084"]:::svc
+  notifications["notifications :8082"]:::svc
+  room["room :8086"]:::svc
+  workspace["workspace :8087"]:::svc
+
+  gw --> user
+  gw --> calendar
+  gw --> tasks
+  gw --> chat
+  gw --> notifications
+  gw --> room
+  gw --> workspace
+
+  mysql[("MySQL")]:::db
+  pgcal[("PostgreSQL: calendar")]:::db
+  pgtasks[("PostgreSQL: tasks")]:::db
+  pgpub[("PostgreSQL: public")]:::db
+  mongo[("MongoDB")]:::db
+  redis[("Redis")]:::db
+
+  user --> mysql
+  calendar --> pgcal
+  tasks --> pgtasks
+  workspace --> pgpub
+  chat --> mongo
+  chat --> redis
+  notifications --> mongo
+  notifications --> redis
+  room --> mongo
+  room --> redis
+
+  rabbit{{"RabbitMQ"}}:::bus
+  user -->|"events"| rabbit
+  calendar -->|"events"| rabbit
+  tasks -->|"events"| rabbit
+  workspace -->|"events"| rabbit
+  room -->|"events"| rabbit
+  rabbit -->|"consume"| notifications
+  rabbit -->|"consume"| chat
+
+  colyseus -->|"X-Internal-Token"| room
+  colyseus -->|"X-Internal-Token"| workspace
+  calendar -->|"status + admin check"| workspace
+  chat -->|"role check"| workspace
+  room -->|"role + zones"| workspace
+
+  classDef client fill:#eaf3fb,stroke:#1164a3,stroke-width:1.5px,color:#1d1c1d
+  classDef gate fill:#f3e9f3,stroke:#3f0e40,stroke-width:2px,color:#1d1c1d
+  classDef svc fill:#ffffff,stroke:#6DB33F,stroke-width:1.5px,color:#1d1c1d
+  classDef node fill:#ffffff,stroke:#339933,stroke-width:1.5px,color:#1d1c1d
+  classDef db fill:#f8f8f8,stroke:#8a8a8a,stroke-width:1.2px,color:#3c3b3c
+  classDef bus fill:#fff3e8,stroke:#FF6600,stroke-width:2px,color:#1d1c1d
