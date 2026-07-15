@@ -145,6 +145,7 @@ services:
       CALENDAR_SERVICE_URL: http://calendar-service:8083
       TASKS_SERVICE_URL: http://tasks-service:8085
       NOTIFICATIONS_SERVICE_URL: http://notifications-service:8082
+      AI_SERVICE_URL: http://ai-service:8089
       JWT_SECRET: ${JWT_SECRET}
       # Dev/demo CORS: the SkyOffice client (:5000) calls the gateway (:8080) cross-origin, and on
       # the LAN that origin is http://<host-ip>:5000 — not localhost. "*" is an allowed-origin
@@ -299,6 +300,28 @@ services:
     healthcheck:
       <<: *spring-healthcheck
       test: ["CMD-SHELL", "curl -fsS http://localhost:8085/actuator/health || exit 1"]
+
+  # AI assistant (Node). Turns natural language into calls against the platform's
+  # own REST APIs via OpenAI function calling. The OpenAI key lives only here —
+  # it is never exposed to the browser. Reuses the caller's JWT downstream, so
+  # the assistant inherits exactly the signed-in user's permissions.
+  ai-service:
+    <<: *service-defaults
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    ports: ["8089:8089"]
+    environment:
+      PORT: "8089"
+      GATEWAY_URL: http://gateway-api:8080
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8089/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
 
   # ===========================================================================
   # Realtime office server (Colyseus / Node)
