@@ -316,6 +316,8 @@ services:
       GATEWAY_URL: http://gateway-api:8080
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      # Optional: any OpenAI-compatible endpoint (Groq / Gemini / OpenRouter / Ollama).
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:8089/actuator/health || exit 1"]
       interval: 10s

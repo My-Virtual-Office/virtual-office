@@ -21,10 +21,18 @@ const GATEWAY_URL = process.env.GATEWAY_URL || "http://gateway-api:8080";
 const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 const MAX_STEPS = 6; // tool-call rounds before we force a text answer
 
+// Any OpenAI-compatible endpoint works — the assistant only needs chat
+// completions + function calling. Point OPENAI_BASE_URL at Groq, Google's
+// OpenAI-compat layer, OpenRouter or a local Ollama to avoid paid OpenAI
+// billing; leave it unset for OpenAI itself. See .env.example.
+const BASE_URL = process.env.OPENAI_BASE_URL || undefined;
+
 if (!process.env.OPENAI_API_KEY) {
   console.error("[ai-service] OPENAI_API_KEY is not set — /api/ai/chat will return 503");
 }
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+const openai = process.env.OPENAI_API_KEY
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY, baseURL: BASE_URL })
+  : null;
 
 const app = express();
 app.use(express.json({ limit: "1mb" }));
@@ -337,4 +345,5 @@ app.post("/api/ai/chat", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`[ai-service] listening on ${PORT}, model=${MODEL}, gateway=${GATEWAY_URL}`));
+app.listen(PORT, () =>
+  console.log(`[ai-service] listening on ${PORT}, model=${MODEL}, provider=${BASE_URL || "api.openai.com"}, gateway=${GATEWAY_URL}`));
