@@ -89,7 +89,8 @@ li i{font-style:italic;color:var(--muted)}
 li code{font:500 .88em/1 var(--mono);background:var(--wash);border:1px solid var(--rule);border-radius:3px;padding:.1em .35em}
 
 /* tech chips — brand colour, honest, no fake logos */
-.tech{display:flex;flex-wrap:wrap;gap:.34em;margin-top:.9em}
+.tech{display:flex;flex-wrap:wrap;gap:.4em;margin-top:.9em}
+.chip-l{width:1.15em;height:1.15em;flex:none;fill:var(--c)}
 .chip{display:inline-flex;align-items:center;gap:.36em;border:1px solid var(--rule);border-radius:999px;
       padding:.26em .62em .26em .48em;font:600 .64em/1 var(--mono);color:#3a3a3a;background:var(--paper);
       white-space:nowrap}
@@ -118,6 +119,7 @@ tbody tr:last-child th,tbody tr:last-child td{background:#1164a30d;font-weight:7
   box-shadow:0 1px 2px #1d1c1d0d;white-space:nowrap;font-weight:700;color:var(--ink);overflow:hidden}
 .dg-box .dg-t{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,#999)}
 .dg-box code{font:500 .82em/1 var(--mono);color:var(--muted);font-weight:500}
+.dg-arch .dg-box code,.dg-gate .dg-box code{font-size:.68em;color:#8a8a8a;letter-spacing:.02em}
 .dg-box small{font:500 .74em/1 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .dg-box.wide{padding:.55em 2em}
 .dg-box.dg-ghost{border-style:dashed;box-shadow:none;background:transparent}
@@ -186,6 +188,80 @@ tbody tr:last-child th,tbody tr:last-child td{background:#1164a30d;font-weight:7
 .dg-tree b{color:var(--ink)}
 .dg-tree .in{padding-left:1.6em}
 .dg-tree small{color:var(--muted)}
+
+/* 1 · title card — the team, at desks */
+.dg.dg-title{gap:.7em;width:100%}
+.tc-floor{display:flex;gap:.6em;width:100%}
+.tc-zone{flex:1;border:1px solid var(--rule);border-radius:7px;background:var(--wash);padding:.7em .5em .5em;
+  display:flex;flex-direction:column;align-items:center;gap:.55em}
+.tc-zl{font:700 .66em/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--c)}
+.tc-p{display:flex;flex-direction:column;align-items:center;gap:.22em;width:100%}
+.tc-av{width:2.5em;height:2.5em;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;
+  font:700 .82em/1 var(--mono);letter-spacing:.03em;box-shadow:0 2px 0 rgba(0,0,0,.14)}
+.tc-n{font-size:.82em;font-weight:600;color:var(--ink);text-align:center;line-height:1.2}
+.tc-desk{width:66%;height:.42em;border-radius:2px;background:#d8cdd8;margin-top:.1em}
+
+/* 2 · the ledger — what onsite gave, what remote left */
+.dg.dg-ledger{flex-direction:row;align-items:stretch;gap:.55em;flex-wrap:wrap}
+.led{flex:1;min-width:0;border:1px solid var(--rule);border-radius:7px;padding:.7em .8em;background:var(--wash)}
+.led-h{display:block;font:700 .64em/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.5em}
+.led ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.34em}
+.led li::before{content:none !important;display:none;background:none;width:auto;height:auto}
+.led li{font-size:.86em;font-weight:600;color:var(--ink);line-height:1.25;padding-left:0;max-width:none}
+.led.bad li{position:relative;padding-left:1em}
+.led.gone li{color:var(--muted);text-decoration:line-through;text-decoration-color:#e01e5a99;text-decoration-thickness:2px}
+.led.bad{border-color:#e01e5a44;background:#e01e5a08}
+.led.bad li::before{content:"×" !important;display:block !important;background:none;width:auto;height:auto;
+  position:absolute;left:0;top:.05em;color:#e01e5a;font-weight:800}
+.led-a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2em;
+  color:#e01e5a;font-style:normal;font-size:1.5em;font-weight:700}
+.led-a span{font:700 .42em/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.dg-ledger .dg-cap{flex-basis:100%}
+
+/* code / terminal blocks */
+.dg.dg-code{gap:.6em;align-items:stretch;width:100%}
+.dg-pre{font:500 .74em/1.6 var(--mono);white-space:pre-wrap;word-break:break-word;background:#231024;color:#e8dbe8;border-radius:5px;padding:.9em 1em;
+  overflow:auto;white-space:pre;border-left:3px solid var(--aubergine)}
+.dg-pre b{color:#fff;font-weight:700}
+.dg-pre .c{color:#a98fa9}
+.dg-pre.term{background:#14101a}
+.dg-pre .p{color:#2bac76;font-weight:700}
+.dg-pre .ct{color:#f2b8d0;word-break:break-all;white-space:pre-wrap}
+.dg-tree-note{color:var(--muted);font-size:.86em;margin-top:.3em}
+.dg-q{margin-top:.1em}
+
+/* board bands */
+.dg-bands{display:flex;gap:.5em;width:100%;align-items:stretch}
+.dg-bands .dg-band{flex:1;border:1px solid var(--rule);border-radius:5px;padding:.55em .7em;display:flex;
+  align-items:center;justify-content:space-between;background:var(--wash);font-weight:700}
+.dg-bands .dg-band b{font-size:1.15em}
+.dg-bands .dg-band.od{border-color:#e01e5a44;background:#e01e5a0a;color:#e01e5a}
+.dg-bands .dg-band.td{border-color:#1164a344;background:#1164a30a;color:var(--blue)}
+.dg-bands .dg-band.up{color:var(--muted)}
+
+/* observability — two real dashboards, stacked */
+.obs-shot{margin:0;width:100%;border:1px solid var(--rule);border-radius:6px;overflow:hidden;
+  display:block;padding:0;aspect-ratio:auto;max-height:none;background:var(--wash);box-shadow:0 4px 18px #1d1c1d14}
+.obs-shot img{position:static;inset:auto;width:100%;height:auto;max-height:31vh;display:block;
+  object-fit:cover;object-position:top center}
+.obs-shot figcaption{font:500 .72em/1.3 var(--mono);color:var(--muted);background:var(--wash);
+  padding:.34em .6em;border-top:1px solid var(--rule)}
+.obs-shot figcaption b{color:var(--ink)}
+
+/* observability */
+.dg.dg-obs{gap:.6em;width:100%;max-height:100%}
+.dg-stats{display:flex;gap:.5em;width:100%}
+.dg-stats .st{flex:1;border:1px solid var(--rule);border-radius:5px;padding:.6em;text-align:center;background:var(--wash)}
+.dg-stats .st b{display:block;font-size:1.25em;color:var(--ink)}
+.dg-stats .st span{font:500 .72em/1 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dg-next{display:flex;align-items:center;gap:.5em;border:1px dashed #E6522C66;border-radius:5px;padding:.5em .7em;background:#E6522C08}
+.dg-next-l{font:700 .66em/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#E6522C}
+
+/* the slide's signature: a big brand mark, rotated, ghosted behind everything */
+.mark{position:absolute;right:-3%;bottom:-4%;width:34%;transform:rotate(-45deg);
+  opacity:.09;z-index:0;pointer-events:none}
+.mark svg{width:100%;height:auto;display:block}
 
 /* visual placeholder */
 figure{border:2px dashed #c9c9c9;border-radius:4px;background:
@@ -312,16 +388,17 @@ const SLIDES = [
   ],
   "script": [
    "Project name, one line of what it is: <i>&quot;a virtual office that puts your people, chat, tasks and meetings in one place.&quot;</i>",
-   "Introduce the team and what each person owned: Frontend, Backend, Mobile.",
-   " the problem → what we built → how it works → demo.Say the agenda in one sentence:"
+   "Introduce the team by name, grouped by what they owned — six people, three clients:",
+   "Say the agenda in one sentence: the problem → what we built → how it works → demo."
   ],
   "tech": [],
+  "mark": null,
   "visual": {
-   "kind": "diagram",
+   "kind": "diagram-built",
    "desc": "Title card — project name + the six of you. A team photo works better than a logo.",
    "ratio": "16/9",
    "table": null,
-   "html": null
+   "html": "<div class=\"dg dg-title\"><div class=\"tc-floor\"><div class=\"tc-zone\"><span class=\"tc-zl\" style=\"--c:#61DAFB\">Frontend</span><div class=\"tc-p\" style=\"--c:#61DAFB\"><span class=\"tc-av\">RO</span><span class=\"tc-n\">Rokaya Othman</span><i class=\"tc-desk\"></i></div><div class=\"tc-p\" style=\"--c:#61DAFB\"><span class=\"tc-av\">NM</span><span class=\"tc-n\">Nadine Mohsen</span><i class=\"tc-desk\"></i></div></div><div class=\"tc-zone\"><span class=\"tc-zl\" style=\"--c:#6DB33F\">Backend</span><div class=\"tc-p\" style=\"--c:#6DB33F\"><span class=\"tc-av\">AS</span><span class=\"tc-n\">Abdelrahman Sersawy</span><i class=\"tc-desk\"></i></div><div class=\"tc-p\" style=\"--c:#6DB33F\"><span class=\"tc-av\">AM</span><span class=\"tc-n\">Ahmed Mousa</span><i class=\"tc-desk\"></i></div><div class=\"tc-p\" style=\"--c:#6DB33F\"><span class=\"tc-av\">KL</span><span class=\"tc-n\">Khalid Labib</span><i class=\"tc-desk\"></i></div></div><div class=\"tc-zone\"><span class=\"tc-zl\" style=\"--c:#02569B\">Mobile</span><div class=\"tc-p\" style=\"--c:#02569B\"><span class=\"tc-av\">KQ</span><span class=\"tc-n\">Khaled Qenawy</span><i class=\"tc-desk\"></i></div></div></div><p class=\"dg-cap\">Six people · three clients · one workspace</p></div>"
   },
   "next": null
  },
@@ -333,8 +410,10 @@ const SLIDES = [
   "role": "Backend · Security & Services",
   "time": "~1m",
   "bullets": [
-   "Remote broke what the office gave free",
-   "Who&#x27;s online? · app-switching · no presence · scattered",
+   "The office gave five things <b>free</b>",
+   "Fast talk · collaboration · visible status · ownership · real interaction",
+   "<b>Remote took all five</b>",
+   "Five disconnected tools in their place",
    "<i>“Five tools all day, still don&#x27;t know what the team is doing”</i>"
   ],
   "notes": [
@@ -344,16 +423,19 @@ const SLIDES = [
   ],
   "script": [
    "Remote and hybrid work broke something that the office gave us for free.",
-   "Four concrete pains (from our research, not opinion):",
+   "<b>First name what onsite gave you</b> — five things nobody ever thanks an office for:",
+   "<b>Then take all five away.</b> That&#x27;s remote — and this is research, not opinion:",
+   "The mirror is the point: every problem on the right is a thing the office solved by simply <i>being a place</i>.",
    "Land it with a human sentence: <i>&quot;You can be in five tools all day and still not know what your team is doing.&quot;</i>"
   ],
   "tech": [],
+  "mark": null,
   "visual": {
    "kind": "diagram-built",
    "desc": "One person surrounded by app logos (Slack · Teams · Zoom · Jira · Calendar) with arrows going everywhere. Draw it — a screenshot can't say this.",
    "ratio": "4/3",
    "table": null,
-   "html": "<div class=\"dg dg-hub\">\n  <div class=\"hub-grid\">\n    <span class=\"hub-n\" style=\"--c:#4A154B\">Slack</span>\n    <span class=\"hub-n\" style=\"--c:#6264A7\">Teams</span>\n    <span class=\"hub-n\" style=\"--c:#2D8CFF\">Zoom</span>\n    <span class=\"hub-c bad\">you<small>all day</small></span>\n    <div class=\"hub-row\">\n      <span class=\"hub-n\" style=\"--c:#0052CC\">Jira</span>\n      <span class=\"hub-n\" style=\"--c:#4285F4\">Calendar</span>\n      <span class=\"hub-n\" style=\"--c:#5865F2\">Discord</span>\n    </div>\n  </div>\n  <div class=\"dg-cap\">Five tools. One job. No idea what the team is doing.</div>\n</div>"
+   "html": "<div class=\"dg dg-ledger\"><div class=\"led gone\"><b class=\"led-h\">onsite gave you</b><ul><li>Faster communication</li><li>Better collaboration</li><li>Visible work status</li><li>Clear tasks & accountability</li><li>Real interaction</li></ul></div><i class=\"led-a\"><span>remote</span>→</i><div class=\"led bad\"><b class=\"led-h\">remote left you</b><ul><li>Disconnected tools</li><li>Constant context switching</li><li>No spontaneous talk</li><li>Can't see who's available</li><li>No shared place to be</li></ul></div><p class=\"dg-cap\">Five tools. One job. No idea what the team is doing.</p></div>"
   },
   "next": null
  },
@@ -382,17 +464,21 @@ const SLIDES = [
   "tech": [
    {
     "name": "Slack",
-    "color": "#4A154B"
+    "color": "#4A154B",
+    "path": null
    },
    {
     "name": "Microsoft Teams",
-    "color": "#6264A7"
+    "color": "#6264A7",
+    "path": null
    },
    {
     "name": "Discord",
-    "color": "#5865F2"
+    "color": "#5865F2",
+    "path": "M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"
    }
   ],
+  "mark": null,
   "visual": {
    "kind": "table",
    "desc": "Comparison table. Rows: Chat · Threads · Tasks · Meetings · Presence · One place. Columns: Slack · Teams · Discord · Ours. Give them their ticks honestly.",
@@ -477,6 +563,7 @@ const SLIDES = [
    "Hand over: <i>&quot;Rokaya will show how we got to this from real user research.&quot;</i>"
   ],
   "tech": [],
+  "mark": null,
   "visual": {
    "kind": "diagram-built",
    "desc": "A single ring labelled 'Workspace' with five segments: People · Chat · Tasks · Meetings · Presence. Still no 2D reveal.",
@@ -516,9 +603,15 @@ const SLIDES = [
   "tech": [
    {
     "name": "Figma",
-    "color": "#F24E1E"
+    "color": "#F24E1E",
+    "path": "M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"
    }
   ],
+  "mark": {
+   "key": "Figma",
+   "hex": "#F24E1E",
+   "path": "M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"
+  },
   "visual": {
    "kind": "shot",
    "desc": "3–4 real user-story cards + the arrow Research → User Stories → Features. From Figma if you have it.",
@@ -548,10 +641,11 @@ const SLIDES = [
    "Then say the honest bridge: <i>&quot;This gets us to parity. It doesn&#x27;t solve the gaps. The next slides are what we added.&quot;</i>"
   ],
   "tech": [],
+  "mark": null,
   "visual": {
    "kind": "shot",
    "desc": "The chat UI: a channel with a thread open, real names and avatars. Use the Northstar demo — never an empty workspace.",
-   "ratio": "16/10",
+   "ratio": "1597/636",
    "table": null,
    "html": null
   },
@@ -566,7 +660,7 @@ const SLIDES = [
   "title": "Catching Up Without Reading Everything",
   "who": "Sersawy",
   "initials": "SE",
-  "role": "Backend · Workspace, AI & Platform",
+  "role": "Backend · Workspace, AI & the 2D Office",
   "time": "~1m 15s",
   "bullets": [
    "Built for the person, not just the work",
@@ -591,13 +685,16 @@ const SLIDES = [
   "tech": [
    {
     "name": "Groq",
-    "color": "#F55036"
+    "color": "#F55036",
+    "path": null
    },
    {
     "name": "Function calling",
-    "color": "#10A37F"
+    "color": "#10A37F",
+    "path": null
    }
   ],
+  "mark": null,
   "visual": {
    "kind": "shot",
    "desc": "The Assistant answering 'Catch me up — what did I miss?', with the 'Based on live data' caption visible in frame.",
@@ -612,7 +709,7 @@ const SLIDES = [
   "title": "The Personal Desk",
   "who": "Sersawy",
   "initials": "SE",
-  "role": "Backend · Workspace, AI & Platform",
+  "role": "Backend · Workspace, AI & the 2D Office",
   "time": "~45s",
   "bullets": [
    "Real office: your desk is <i>yours</i>",
@@ -634,10 +731,11 @@ const SLIDES = [
    "<b>Bridge to Nadine (say it, it sets up the reveal):</b> <i>&quot;A desk makes the workspace yours. But a desk on its own is still a room with one person in it — and that&#x27;s the real problem.&quot;</i>"
   ],
   "tech": [],
+  "mark": null,
   "visual": {
    "kind": "shot",
    "desc": "My Desk — Today's Agenda with real meetings, tasks, sticky notes, whiteboard. Seed first; an empty desk proves the opposite of your point.",
-   "ratio": "16/10",
+   "ratio": "1499/1043",
    "table": null,
    "html": null
   },
@@ -652,7 +750,7 @@ const SLIDES = [
   "title": "The Biggest Gap: Human Presence",
   "who": "Nadine",
   "initials": "NA",
-  "role": "Frontend · Real-Time & the 2D Office",
+  "role": "Frontend · Real-Time",
   "time": "~1m 30s",
   "bullets": [
    "You can&#x27;t <b>see</b> your colleagues",
@@ -675,10 +773,11 @@ const SLIDES = [
    "<b>The key line:</b> <i>&quot;This is not a game and it&#x27;s not decoration. It&#x27;s the part that brings back the human interaction the other tools removed.&quot;</i>"
   ],
   "tech": [],
+  "mark": null,
   "visual": {
    "kind": "live",
    "desc": "THE 2D OFFICE — go live. Several avatars, a meeting room, someone's status. Walk across the floor. Fallback screenshot: 1600×900.",
-   "ratio": "16/9",
+   "ratio": "1599/812",
    "table": null,
    "html": null
   },
@@ -712,9 +811,15 @@ const SLIDES = [
   "tech": [
    {
     "name": "Figma",
-    "color": "#F24E1E"
+    "color": "#F24E1E",
+    "path": "M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"
    }
   ],
+  "mark": {
+   "key": "Figma",
+   "hex": "#F24E1E",
+   "path": "M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z"
+  },
   "visual": {
    "kind": "shot",
    "desc": "Figma board: wireframe and the shipped screen side by side. The before → after is the whole story.",
@@ -753,23 +858,31 @@ const SLIDES = [
   "tech": [
    {
     "name": "React",
-    "color": "#61DAFB"
+    "color": "#61DAFB",
+    "path": "M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.345-.034-.46 0-.915.01-1.36.034.44-.572.895-1.096 1.345-1.565zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.868.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.345.034.46 0 .915-.01 1.36-.034-.44.572-.895 1.095-1.345 1.565-.455-.47-.91-.993-1.36-1.565z"
    },
    {
     "name": "React Router",
-    "color": "#CA4245"
+    "color": "#CA4245",
+    "path": "M12.118 5.466a2.306 2.306 0 00-.623.08c-.278.067-.702.332-.953.583-.41.423-.49.609-.662 1.469-.08.423.41 1.43.847 1.734.45.317 1.085.502 2.065.608 1.429.16 1.84.636 1.84 2.197 0 1.377-.385 1.747-1.96 1.906-1.707.172-2.58.834-2.765 2.117-.106.781.41 1.76 1.125 2.091 1.627.768 3.15-.198 3.467-2.196.211-1.284.622-1.642 1.998-1.747 1.588-.133 2.409-.675 2.713-1.787.278-1.02-.304-2.157-1.297-2.554-.264-.106-.873-.238-1.35-.291-1.495-.16-1.879-.424-2.038-1.39-.225-1.337-.317-1.562-.794-2.09a2.174 2.174 0 00-1.613-.73zm-4.785 4.36a2.145 2.145 0 00-.497.048c-1.469.318-2.17 2.051-1.35 3.295 1.178 1.774 3.944.953 3.97-1.177.012-1.193-.98-2.143-2.123-2.166zM2.089 14.19a2.22 2.22 0 00-.427.052c-2.158.476-2.237 3.626-.106 4.182.53.145.582.145 1.111.013 1.191-.318 1.866-1.456 1.549-2.607-.278-1.02-1.144-1.664-2.127-1.64zm19.824.008c-.233.002-.477.058-.784.162-1.39.477-1.866 2.092-.98 3.336.557.794 1.96 1.058 2.82.516 1.416-.874 1.363-3.057-.093-3.746-.38-.186-.663-.271-.963-.268z"
    },
    {
     "name": "Axios",
-    "color": "#5A29E4"
+    "color": "#5A29E4",
+    "path": "M11.0683 2.89968V22.2973l-2.11399 1.70265V7.8638H4.975l6.0933-4.96412zM14.93426 0v15.76724H19.025l-6.20044 5.08865V1.4689L14.93426 0z"
    }
   ],
+  "mark": {
+   "key": "React",
+   "hex": "#61DAFB",
+   "path": "M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.345-.034-.46 0-.915.01-1.36.034.44-.572.895-1.096 1.345-1.565zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.868.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.345.034.46 0 .915-.01 1.36-.034-.44.572-.895 1.095-1.345 1.565-.455-.47-.91-.993-1.36-1.565z"
+  },
   "visual": {
-   "kind": "shot",
+   "kind": "diagram-built",
    "desc": "Component tree or the reusable-components folder + one small Axios interceptor snippet (the auth token). Keep the code readable from the back row.",
    "ratio": "4/3",
    "table": null,
-   "html": null
+   "html": "<div class=\"dg dg-code\">\n  <div class=\"dg-tree\">\n    <b>components/</b>\n    <div>├── <b>Button</b>.jsx</div><div>├── <b>Modal</b>.jsx</div>\n    <div>├── <b>Card</b>.jsx</div><div>└── <b>Nav</b>.jsx</div>\n    <div class=\"dg-tree-note\">built once · used on every page</div>\n  </div>\n  <pre class=\"dg-pre\"><span class=\"c\">// one place for the token, every request</span>\naxios.interceptors.request.use(cfg =&gt; {\n  cfg.headers.<b>Authorization</b> = `Bearer ${token}`\n  return cfg\n})</pre>\n</div>"
   },
   "next": {
    "name": "Nadine",
@@ -782,7 +895,7 @@ const SLIDES = [
   "title": "Real-Time: WebSockets, STOMP & Agora",
   "who": "Nadine",
   "initials": "NA",
-  "role": "Frontend · Real-Time & the 2D Office",
+  "role": "Frontend · Real-Time",
   "time": "~1m",
   "bullets": [
    "HTTP you <i>ask</i> · WebSocket it <i>arrives</i>",
@@ -805,17 +918,25 @@ const SLIDES = [
   "tech": [
    {
     "name": "WebSocket",
-    "color": "#7A7A7A"
+    "color": "#7A7A7A",
+    "path": null
    },
    {
     "name": "STOMP",
-    "color": "#7A7A7A"
+    "color": "#7A7A7A",
+    "path": null
    },
    {
     "name": "Agora",
-    "color": "#099DFD"
+    "color": "#099DFD",
+    "path": "M13.4393 11.6804a1.351 1.351 0 1 1 1.3496-1.351 1.3523 1.3523 0 0 1-1.3496 1.351m0-3.8006a2.4496 2.4496 0 1 0 2.4495 2.4496 2.4537 2.4537 0 0 0-2.4495-2.4496m4.0693.631-.0301.0301-.033.0315-.022-.0397-.0191-.033a1.17 1.17 0 0 0-.8695-.6034l-.092-.0178v4.9019l.092-.0123a1.1383 1.1383 0 0 0 1.008-1.1536v-1.285a1.362 1.362 0 0 1 1.211-1.3428l.0728-.0082V7.8812l-.0878.0096a2.086 2.086 0 0 0-1.2344.6227M2.4477 11.6817a1.351 1.351 0 1 1 1.351-1.3509 1.3523 1.3523 0 0 1-1.351 1.351m1.5731-3.3192-.0206.0274-.0205.0275-.0275-.0206-.026-.0206a2.4496 2.4496 0 1 0-1.4785 4.404 2.4235 2.4235 0 0 0 1.4785-.4978l.026-.0192.0275-.022.0204.0289.0206.0274a1.1685 1.1685 0 0 0 .786.4718l.0905.0124v-4.902l-.0905.0124a1.17 1.17 0 0 0-.786.4704m17.5298 3.3191a1.351 1.351 0 1 1 1.3523-1.3509 1.3523 1.3523 0 0 1-1.351 1.351m2.3577-3.7896a1.1754 1.1754 0 0 0-.7872.4704l-.0192.026-.0206.029-.0274-.0207-.026-.0206a2.4496 2.4496 0 1 0-1.4786 4.4014 2.4235 2.4235 0 0 0 1.4785-.498l.026-.0191.0275-.022.0206.0289.0192.0274a1.174 1.174 0 0 0 .7872.4718L24 12.779V7.8798ZM7.9778 8.9785a1.351 1.351 0 1 1-1.3524 1.351 1.3523 1.3523 0 0 1 1.355-1.351M9.5099 12.24a2.444 2.444 0 0 0 .5006-3.2835 1.9775 1.9775 0 0 0-.1125-.1523 1.1877 1.1877 0 0 0 .524-.8325l.0137-.0919H7.9683A2.4482 2.4482 0 0 0 6.4444 12.24a2.4427 2.4427 0 0 0-.2935.2743l.7461.823a1.351 1.351 0 1 1 1.7831 1.9613l.7475.8229a2.4469 2.4469 0 0 0 .07-3.876"
    }
   ],
+  "mark": {
+   "key": "Agora",
+   "hex": "#099DFD",
+   "path": "M13.4393 11.6804a1.351 1.351 0 1 1 1.3496-1.351 1.3523 1.3523 0 0 1-1.3496 1.351m0-3.8006a2.4496 2.4496 0 1 0 2.4495 2.4496 2.4537 2.4537 0 0 0-2.4495-2.4496m4.0693.631-.0301.0301-.033.0315-.022-.0397-.0191-.033a1.17 1.17 0 0 0-.8695-.6034l-.092-.0178v4.9019l.092-.0123a1.1383 1.1383 0 0 0 1.008-1.1536v-1.285a1.362 1.362 0 0 1 1.211-1.3428l.0728-.0082V7.8812l-.0878.0096a2.086 2.086 0 0 0-1.2344.6227M2.4477 11.6817a1.351 1.351 0 1 1 1.351-1.3509 1.3523 1.3523 0 0 1-1.351 1.351m1.5731-3.3192-.0206.0274-.0205.0275-.0275-.0206-.026-.0206a2.4496 2.4496 0 1 0-1.4785 4.404 2.4235 2.4235 0 0 0 1.4785-.4978l.026-.0192.0275-.022.0204.0289.0206.0274a1.1685 1.1685 0 0 0 .786.4718l.0905.0124v-4.902l-.0905.0124a1.17 1.17 0 0 0-.786.4704m17.5298 3.3191a1.351 1.351 0 1 1 1.3523-1.3509 1.3523 1.3523 0 0 1-1.351 1.351m2.3577-3.7896a1.1754 1.1754 0 0 0-.7872.4704l-.0192.026-.0206.029-.0274-.0207-.026-.0206a2.4496 2.4496 0 1 0-1.4786 4.4014 2.4235 2.4235 0 0 0 1.4785-.498l.026-.0191.0275-.022.0206.0289.0192.0274a1.174 1.174 0 0 0 .7872.4718L24 12.779V7.8798ZM7.9778 8.9785a1.351 1.351 0 1 1-1.3524 1.351 1.3523 1.3523 0 0 1 1.355-1.351M9.5099 12.24a2.444 2.444 0 0 0 .5006-3.2835 1.9775 1.9775 0 0 0-.1125-.1523 1.1877 1.1877 0 0 0 .524-.8325l.0137-.0919H7.9683A2.4482 2.4482 0 0 0 6.4444 12.24a2.4427 2.4427 0 0 0-.2935.2743l.7461.823a1.351 1.351 0 1 1 1.7831 1.9613l.7475.8229a2.4469 2.4469 0 0 0 .07-3.876"
+  },
   "visual": {
    "kind": "diagram-built",
    "desc": "Browser ⇄ WebSocket/STOMP ⇄ Gateway ⇄ Chat Service, with a second line for Agora. Or: two browsers, a message landing instantly.",
@@ -823,14 +944,374 @@ const SLIDES = [
    "table": null,
    "html": "<div class=\"dg dg-flow\">\n  <div class=\"dg-lane\"><b class=\"dg-lane-t\">HTTP — you ask</b>\n    <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#61DAFB\"></i><span>Browser</span></div><i class=\"dg-a\">request →</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Gateway</span></div>\n      <i class=\"dg-a\">← response</i></div></div>\n  <div class=\"dg-lane hot\"><b class=\"dg-lane-t\">WebSocket / STOMP — it arrives</b>\n    <div class=\"dg-row\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#61DAFB\"></i><span>Browser</span></div><i class=\"dg-a dg-a2\">⇄ persistent ⇄</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Gateway</span></div>\n      <i class=\"dg-a dg-a2\">⇄</i><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Chat</span></div></div>\n    <div class=\"dg-sub\">messages · presence · office activity · notifications</div></div>\n  <div class=\"dg-row dg-side\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#099DFD\"></i><span>Agora SDK</span></div><i class=\"dg-a\">voice / video — we didn't rebuild WebRTC</i></div>\n</div>"
   },
-  "next": null
+  "next": {
+   "name": "Khalwsh",
+   "initials": "KH",
+   "hint": "the backend"
+  }
  },
  {
   "n": 13,
+  "title": "Microservices Architecture",
+  "who": "Khalwsh",
+  "initials": "KH",
+  "role": "Backend · Architecture & Chat",
+  "time": "~1m 30s",
+  "bullets": [
+   "Not one app — independent services",
+   "<b>Gateway</b> — one door, validates the JWT once",
+   "User · Workspace · Chat · Notif · Calendar · Tasks · Room · AI · +Office",
+   "Separate · deploy alone · scale alone · <b>fail alone</b>",
+   "~20 containers, one command"
+  ],
+  "notes": [
+   "Your biggest technical slide — don&#x27;t rush it",
+   "<b>Trace one request across the diagram out loud</b>",
+   "If asked <i>&quot;why not a monolith?&quot;</i> — honest answer: a monolith ships faster; we wanted independent deploys and per-service scaling, and the AI service later proved it (zero auth work)"
+  ],
+  "script": [
+   "Instead of one big application, the backend is a set of independent services, each owning one part of the system.",
+   "<b>API Gateway</b> — a single entry point for the web and mobile clients; it validates the JWT once at the edge, then routes each request to the right service.",
+   "The services: <b>User</b> (accounts + authentication), <b>Workspace</b>, <b>Chat</b>, <b>Notifications</b>, <b>Calendar</b>, <b>Tasks</b>, <b>Room</b>, <b>AI</b> — plus a realtime <b>Office server</b> for the 2D plane.",
+   "Why it was worth it: separate responsibilities, develop and deploy each independently, easier to test and maintain, scales per service, and one service failing doesn&#x27;t take the system down.",
+   "Mention the whole thing runs with <b>Docker Compose</b> — ~20 containers, one command."
+  ],
+  "tech": [
+   {
+    "name": "Spring Boot",
+    "color": "#6DB33F",
+    "path": "M21.8537 1.4158a10.4504 10.4504 0 0 1-1.284 2.2471A11.9666 11.9666 0 1 0 3.8518 20.7757l.4445.3951a11.9543 11.9543 0 0 0 19.6316-8.2971c.3457-3.0126-.568-6.8649-2.0743-11.458zM5.5805 20.8745a1.0174 1.0174 0 1 1-.1482-1.4323 1.0396 1.0396 0 0 1 .1482 1.4323zm16.1991-3.5806c-2.9385 3.9263-9.2601 2.5928-13.2852 2.7904 0 0-.7161.0494-1.4323.1481 0 0 .2717-.1234.6174-.2469 2.8398-.9877 4.1732-1.1853 5.9018-2.0743 3.2349-1.6545 6.4698-5.2844 7.1118-9.0379-1.2347 3.6053-4.9881 6.7167-8.3959 7.9761-2.3459.8643-6.5685 1.7039-6.5685 1.7039l-.1729-.0988c-2.8645-1.4076-2.9632-7.6304 2.2718-9.6306 2.2966-.889 4.4696-.395 6.9637-.9877 2.6422-.6174 5.7043-2.5929 6.939-5.1857 1.3828 4.1732 3.062 10.643.0493 14.6434z"
+   },
+   {
+    "name": "Spring Cloud Gateway",
+    "color": "#6DB33F",
+    "path": "M21.8537 1.4158a10.4504 10.4504 0 0 1-1.284 2.2471A11.9666 11.9666 0 1 0 3.8518 20.7757l.4445.3951a11.9543 11.9543 0 0 0 19.6316-8.2971c.3457-3.0126-.568-6.8649-2.0743-11.458zM5.5805 20.8745a1.0174 1.0174 0 1 1-.1482-1.4323 1.0396 1.0396 0 0 1 .1482 1.4323zm16.1991-3.5806c-2.9385 3.9263-9.2601 2.5928-13.2852 2.7904 0 0-.7161.0494-1.4323.1481 0 0 .2717-.1234.6174-.2469 2.8398-.9877 4.1732-1.1853 5.9018-2.0743 3.2349-1.6545 6.4698-5.2844 7.1118-9.0379-1.2347 3.6053-4.9881 6.7167-8.3959 7.9761-2.3459.8643-6.5685 1.7039-6.5685 1.7039l-.1729-.0988c-2.8645-1.4076-2.9632-7.6304 2.2718-9.6306 2.2966-.889 4.4696-.395 6.9637-.9877 2.6422-.6174 5.7043-2.5929 6.939-5.1857 1.3828 4.1732 3.062 10.643.0493 14.6434z"
+   },
+   {
+    "name": "Docker",
+    "color": "#2496ED",
+    "path": "M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z"
+   },
+   {
+    "name": "MySQL",
+    "color": "#4479A1",
+    "path": "M16.405 5.501c-.115 0-.193.014-.274.033v.013h.014c.054.104.146.18.214.273.054.107.1.214.154.32l.014-.015c.094-.066.14-.172.14-.333-.04-.047-.046-.094-.08-.14-.04-.067-.126-.1-.18-.153zM5.77 18.695h-.927a50.854 50.854 0 00-.27-4.41h-.008l-1.41 4.41H2.45l-1.4-4.41h-.01a72.892 72.892 0 00-.195 4.41H0c.055-1.966.192-3.81.41-5.53h1.15l1.335 4.064h.008l1.347-4.064h1.095c.242 2.015.384 3.86.428 5.53zm4.017-4.08c-.378 2.045-.876 3.533-1.492 4.46-.482.716-1.01 1.073-1.583 1.073-.153 0-.34-.046-.566-.138v-.494c.11.017.24.026.386.026.268 0 .483-.075.647-.222.197-.18.295-.382.295-.605 0-.155-.077-.47-.23-.944L6.23 14.615h.91l.727 2.36c.164.536.233.91.205 1.123.4-1.064.678-2.227.835-3.483zm12.325 4.08h-2.63v-5.53h.885v4.85h1.745zm-3.32.135l-1.016-.5c.09-.076.177-.158.255-.25.433-.506.648-1.258.648-2.253 0-1.83-.718-2.746-2.155-2.746-.704 0-1.254.232-1.65.697-.43.508-.646 1.256-.646 2.245 0 .972.19 1.686.574 2.14.35.41.877.615 1.583.615.264 0 .506-.033.725-.098l1.325.772.36-.622zM15.5 17.588c-.225-.36-.337-.94-.337-1.736 0-1.393.424-2.09 1.27-2.09.443 0 .77.167.977.5.224.362.336.936.336 1.723 0 1.404-.424 2.108-1.27 2.108-.445 0-.77-.167-.978-.5zm-1.658-.425c0 .47-.172.856-.516 1.156-.344.3-.803.45-1.384.45-.543 0-1.064-.172-1.573-.515l.237-.476c.438.22.833.328 1.19.328.332 0 .593-.073.783-.22a.754.754 0 00.3-.615c0-.33-.23-.61-.648-.845-.388-.213-1.163-.657-1.163-.657-.422-.307-.632-.636-.632-1.177 0-.45.157-.81.47-1.085.315-.278.72-.415 1.22-.415.512 0 .98.136 1.4.41l-.213.476a2.726 2.726 0 00-1.064-.23c-.283 0-.502.068-.654.206a.685.685 0 00-.248.524c0 .328.234.61.666.85.393.215 1.187.67 1.187.67.433.305.648.63.648 1.168zm9.382-5.852c-.535-.014-.95.04-1.297.188-.1.04-.26.04-.274.167.055.053.063.14.11.214.08.134.218.313.346.407.14.11.28.216.427.31.26.16.555.255.81.416.145.094.293.213.44.313.073.05.12.14.214.172v-.02c-.046-.06-.06-.147-.105-.214-.067-.067-.134-.127-.2-.193a3.223 3.223 0 00-.695-.675c-.214-.146-.682-.35-.77-.595l-.013-.014c.146-.013.32-.066.46-.106.227-.06.435-.047.67-.106.106-.027.213-.06.32-.094v-.06c-.12-.12-.21-.283-.334-.395a8.867 8.867 0 00-1.104-.823c-.21-.134-.476-.22-.697-.334-.08-.04-.214-.06-.26-.127-.12-.146-.19-.34-.275-.514a17.69 17.69 0 01-.547-1.163c-.12-.262-.193-.523-.34-.763-.69-1.137-1.437-1.826-2.586-2.5-.247-.14-.543-.2-.856-.274-.167-.008-.334-.02-.5-.027-.11-.047-.216-.174-.31-.235-.38-.24-1.364-.76-1.644-.072-.18.434.267.862.422 1.082.115.153.26.328.34.5.047.116.06.235.107.356.106.294.207.622.347.897.073.14.153.287.247.413.054.073.146.107.167.227-.094.136-.1.334-.154.5-.24.757-.146 1.693.194 2.25.107.166.362.534.703.393.3-.12.234-.5.32-.835.02-.08.007-.133.048-.187v.015c.094.188.188.367.274.555.206.328.566.668.867.895.16.12.287.328.487.402v-.02h-.015c-.043-.058-.1-.086-.154-.133a3.445 3.445 0 01-.35-.4 8.76 8.76 0 01-.747-1.218c-.11-.21-.202-.436-.29-.643-.04-.08-.04-.2-.107-.24-.1.146-.247.273-.32.453-.127.288-.14.642-.188 1.01-.027.007-.014 0-.027.014-.214-.052-.287-.274-.367-.46-.2-.475-.233-1.238-.06-1.785.047-.14.247-.582.167-.716-.042-.127-.174-.2-.247-.303a2.478 2.478 0 01-.24-.427c-.16-.374-.24-.788-.414-1.162-.08-.173-.22-.354-.334-.513-.127-.18-.267-.307-.368-.52-.033-.073-.08-.194-.027-.274.014-.054.042-.075.094-.09.088-.072.335.022.422.062.247.1.455.194.662.334.094.066.195.193.315.226h.14c.214.047.455.014.655.073.355.114.675.28.962.46a5.953 5.953 0 012.085 2.286c.08.154.115.295.188.455.14.33.313.663.455.982.14.315.275.636.476.897.1.14.502.213.682.286.133.06.34.115.46.188.23.14.454.3.67.454.11.076.443.243.463.378z"
+   },
+   {
+    "name": "PostgreSQL",
+    "color": "#4169E1",
+    "path": "M23.5594 14.7228a.5269.5269 0 0 0-.0563-.1191c-.139-.2632-.4768-.3418-1.0074-.2321-1.6533.3411-2.2935.1312-2.5256-.0191 1.342-2.0482 2.445-4.522 3.0411-6.8297.2714-1.0507.7982-3.5237.1222-4.7316a1.5641 1.5641 0 0 0-.1509-.235C21.6931.9086 19.8007.0248 17.5099.0005c-1.4947-.0158-2.7705.3461-3.1161.4794a9.449 9.449 0 0 0-.5159-.0816 8.044 8.044 0 0 0-1.3114-.1278c-1.1822-.0184-2.2038.2642-3.0498.8406-.8573-.3211-4.7888-1.645-7.2219.0788C.9359 2.1526.3086 3.8733.4302 6.3043c.0409.818.5069 3.334 1.2423 5.7436.4598 1.5065.9387 2.7019 1.4334 3.582.553.9942 1.1259 1.5933 1.7143 1.7895.4474.1491 1.1327.1441 1.8581-.7279.8012-.9635 1.5903-1.8258 1.9446-2.2069.4351.2355.9064.3625 1.39.3772a.0569.0569 0 0 0 .0004.0041 11.0312 11.0312 0 0 0-.2472.3054c-.3389.4302-.4094.5197-1.5002.7443-.3102.064-1.1344.2339-1.1464.8115-.0025.1224.0329.2309.0919.3268.2269.4231.9216.6097 1.015.6331 1.3345.3335 2.5044.092 3.3714-.6787-.017 2.231.0775 4.4174.3454 5.0874.2212.5529.7618 1.9045 2.4692 1.9043.2505 0 .5263-.0291.8296-.0941 1.7819-.3821 2.5557-1.1696 2.855-2.9059.1503-.8707.4016-2.8753.5388-4.1012.0169-.0703.0357-.1207.057-.1362.0007-.0005.0697-.0471.4272.0307a.3673.3673 0 0 0 .0443.0068l.2539.0223.0149.001c.8468.0384 1.9114-.1426 2.5312-.4308.6438-.2988 1.8057-1.0323 1.5951-1.6698zM2.371 11.8765c-.7435-2.4358-1.1779-4.8851-1.2123-5.5719-.1086-2.1714.4171-3.6829 1.5623-4.4927 1.8367-1.2986 4.8398-.5408 6.108-.13-.0032.0032-.0066.0061-.0098.0094-2.0238 2.044-1.9758 5.536-1.9708 5.7495-.0002.0823.0066.1989.0162.3593.0348.5873.0996 1.6804-.0735 2.9184-.1609 1.1504.1937 2.2764.9728 3.0892.0806.0841.1648.1631.2518.2374-.3468.3714-1.1004 1.1926-1.9025 2.1576-.5677.6825-.9597.5517-1.0886.5087-.3919-.1307-.813-.5871-1.2381-1.3223-.4796-.839-.9635-2.0317-1.4155-3.5126zm6.0072 5.0871c-.1711-.0428-.3271-.1132-.4322-.1772.0889-.0394.2374-.0902.4833-.1409 1.2833-.2641 1.4815-.4506 1.9143-1.0002.0992-.126.2116-.2687.3673-.4426a.3549.3549 0 0 0 .0737-.1298c.1708-.1513.2724-.1099.4369-.0417.156.0646.3078.26.3695.4752.0291.1016.0619.2945-.0452.4444-.9043 1.2658-2.2216 1.2494-3.1676 1.0128zm2.094-3.988-.0525.141c-.133.3566-.2567.6881-.3334 1.003-.6674-.0021-1.3168-.2872-1.8105-.8024-.6279-.6551-.9131-1.5664-.7825-2.5004.1828-1.3079.1153-2.4468.079-3.0586-.005-.0857-.0095-.1607-.0122-.2199.2957-.2621 1.6659-.9962 2.6429-.7724.4459.1022.7176.4057.8305.928.5846 2.7038.0774 3.8307-.3302 4.7363-.084.1866-.1633.3629-.2311.5454zm7.3637 4.5725c-.0169.1768-.0358.376-.0618.5959l-.146.4383a.3547.3547 0 0 0-.0182.1077c-.0059.4747-.054.6489-.115.8693-.0634.2292-.1353.4891-.1794 1.0575-.11 1.4143-.8782 2.2267-2.4172 2.5565-1.5155.3251-1.7843-.4968-2.0212-1.2217a6.5824 6.5824 0 0 0-.0769-.2266c-.2154-.5858-.1911-1.4119-.1574-2.5551.0165-.5612-.0249-1.9013-.3302-2.6462.0044-.2932.0106-.5909.019-.8918a.3529.3529 0 0 0-.0153-.1126 1.4927 1.4927 0 0 0-.0439-.208c-.1226-.4283-.4213-.7866-.7797-.9351-.1424-.059-.4038-.1672-.7178-.0869.067-.276.1831-.5875.309-.9249l.0529-.142c.0595-.16.134-.3257.213-.5012.4265-.9476 1.0106-2.2453.3766-5.1772-.2374-1.0981-1.0304-1.6343-2.2324-1.5098-.7207.0746-1.3799.3654-1.7088.5321a5.6716 5.6716 0 0 0-.1958.1041c.0918-1.1064.4386-3.1741 1.7357-4.4823a4.0306 4.0306 0 0 1 .3033-.276.3532.3532 0 0 0 .1447-.0644c.7524-.5706 1.6945-.8506 2.802-.8325.4091.0067.8017.0339 1.1742.081 1.939.3544 3.2439 1.4468 4.0359 2.3827.8143.9623 1.2552 1.9315 1.4312 2.4543-1.3232-.1346-2.2234.1268-2.6797.779-.9926 1.4189.543 4.1729 1.2811 5.4964.1353.2426.2522.4522.2889.5413.2403.5825.5515.9713.7787 1.2552.0696.087.1372.1714.1885.245-.4008.1155-1.1208.3825-1.0552 1.717-.0123.1563-.0423.4469-.0834.8148-.0461.2077-.0702.4603-.0994.7662zm.8905-1.6211c-.0405-.8316.2691-.9185.5967-1.0105a2.8566 2.8566 0 0 0 .135-.0406 1.202 1.202 0 0 0 .1342.103c.5703.3765 1.5823.4213 3.0068.1344-.2016.1769-.5189.3994-.9533.6011-.4098.1903-1.0957.333-1.7473.3636-.7197.0336-1.0859-.0807-1.1721-.151zm.5695-9.2712c-.0059.3508-.0542.6692-.1054 1.0017-.055.3576-.112.7274-.1264 1.1762-.0142.4368.0404.8909.0932 1.3301.1066.887.216 1.8003-.2075 2.7014a3.5272 3.5272 0 0 1-.1876-.3856c-.0527-.1276-.1669-.3326-.3251-.6162-.6156-1.1041-2.0574-3.6896-1.3193-4.7446.3795-.5427 1.3408-.5661 2.1781-.463zm.2284 7.0137a12.3762 12.3762 0 0 0-.0853-.1074l-.0355-.0444c.7262-1.1995.5842-2.3862.4578-3.4385-.0519-.4318-.1009-.8396-.0885-1.2226.0129-.4061.0666-.7543.1185-1.0911.0639-.415.1288-.8443.1109-1.3505.0134-.0531.0188-.1158.0118-.1902-.0457-.4855-.5999-1.938-1.7294-3.253-.6076-.7073-1.4896-1.4972-2.6889-2.0395.5251-.1066 1.2328-.2035 2.0244-.1859 2.0515.0456 3.6746.8135 4.8242 2.2824a.908.908 0 0 1 .0667.1002c.7231 1.3556-.2762 6.2751-2.9867 10.5405zm-8.8166-6.1162c-.025.1794-.3089.4225-.6211.4225a.5821.5821 0 0 1-.0809-.0056c-.1873-.026-.3765-.144-.5059-.3156-.0458-.0605-.1203-.178-.1055-.2844.0055-.0401.0261-.0985.0925-.1488.1182-.0894.3518-.1226.6096-.0867.3163.0441.6426.1938.6113.4186zm7.9305-.4114c.0111.0792-.049.201-.1531.3102-.0683.0717-.212.1961-.4079.2232a.5456.5456 0 0 1-.075.0052c-.2935 0-.5414-.2344-.5607-.3717-.024-.1765.2641-.3106.5611-.352.297-.0414.6111.0088.6356.1851z"
+   },
+   {
+    "name": "MongoDB",
+    "color": "#47A248",
+    "path": "M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.888 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.213 0 .49 10.695.49 10.695-.381-.045-.765-1.76-.765-2.405z"
+   },
+   {
+    "name": "Redis",
+    "color": "#FF4438",
+    "path": "M22.71 13.145c-1.66 2.092-3.452 4.483-7.038 4.483-3.203 0-4.397-2.825-4.48-5.12.701 1.484 2.073 2.685 4.214 2.63 4.117-.133 6.94-3.852 6.94-7.239 0-4.05-3.022-6.972-8.268-6.972-3.752 0-8.4 1.428-11.455 3.685C2.59 6.937 3.885 9.958 4.35 9.626c2.648-1.904 4.748-3.13 6.784-3.744C8.12 9.244.886 17.05 0 18.425c.1 1.261 1.66 4.648 2.424 4.648.232 0 .431-.133.664-.365a100.49 100.49 0 0 0 5.54-6.765c.222 3.104 1.748 6.898 6.014 6.898 3.819 0 7.604-2.756 9.33-8.965.2-.764-.73-1.361-1.261-.73zm-4.349-5.013c0 1.959-1.926 2.922-3.685 2.922-.941 0-1.664-.247-2.235-.568 1.051-1.592 2.092-3.225 3.21-4.973 1.972.334 2.71 1.43 2.71 2.619z"
+   },
+   {
+    "name": "RabbitMQ",
+    "color": "#FF6600",
+    "path": "M23.035 9.601h-7.677a.956.956 0 01-.962-.962V.962a.956.956 0 00-.962-.956H10.56a.956.956 0 00-.962.956V8.64a.956.956 0 01-.962.962H5.762a.956.956 0 01-.961-.962V.962A.956.956 0 003.839 0H.959a.956.956 0 00-.956.962v22.076A.956.956 0 00.965 24h22.07a.956.956 0 00.962-.962V10.58a.956.956 0 00-.962-.98zm-3.86 8.152a1.437 1.437 0 01-1.437 1.443h-1.924a1.437 1.437 0 01-1.436-1.443v-1.917a1.437 1.437 0 011.436-1.443h1.924a1.437 1.437 0 011.437 1.443z"
+   }
+  ],
+  "mark": {
+   "key": "Spring Boot",
+   "hex": "#6DB33F",
+   "path": "M21.8537 1.4158a10.4504 10.4504 0 0 1-1.284 2.2471A11.9666 11.9666 0 1 0 3.8518 20.7757l.4445.3951a11.9543 11.9543 0 0 0 19.6316-8.2971c.3457-3.0126-.568-6.8649-2.0743-11.458zM5.5805 20.8745a1.0174 1.0174 0 1 1-.1482-1.4323 1.0396 1.0396 0 0 1 .1482 1.4323zm16.1991-3.5806c-2.9385 3.9263-9.2601 2.5928-13.2852 2.7904 0 0-.7161.0494-1.4323.1481 0 0 .2717-.1234.6174-.2469 2.8398-.9877 4.1732-1.1853 5.9018-2.0743 3.2349-1.6545 6.4698-5.2844 7.1118-9.0379-1.2347 3.6053-4.9881 6.7167-8.3959 7.9761-2.3459.8643-6.5685 1.7039-6.5685 1.7039l-.1729-.0988c-2.8645-1.4076-2.9632-7.6304 2.2718-9.6306 2.2966-.889 4.4696-.395 6.9637-.9877 2.6422-.6174 5.7043-2.5929 6.939-5.1857 1.3828 4.1732 3.062 10.643.0493 14.6434z"
+  },
+  "visual": {
+   "kind": "diagram-built",
+   "desc": "THE ARCHITECTURE. Clients → Gateway → 9 services → datastores (MySQL · PostgreSQL · MongoDB · Redis · RabbitMQ). Colour-code by concern. Your most important slide.",
+   "ratio": "16/9",
+   "table": null,
+   "html": "<div class=\"dg dg-arch\">\n  <div class=\"dg-tier\"><span class=\"dg-tier-l\">clients</span><div class=\"dg-row\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#61DAFB\"></i><span>Web</span><code>:3001</code></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#02569B\"></i><span>Mobile</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#CC3333\"></i><span>2D Office</span><code>:5000</code></div></div></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-gate\"><div class=\"dg-box wide\"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>API Gateway</span><code>:8080</code></div><small>one door · validates the JWT once · injects identity</small></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-tier\"><span class=\"dg-tier-l\">services</span><div class=\"dg-grid\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>User</span><code>:8091</code></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Workspace</span><code>:8087</code></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Chat</span><code>:8084</code></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Notif</span><code>:8082</code></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Calendar</span><code>:8083</code></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Tasks</span><code>:8085</code></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Room</span><code>:8086</code></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#10A37F\"></i><span>AI</span><code>:8089</code></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#339933\"></i><span>Office</span><code>:2567</code></div></div></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-tier\"><span class=\"dg-tier-l\">data</span><div class=\"dg-row\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#4479A1\"></i><span>MySQL</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#4169E1\"></i><span>Postgres</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#47A248\"></i><span>Mongo</span></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#DC382D\"></i><span>Redis</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#FF6600\"></i><span>RabbitMQ</span></div></div></div>\n  <div class=\"dg-cap\"><div class=\"dg-box dg-ghost\"><i class=\"dg-t\" style=\"--c:#2496ED\"></i><span>Docker Compose</span></div> ~20 containers · one command</div>\n</div>"
+  },
+  "next": {
+   "name": "Mousa",
+   "initials": "MO",
+   "hint": "identity, tasks and the calendar"
+  }
+ },
+ {
+  "n": 14,
+  "title": "Identity: Decided Once, at the Edge",
+  "who": "Mousa",
+  "initials": "MO",
+  "role": "Backend · Security & Services",
+  "time": "~1m",
+  "bullets": [
+   "BCrypt — we never store a password",
+   "JWT (HS256), shared only gateway ↔ user-service",
+   "<b>Strip</b> client <code>X-User-*</code> · <b>inject</b> trusted",
+   "Services never parse a JWT",
+   "Account role <b>vs</b> workspace role",
+   "OTP reset — no links to leak",
+   "Register → <b>RabbitMQ</b> → welcome. Never blocks signup",
+   "<i>“Decided once, at the edge”</i>"
+  ],
+  "notes": [
+   "Strip-then-inject is the whole idea — say it once, clearly, and point at the diagram",
+   "<b>Don&#x27;t recite JWT internals</b> — nobody asked, and it invites a question you don&#x27;t want"
+  ],
+  "script": [
+   "Registration, login and identity live in <b>user-service</b>. Passwords are hashed with <b>BCrypt</b> — we never store a password, not even encrypted.",
+   "On login we issue a <b>JWT (HS256)</b>, signed with a secret shared only between user-service and the gateway.",
+   "<b>The gateway is the only place identity is decided.</b> On every request it:",
+   "Downstream services never parse a JWT. They trust those headers <i>precisely because only the gateway can set them</i>. That&#x27;s why there is no auth code duplicated across nine services — and why adding the AI service later cost us zero auth work.",
+   "<b>Two levels of authorization:</b>",
+   "Password reset is <b>OTP over email</b> — no reset links to leak or replay.",
+   "<b>The line:</b> <i>&quot;Identity is decided once, at the edge. Every service trusts the gateway and nothing else.&quot;</i>"
+  ],
+  "tech": [
+   {
+    "name": "JWT",
+    "color": "#000000",
+    "path": "M10.2 0v6.456L12 8.928l1.8-2.472V0zm3.6 6.456v3.072l2.904-.96L20.52 3.36l-2.928-2.136zm2.904 2.112l-1.8 2.496 2.928.936 6.144-1.992-1.128-3.432zM17.832 12l-2.928.936 1.8 2.496 6.144 1.992 1.128-3.432zm-1.128 3.432l-2.904-.96v3.072l3.792 5.232 2.928-2.136zM13.8 17.544L12 15.072l-1.8 2.472V24h3.6zm-3.6 0v-3.072l-2.904.96L3.48 20.64l2.928 2.136zm-2.904-2.112l1.8-2.496L6.168 12 .024 13.992l1.128 3.432zM6.168 12l2.928-.936-1.8-2.496-6.144-1.992-1.128 3.432zm1.128-3.432l2.904.96V6.456L6.408 1.224 3.48 3.36Z"
+   },
+   {
+    "name": "BCrypt",
+    "color": "#7A7A7A",
+    "path": null
+   },
+   {
+    "name": "Spring Security",
+    "color": "#6DB33F",
+    "path": "M20.59 2.066 11.993 0 3.41 2.066v6.612h4.557a3.804 3.804 0 0 0 0 .954H3.41v3.106C3.41 19.867 11.994 24 11.994 24s8.582-4.133 8.582-11.258V9.635h-4.545a3.616 3.616 0 0 0 0-.954h4.558zM12 12.262h-.006a3.109 3.109 0 1 1 .006 0zm-.006-4.579a.804.804 0 0 0-.37 1.52v.208l.238.237v.159l.159.159v.159l-.14.14.15.246v.159l-.16.189.223.222.246-.246V9.218a.804.804 0 0 0-.346-1.535zm0 .836a.299.299 0 1 1 .298-.299.299.299 0 0 1-.298.3z"
+   }
+  ],
+  "mark": {
+   "key": "JWT",
+   "hex": "#000000",
+   "path": "M10.2 0v6.456L12 8.928l1.8-2.472V0zm3.6 6.456v3.072l2.904-.96L20.52 3.36l-2.928-2.136zm2.904 2.112l-1.8 2.496 2.928.936 6.144-1.992-1.128-3.432zM17.832 12l-2.928.936 1.8 2.496 6.144 1.992 1.128-3.432zm-1.128 3.432l-2.904-.96v3.072l3.792 5.232 2.928-2.136zM13.8 17.544L12 15.072l-1.8 2.472V24h3.6zm-3.6 0v-3.072l-2.904.96L3.48 20.64l2.928 2.136zm-2.904-2.112l1.8-2.496L6.168 12 .024 13.992l1.128 3.432zM6.168 12l2.928-.936-1.8-2.496-6.144-1.992-1.128 3.432zm1.128-3.432l2.904.96V6.456L6.408 1.224 3.48 3.36Z"
+  },
+  "visual": {
+   "kind": "diagram-built",
+   "desc": "Strip-then-inject: Client (X-User-Id: 1 ← spoofed ✗) → Gateway [verify JWT · strip · inject] → Service (X-User-Id: 64 ✓).",
+   "ratio": "16/9",
+   "table": null,
+   "html": "<div class=\"dg dg-auth\">\n  <div class=\"dg-row\">\n    <div class=\"dg-box bad\"><span>Client</span><code>X-User-Id: 1</code><small>spoofed</small></div>\n    <i class=\"dg-a\">→</i>\n    <div class=\"dg-gatebox\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Gateway</span></div>\n      <ol><li>verify JWT</li><li class=\"strike\">strip <code>X-User-*</code></li><li>inject trusted</li></ol></div>\n    <i class=\"dg-a\">→</i>\n    <div class=\"dg-box good\"><span>Service</span><code>X-User-Id: 64</code><small>trusted</small></div>\n  </div>\n  <div class=\"dg-cap\">Services never parse a JWT. They trust the gateway — because only it can set these.</div>\n</div>"
+  },
+  "next": null
+ },
+ {
+  "n": 15,
+  "title": "Tasks & Calendar: The Engineering",
+  "who": "Mousa",
+  "initials": "MO",
+  "role": "Backend · Security & Services",
+  "time": "~1m 15s",
+  "bullets": [
+   "Spring Data JPA on PostgreSQL",
+   "<b><code>#42</code>, not a UUID</b> — max+1 per workspace",
+   "<b>Flyway</b> — schema is versioned, not hand-run SQL",
+   "Assign → RabbitMQ → Notification. <b>Never waits</b>",
+   "<code>@Scheduled</code> 60s — reminders + <b>auto-status</b>",
+   "Meeting starts → <i>“In a meeting ”</i> by itself",
+   "<b>Idempotent</b> — flags, never double-send",
+   "<b>Never clobber a human&#x27;s own status</b>"
+  ],
+  "notes": [
+   "<b>Skip the CRUD</b> — create/assign/deadline isn&#x27;t interesting, and the slide already says it",
+   "Go straight to auto-status and the idempotency flags",
+   "Your best line: <i>&quot;we only revert if the status still carries our marker&quot;</i>"
+  ],
+  "script": [
+   "Both are Spring Boot + <b>Spring Data JPA on PostgreSQL</b>, each with its own schema. Relational on purpose: tasks and events have real relationships and we query them by assignee, status and date range.",
+   "<b>Human task numbers.</b> Tasks are <code>#42</code>, not a UUID — <code>max(taskNumber) + 1</code> per workspace, so numbers are per-company and someone can say <i>&quot;take a look at 42&quot;</i> in chat and be understood. <i>(Honest trade-off: it&#x27;s a read-then-write, so under real concurrency it needs the transaction plus a unique constraint to stay safe.)</i>",
+   "<b>Event-driven, not blocking.</b> Assign a task → Task Service publishes an event to <b>RabbitMQ</b> → Notification Service consumes it and sends. Task Service never waits for an email. If notifications are down, tasks still work — that&#x27;s the whole point of the queue.",
+   "<b>Scheduled jobs</b> (<code>@Scheduled</code>, 60s tick) — this is where the calendar gets interesting:",
+   "<b>The two details worth stressing — examiners ask about exactly this:</b>",
+   "Plus the unglamorous parts that keep it honest: <code>@NotNull</code> / <code>@NotBlank</code> validation at each service edge, enums normalised on input, and space membership checked before you can put a task on someone&#x27;s board."
+  ],
+  "tech": [
+   {
+    "name": "Spring Data JPA",
+    "color": "#6DB33F",
+    "path": "M21.8537 1.4158a10.4504 10.4504 0 0 1-1.284 2.2471A11.9666 11.9666 0 1 0 3.8518 20.7757l.4445.3951a11.9543 11.9543 0 0 0 19.6316-8.2971c.3457-3.0126-.568-6.8649-2.0743-11.458zM5.5805 20.8745a1.0174 1.0174 0 1 1-.1482-1.4323 1.0396 1.0396 0 0 1 .1482 1.4323zm16.1991-3.5806c-2.9385 3.9263-9.2601 2.5928-13.2852 2.7904 0 0-.7161.0494-1.4323.1481 0 0 .2717-.1234.6174-.2469 2.8398-.9877 4.1732-1.1853 5.9018-2.0743 3.2349-1.6545 6.4698-5.2844 7.1118-9.0379-1.2347 3.6053-4.9881 6.7167-8.3959 7.9761-2.3459.8643-6.5685 1.7039-6.5685 1.7039l-.1729-.0988c-2.8645-1.4076-2.9632-7.6304 2.2718-9.6306 2.2966-.889 4.4696-.395 6.9637-.9877 2.6422-.6174 5.7043-2.5929 6.939-5.1857 1.3828 4.1732 3.062 10.643.0493 14.6434z"
+   },
+   {
+    "name": "PostgreSQL",
+    "color": "#4169E1",
+    "path": "M23.5594 14.7228a.5269.5269 0 0 0-.0563-.1191c-.139-.2632-.4768-.3418-1.0074-.2321-1.6533.3411-2.2935.1312-2.5256-.0191 1.342-2.0482 2.445-4.522 3.0411-6.8297.2714-1.0507.7982-3.5237.1222-4.7316a1.5641 1.5641 0 0 0-.1509-.235C21.6931.9086 19.8007.0248 17.5099.0005c-1.4947-.0158-2.7705.3461-3.1161.4794a9.449 9.449 0 0 0-.5159-.0816 8.044 8.044 0 0 0-1.3114-.1278c-1.1822-.0184-2.2038.2642-3.0498.8406-.8573-.3211-4.7888-1.645-7.2219.0788C.9359 2.1526.3086 3.8733.4302 6.3043c.0409.818.5069 3.334 1.2423 5.7436.4598 1.5065.9387 2.7019 1.4334 3.582.553.9942 1.1259 1.5933 1.7143 1.7895.4474.1491 1.1327.1441 1.8581-.7279.8012-.9635 1.5903-1.8258 1.9446-2.2069.4351.2355.9064.3625 1.39.3772a.0569.0569 0 0 0 .0004.0041 11.0312 11.0312 0 0 0-.2472.3054c-.3389.4302-.4094.5197-1.5002.7443-.3102.064-1.1344.2339-1.1464.8115-.0025.1224.0329.2309.0919.3268.2269.4231.9216.6097 1.015.6331 1.3345.3335 2.5044.092 3.3714-.6787-.017 2.231.0775 4.4174.3454 5.0874.2212.5529.7618 1.9045 2.4692 1.9043.2505 0 .5263-.0291.8296-.0941 1.7819-.3821 2.5557-1.1696 2.855-2.9059.1503-.8707.4016-2.8753.5388-4.1012.0169-.0703.0357-.1207.057-.1362.0007-.0005.0697-.0471.4272.0307a.3673.3673 0 0 0 .0443.0068l.2539.0223.0149.001c.8468.0384 1.9114-.1426 2.5312-.4308.6438-.2988 1.8057-1.0323 1.5951-1.6698zM2.371 11.8765c-.7435-2.4358-1.1779-4.8851-1.2123-5.5719-.1086-2.1714.4171-3.6829 1.5623-4.4927 1.8367-1.2986 4.8398-.5408 6.108-.13-.0032.0032-.0066.0061-.0098.0094-2.0238 2.044-1.9758 5.536-1.9708 5.7495-.0002.0823.0066.1989.0162.3593.0348.5873.0996 1.6804-.0735 2.9184-.1609 1.1504.1937 2.2764.9728 3.0892.0806.0841.1648.1631.2518.2374-.3468.3714-1.1004 1.1926-1.9025 2.1576-.5677.6825-.9597.5517-1.0886.5087-.3919-.1307-.813-.5871-1.2381-1.3223-.4796-.839-.9635-2.0317-1.4155-3.5126zm6.0072 5.0871c-.1711-.0428-.3271-.1132-.4322-.1772.0889-.0394.2374-.0902.4833-.1409 1.2833-.2641 1.4815-.4506 1.9143-1.0002.0992-.126.2116-.2687.3673-.4426a.3549.3549 0 0 0 .0737-.1298c.1708-.1513.2724-.1099.4369-.0417.156.0646.3078.26.3695.4752.0291.1016.0619.2945-.0452.4444-.9043 1.2658-2.2216 1.2494-3.1676 1.0128zm2.094-3.988-.0525.141c-.133.3566-.2567.6881-.3334 1.003-.6674-.0021-1.3168-.2872-1.8105-.8024-.6279-.6551-.9131-1.5664-.7825-2.5004.1828-1.3079.1153-2.4468.079-3.0586-.005-.0857-.0095-.1607-.0122-.2199.2957-.2621 1.6659-.9962 2.6429-.7724.4459.1022.7176.4057.8305.928.5846 2.7038.0774 3.8307-.3302 4.7363-.084.1866-.1633.3629-.2311.5454zm7.3637 4.5725c-.0169.1768-.0358.376-.0618.5959l-.146.4383a.3547.3547 0 0 0-.0182.1077c-.0059.4747-.054.6489-.115.8693-.0634.2292-.1353.4891-.1794 1.0575-.11 1.4143-.8782 2.2267-2.4172 2.5565-1.5155.3251-1.7843-.4968-2.0212-1.2217a6.5824 6.5824 0 0 0-.0769-.2266c-.2154-.5858-.1911-1.4119-.1574-2.5551.0165-.5612-.0249-1.9013-.3302-2.6462.0044-.2932.0106-.5909.019-.8918a.3529.3529 0 0 0-.0153-.1126 1.4927 1.4927 0 0 0-.0439-.208c-.1226-.4283-.4213-.7866-.7797-.9351-.1424-.059-.4038-.1672-.7178-.0869.067-.276.1831-.5875.309-.9249l.0529-.142c.0595-.16.134-.3257.213-.5012.4265-.9476 1.0106-2.2453.3766-5.1772-.2374-1.0981-1.0304-1.6343-2.2324-1.5098-.7207.0746-1.3799.3654-1.7088.5321a5.6716 5.6716 0 0 0-.1958.1041c.0918-1.1064.4386-3.1741 1.7357-4.4823a4.0306 4.0306 0 0 1 .3033-.276.3532.3532 0 0 0 .1447-.0644c.7524-.5706 1.6945-.8506 2.802-.8325.4091.0067.8017.0339 1.1742.081 1.939.3544 3.2439 1.4468 4.0359 2.3827.8143.9623 1.2552 1.9315 1.4312 2.4543-1.3232-.1346-2.2234.1268-2.6797.779-.9926 1.4189.543 4.1729 1.2811 5.4964.1353.2426.2522.4522.2889.5413.2403.5825.5515.9713.7787 1.2552.0696.087.1372.1714.1885.245-.4008.1155-1.1208.3825-1.0552 1.717-.0123.1563-.0423.4469-.0834.8148-.0461.2077-.0702.4603-.0994.7662zm.8905-1.6211c-.0405-.8316.2691-.9185.5967-1.0105a2.8566 2.8566 0 0 0 .135-.0406 1.202 1.202 0 0 0 .1342.103c.5703.3765 1.5823.4213 3.0068.1344-.2016.1769-.5189.3994-.9533.6011-.4098.1903-1.0957.333-1.7473.3636-.7197.0336-1.0859-.0807-1.1721-.151zm.5695-9.2712c-.0059.3508-.0542.6692-.1054 1.0017-.055.3576-.112.7274-.1264 1.1762-.0142.4368.0404.8909.0932 1.3301.1066.887.216 1.8003-.2075 2.7014a3.5272 3.5272 0 0 1-.1876-.3856c-.0527-.1276-.1669-.3326-.3251-.6162-.6156-1.1041-2.0574-3.6896-1.3193-4.7446.3795-.5427 1.3408-.5661 2.1781-.463zm.2284 7.0137a12.3762 12.3762 0 0 0-.0853-.1074l-.0355-.0444c.7262-1.1995.5842-2.3862.4578-3.4385-.0519-.4318-.1009-.8396-.0885-1.2226.0129-.4061.0666-.7543.1185-1.0911.0639-.415.1288-.8443.1109-1.3505.0134-.0531.0188-.1158.0118-.1902-.0457-.4855-.5999-1.938-1.7294-3.253-.6076-.7073-1.4896-1.4972-2.6889-2.0395.5251-.1066 1.2328-.2035 2.0244-.1859 2.0515.0456 3.6746.8135 4.8242 2.2824a.908.908 0 0 1 .0667.1002c.7231 1.3556-.2762 6.2751-2.9867 10.5405zm-8.8166-6.1162c-.025.1794-.3089.4225-.6211.4225a.5821.5821 0 0 1-.0809-.0056c-.1873-.026-.3765-.144-.5059-.3156-.0458-.0605-.1203-.178-.1055-.2844.0055-.0401.0261-.0985.0925-.1488.1182-.0894.3518-.1226.6096-.0867.3163.0441.6426.1938.6113.4186zm7.9305-.4114c.0111.0792-.049.201-.1531.3102-.0683.0717-.212.1961-.4079.2232a.5456.5456 0 0 1-.075.0052c-.2935 0-.5414-.2344-.5607-.3717-.024-.1765.2641-.3106.5611-.352.297-.0414.6111.0088.6356.1851z"
+   },
+   {
+    "name": "Flyway",
+    "color": "#CC0200",
+    "path": "m3.02 21.055 1.12-.23c1.054-.219 2.114-.415 3.161-.66a4.955 4.952 0 0 0 3.696-3.915 6.06 6.057 0 0 0 .085-1.153l.366-.09a4.936 4.933 0 0 0 3.75-3.717 3.8 3.798 0 0 0 .128-1.06c-.002-.096 0-.193 0-.305.094-.023.18-.047.267-.067a4.552 4.549 0 0 0 2.68-1.755 5.772 5.769 0 0 0 1.005-4.854c-.021-.088-.035-.179-.061-.264a.63.629 0 0 0-.728-.432l-3.184.652-3.485.716-4.002.822q-2.186.449-4.373.893a1.125 1.125 0 0 1-.422.06c-.007-.074-.017-.14-.017-.204-.001-1.12.002-2.243-.005-3.364a.324.324 0 0 1 .174-.307 8.493 8.488 0 0 1 1.9-.86A17.205 17.194 0 0 1 7.827.315C8.373.23 8.922.181 9.47.12a26.795 26.777 0 0 1 3.526-.102c.496.01.992.051 1.487.097.542.051 1.085.11 1.623.192a14.482 14.472 0 0 1 4.007 1.124c.262.123.509.28.764.422a.215.215 0 0 1 .122.223c-.004.054 0 .11 0 .163v19.519c0 .347.045.28-.262.472a8.437 8.432 0 0 1-1.961.857 16.78 16.769 0 0 1-2.851.63c-.6.08-1.2.146-1.804.207-.277.03-.556.035-.835.043-.564.015-1.128.041-1.691.03-.636-.014-1.272-.059-1.907-.099a20.054 20.041 0 0 1-2.519-.332 13.423 13.415 0 0 1-3.224-.976c-.273-.13-.53-.29-.797-.435a.246.246 0 0 1-.144-.248c.008-.23 0-.46.003-.69 0-.049.01-.096.016-.163zm9.985-10.652a1.248 1.248 0 0 1-.09.55 2.624 2.622 0 0 1-2.045 1.84c-1.3.28-2.607.537-3.912.805l-.57.114a1.147 1.146 0 1 0 .403 2.256c.595-.11 1.186-.242 1.779-.363.064-.014.128-.022.209-.035a2.584 2.582 0 0 1-.55 1.41A2.801 2.8 0 0 1 6.516 18c-1.103.223-2.206.45-3.308.676-.052.01-.106.013-.156.02-.048-.146-.061-10.38-.014-10.63l14.048-2.883a1.523 1.522 0 0 1-.016.18 3.438 3.436 0 0 1-.738 1.502 2.399 2.397 0 0 1-1.426.804c-1.11.216-2.218.45-3.326.677l-.96.196a1.168 1.168 0 0 0-.953 1.057 1.147 1.147 0 0 0 .875 1.186 1.747 1.746 0 0 0 .807-.054c.492-.1.983-.203 1.475-.304.053-.01.108-.014.18-.023z"
+   },
+   {
+    "name": "RabbitMQ",
+    "color": "#FF6600",
+    "path": "M23.035 9.601h-7.677a.956.956 0 01-.962-.962V.962a.956.956 0 00-.962-.956H10.56a.956.956 0 00-.962.956V8.64a.956.956 0 01-.962.962H5.762a.956.956 0 01-.961-.962V.962A.956.956 0 003.839 0H.959a.956.956 0 00-.956.962v22.076A.956.956 0 00.965 24h22.07a.956.956 0 00.962-.962V10.58a.956.956 0 00-.962-.98zm-3.86 8.152a1.437 1.437 0 01-1.437 1.443h-1.924a1.437 1.437 0 01-1.436-1.443v-1.917a1.437 1.437 0 011.436-1.443h1.924a1.437 1.437 0 011.437 1.443z"
+   }
+  ],
+  "mark": {
+   "key": "Spring Boot",
+   "hex": "#6DB33F",
+   "path": "M21.8537 1.4158a10.4504 10.4504 0 0 1-1.284 2.2471A11.9666 11.9666 0 1 0 3.8518 20.7757l.4445.3951a11.9543 11.9543 0 0 0 19.6316-8.2971c.3457-3.0126-.568-6.8649-2.0743-11.458zM5.5805 20.8745a1.0174 1.0174 0 1 1-.1482-1.4323 1.0396 1.0396 0 0 1 .1482 1.4323zm16.1991-3.5806c-2.9385 3.9263-9.2601 2.5928-13.2852 2.7904 0 0-.7161.0494-1.4323.1481 0 0 .2717-.1234.6174-.2469 2.8398-.9877 4.1732-1.1853 5.9018-2.0743 3.2349-1.6545 6.4698-5.2844 7.1118-9.0379-1.2347 3.6053-4.9881 6.7167-8.3959 7.9761-2.3459.8643-6.5685 1.7039-6.5685 1.7039l-.1729-.0988c-2.8645-1.4076-2.9632-7.6304 2.2718-9.6306 2.2966-.889 4.4696-.395 6.9637-.9877 2.6422-.6174 5.7043-2.5929 6.939-5.1857 1.3828 4.1732 3.062 10.643.0493 14.6434z"
+  },
+  "visual": {
+   "kind": "diagram-built",
+   "desc": "AutoStatusScheduler.sync() — ~15 lines. Plus the tasks board with Overdue / Today / upcoming bands.",
+   "ratio": "4/3",
+   "table": null,
+   "html": "<div class=\"dg dg-code\">\n  <pre class=\"dg-pre\"><b>@Scheduled</b>(fixedDelay = 60_000)\nvoid <b>sync</b>() {\n  applyForStartedMeetings(now);  <span class=\"c\">// -&gt; \"In a meeting\"</span>\n  revertForEndedMeetings(now);   <span class=\"c\">// only if our marker</span>\n}\n<span class=\"c\">// fails? don't set the flag. next tick retries.</span></pre>\n  <figure class=\"obs-shot\"><img src=\"shots/slide-15-tasks.png\" alt=\"\" onerror=\"this.closest('figure').remove()\">\n    <figcaption>day bands · <b>#97</b>, <b>#94</b> — human numbers, not UUIDs</figcaption></figure>\n</div>"
+  },
+  "next": {
+   "name": "Khalwsh",
+   "initials": "KH",
+   "hint": "chat, notifications and rooms"
+  }
+ },
+ {
+  "n": 16,
+  "title": "Chat, Notifications & Rooms",
+  "who": "Khalwsh",
+  "initials": "KH",
+  "role": "Backend · Architecture & Chat",
+  "time": "~1m 30s",
+  "bullets": [
+   "Chat: DMs · channels · threads, live",
+   "WebSocket · <b>Redis</b> presence · <b>Mongo</b> volume",
+   " <b>DMs are E2E — we can&#x27;t read them</b>",
+   "ECDH → AES-GCM <b>in the browser</b>",
+   "Server stores <code>vo1:&lt;iv&gt;:&lt;ct&gt;</code> and nothing else",
+   "<b>Trade-off: DMs only</b> — channels feed search + AI",
+   "Limits: one device · no forward secrecy · TOFU",
+   "Notif: <b>RabbitMQ</b> — Task never waits",
+   "Rooms: we own the permissions"
+  ],
+  "notes": [
+   "Three services <i>and</i> encryption — budget it: ~30s chat/Redis/Mongo · ~20s RabbitMQ · ~40s encryption",
+   "<b>Run the Mongo ciphertext query live</b> — ten seconds, and it ends the argument"
+  ],
+  "script": [
+   "<b>Chat Service</b> — DMs, channels, threads, group conversations, delivered live.",
+   "<b>🔒 Direct messages are end-to-end encrypted — we can&#x27;t read them, and neither can our server.</b>",
+   "<b>Notification Service</b> — email, in-app pop-ups, and real-time.",
+   "<b>Room Service</b> — meeting and voice rooms, who&#x27;s inside, joining and leaving, and linking a room to a place in the virtual office. <b>Agora</b> provides the call transport; we own rooms and permissions."
+  ],
+  "tech": [
+   {
+    "name": "MongoDB",
+    "color": "#47A248",
+    "path": "M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.888 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.213 0 .49 10.695.49 10.695-.381-.045-.765-1.76-.765-2.405z"
+   },
+   {
+    "name": "Redis",
+    "color": "#FF4438",
+    "path": "M22.71 13.145c-1.66 2.092-3.452 4.483-7.038 4.483-3.203 0-4.397-2.825-4.48-5.12.701 1.484 2.073 2.685 4.214 2.63 4.117-.133 6.94-3.852 6.94-7.239 0-4.05-3.022-6.972-8.268-6.972-3.752 0-8.4 1.428-11.455 3.685C2.59 6.937 3.885 9.958 4.35 9.626c2.648-1.904 4.748-3.13 6.784-3.744C8.12 9.244.886 17.05 0 18.425c.1 1.261 1.66 4.648 2.424 4.648.232 0 .431-.133.664-.365a100.49 100.49 0 0 0 5.54-6.765c.222 3.104 1.748 6.898 6.014 6.898 3.819 0 7.604-2.756 9.33-8.965.2-.764-.73-1.361-1.261-.73zm-4.349-5.013c0 1.959-1.926 2.922-3.685 2.922-.941 0-1.664-.247-2.235-.568 1.051-1.592 2.092-3.225 3.21-4.973 1.972.334 2.71 1.43 2.71 2.619z"
+   },
+   {
+    "name": "RabbitMQ",
+    "color": "#FF6600",
+    "path": "M23.035 9.601h-7.677a.956.956 0 01-.962-.962V.962a.956.956 0 00-.962-.956H10.56a.956.956 0 00-.962.956V8.64a.956.956 0 01-.962.962H5.762a.956.956 0 01-.961-.962V.962A.956.956 0 003.839 0H.959a.956.956 0 00-.956.962v22.076A.956.956 0 00.965 24h22.07a.956.956 0 00.962-.962V10.58a.956.956 0 00-.962-.98zm-3.86 8.152a1.437 1.437 0 01-1.437 1.443h-1.924a1.437 1.437 0 01-1.436-1.443v-1.917a1.437 1.437 0 011.436-1.443h1.924a1.437 1.437 0 011.437 1.443z"
+   },
+   {
+    "name": "WebSocket",
+    "color": "#7A7A7A",
+    "path": null
+   },
+   {
+    "name": "WebCrypto",
+    "color": "#2F6F4F",
+    "path": null
+   }
+  ],
+  "mark": {
+   "key": "MongoDB",
+   "hex": "#47A248",
+   "path": "M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.888 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.213 0 .49 10.695.49 10.695-.381-.045-.765-1.76-.765-2.405z"
+  },
+  "visual": {
+   "kind": "diagram-built",
+   "desc": "Terminal: the Mongo query returning vo1:<iv>:<ciphertext>. Ten seconds, and it ends the argument. Plus the RabbitMQ event flow diagram.",
+   "ratio": "16/9",
+   "table": null,
+   "html": "<div class=\"dg dg-code\">\n  <pre class=\"dg-pre term\"><span class=\"p\">&gt;</span> db.messages.find({content: /^vo1:/})\n<span class=\"ct\">vo1:TzO44O2p++/WL3yy:YHdQoK4tYMtycnZBfodXR5RX8…</span>\n<span class=\"c\">// what the server has. no key. that's the whole point.</span></pre>\n  <div class=\"dg-row dg-q\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Task Service</span></div><i class=\"dg-a\">publish →</i>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#FF6600\"></i><span>RabbitMQ</span></div><i class=\"dg-a\">→ consume</i>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Notification</span></div>\n  </div>\n  <div class=\"dg-cap\">Task Service never waits for an email.</div>\n</div>"
+  },
+  "next": {
+   "name": "Sersawy",
+   "initials": "SE",
+   "hint": "the workspace and the AI bot"
+  }
+ },
+ {
+  "n": 17,
+  "title": "Workspace Service & the AI Bot",
+  "who": "Sersawy",
+  "initials": "SE",
+  "role": "Backend · Workspace, AI & the 2D Office",
+  "time": "~1m 15s",
+  "bullets": [
+   "Workspace = the backbone",
+   "Members · teams · channels · roles · office layout",
+   "AI: summarise · decisions · create · answer",
+   "<b>The hard part was context</b>",
+   "Function calling — same APIs, <b>your</b> token"
+  ],
+  "notes": [
+   "<b>Create the task from a sentence, live</b>",
+   "While it runs, say the context + permissions point — that&#x27;s the actual content",
+   "The task appearing on the board is the applause moment"
+  ],
+  "script": [
+   "<b>Workspace Service</b> — the backbone. It creates the workspace, adds/removes members, splits people into <b>teams</b>, manages channels and rooms, sets roles and permissions, and connects people to their tasks, meetings and conversations. It also holds the virtual office layout.",
+   "One place instead of five apps — that&#x27;s this service&#x27;s job.",
+   "<b>AI Bot</b> — it can summarise a long conversation, pull out the decisions, tell you which tasks were mentioned, answer questions about the workspace, and create tasks and meetings from plain language.",
+   "<b>Say the hard part out loud (examiners like this):</b> the real challenge was <b>context</b> — giving the model only the data that belongs to this user and this conversation, so the answer is accurate and grounded. We solved it with <b>function calling</b>: the model doesn&#x27;t get a data dump, it calls the same APIs a user would, <b>using that user&#x27;s own token</b> — so it can never see anything the person couldn&#x27;t see themselves."
+  ],
+  "tech": [
+   {
+    "name": "Node.js",
+    "color": "#5FA04E",
+    "path": "M11.998,24c-0.321,0-0.641-0.084-0.922-0.247l-2.936-1.737c-0.438-0.245-0.224-0.332-0.08-0.383 c0.585-0.203,0.703-0.25,1.328-0.604c0.065-0.037,0.151-0.023,0.218,0.017l2.256,1.339c0.082,0.045,0.197,0.045,0.272,0l8.795-5.076 c0.082-0.047,0.134-0.141,0.134-0.238V6.921c0-0.099-0.053-0.192-0.137-0.242l-8.791-5.072c-0.081-0.047-0.189-0.047-0.271,0 L3.075,6.68C2.99,6.729,2.936,6.825,2.936,6.921v10.15c0,0.097,0.054,0.189,0.139,0.235l2.409,1.392 c1.307,0.654,2.108-0.116,2.108-0.89V7.787c0-0.142,0.114-0.253,0.256-0.253h1.115c0.139,0,0.255,0.112,0.255,0.253v10.021 c0,1.745-0.95,2.745-2.604,2.745c-0.508,0-0.909,0-2.026-0.551L2.28,18.675c-0.57-0.329-0.922-0.945-0.922-1.604V6.921 c0-0.659,0.353-1.275,0.922-1.603l8.795-5.082c0.557-0.315,1.296-0.315,1.848,0l8.794,5.082c0.57,0.329,0.924,0.944,0.924,1.603 v10.15c0,0.659-0.354,1.273-0.924,1.604l-8.794,5.078C12.643,23.916,12.324,24,11.998,24z M19.099,13.993 c0-1.9-1.284-2.406-3.987-2.763c-2.731-0.361-3.009-0.548-3.009-1.187c0-0.528,0.235-1.233,2.258-1.233 c1.807,0,2.473,0.389,2.747,1.607c0.024,0.115,0.129,0.199,0.247,0.199h1.141c0.071,0,0.138-0.031,0.186-0.081 c0.048-0.054,0.074-0.123,0.067-0.196c-0.177-2.098-1.571-3.076-4.388-3.076c-2.508,0-4.004,1.058-4.004,2.833 c0,1.925,1.488,2.457,3.895,2.695c2.88,0.282,3.103,0.703,3.103,1.269c0,0.983-0.789,1.402-2.642,1.402 c-2.327,0-2.839-0.584-3.011-1.742c-0.02-0.124-0.126-0.215-0.253-0.215h-1.137c-0.141,0-0.254,0.112-0.254,0.253 c0,1.482,0.806,3.248,4.655,3.248C17.501,17.007,19.099,15.91,19.099,13.993z"
+   },
+   {
+    "name": "Groq",
+    "color": "#F55036",
+    "path": null
+   },
+   {
+    "name": "Function calling",
+    "color": "#10A37F",
+    "path": null
+   },
+   {
+    "name": "PostgreSQL",
+    "color": "#4169E1",
+    "path": "M23.5594 14.7228a.5269.5269 0 0 0-.0563-.1191c-.139-.2632-.4768-.3418-1.0074-.2321-1.6533.3411-2.2935.1312-2.5256-.0191 1.342-2.0482 2.445-4.522 3.0411-6.8297.2714-1.0507.7982-3.5237.1222-4.7316a1.5641 1.5641 0 0 0-.1509-.235C21.6931.9086 19.8007.0248 17.5099.0005c-1.4947-.0158-2.7705.3461-3.1161.4794a9.449 9.449 0 0 0-.5159-.0816 8.044 8.044 0 0 0-1.3114-.1278c-1.1822-.0184-2.2038.2642-3.0498.8406-.8573-.3211-4.7888-1.645-7.2219.0788C.9359 2.1526.3086 3.8733.4302 6.3043c.0409.818.5069 3.334 1.2423 5.7436.4598 1.5065.9387 2.7019 1.4334 3.582.553.9942 1.1259 1.5933 1.7143 1.7895.4474.1491 1.1327.1441 1.8581-.7279.8012-.9635 1.5903-1.8258 1.9446-2.2069.4351.2355.9064.3625 1.39.3772a.0569.0569 0 0 0 .0004.0041 11.0312 11.0312 0 0 0-.2472.3054c-.3389.4302-.4094.5197-1.5002.7443-.3102.064-1.1344.2339-1.1464.8115-.0025.1224.0329.2309.0919.3268.2269.4231.9216.6097 1.015.6331 1.3345.3335 2.5044.092 3.3714-.6787-.017 2.231.0775 4.4174.3454 5.0874.2212.5529.7618 1.9045 2.4692 1.9043.2505 0 .5263-.0291.8296-.0941 1.7819-.3821 2.5557-1.1696 2.855-2.9059.1503-.8707.4016-2.8753.5388-4.1012.0169-.0703.0357-.1207.057-.1362.0007-.0005.0697-.0471.4272.0307a.3673.3673 0 0 0 .0443.0068l.2539.0223.0149.001c.8468.0384 1.9114-.1426 2.5312-.4308.6438-.2988 1.8057-1.0323 1.5951-1.6698zM2.371 11.8765c-.7435-2.4358-1.1779-4.8851-1.2123-5.5719-.1086-2.1714.4171-3.6829 1.5623-4.4927 1.8367-1.2986 4.8398-.5408 6.108-.13-.0032.0032-.0066.0061-.0098.0094-2.0238 2.044-1.9758 5.536-1.9708 5.7495-.0002.0823.0066.1989.0162.3593.0348.5873.0996 1.6804-.0735 2.9184-.1609 1.1504.1937 2.2764.9728 3.0892.0806.0841.1648.1631.2518.2374-.3468.3714-1.1004 1.1926-1.9025 2.1576-.5677.6825-.9597.5517-1.0886.5087-.3919-.1307-.813-.5871-1.2381-1.3223-.4796-.839-.9635-2.0317-1.4155-3.5126zm6.0072 5.0871c-.1711-.0428-.3271-.1132-.4322-.1772.0889-.0394.2374-.0902.4833-.1409 1.2833-.2641 1.4815-.4506 1.9143-1.0002.0992-.126.2116-.2687.3673-.4426a.3549.3549 0 0 0 .0737-.1298c.1708-.1513.2724-.1099.4369-.0417.156.0646.3078.26.3695.4752.0291.1016.0619.2945-.0452.4444-.9043 1.2658-2.2216 1.2494-3.1676 1.0128zm2.094-3.988-.0525.141c-.133.3566-.2567.6881-.3334 1.003-.6674-.0021-1.3168-.2872-1.8105-.8024-.6279-.6551-.9131-1.5664-.7825-2.5004.1828-1.3079.1153-2.4468.079-3.0586-.005-.0857-.0095-.1607-.0122-.2199.2957-.2621 1.6659-.9962 2.6429-.7724.4459.1022.7176.4057.8305.928.5846 2.7038.0774 3.8307-.3302 4.7363-.084.1866-.1633.3629-.2311.5454zm7.3637 4.5725c-.0169.1768-.0358.376-.0618.5959l-.146.4383a.3547.3547 0 0 0-.0182.1077c-.0059.4747-.054.6489-.115.8693-.0634.2292-.1353.4891-.1794 1.0575-.11 1.4143-.8782 2.2267-2.4172 2.5565-1.5155.3251-1.7843-.4968-2.0212-1.2217a6.5824 6.5824 0 0 0-.0769-.2266c-.2154-.5858-.1911-1.4119-.1574-2.5551.0165-.5612-.0249-1.9013-.3302-2.6462.0044-.2932.0106-.5909.019-.8918a.3529.3529 0 0 0-.0153-.1126 1.4927 1.4927 0 0 0-.0439-.208c-.1226-.4283-.4213-.7866-.7797-.9351-.1424-.059-.4038-.1672-.7178-.0869.067-.276.1831-.5875.309-.9249l.0529-.142c.0595-.16.134-.3257.213-.5012.4265-.9476 1.0106-2.2453.3766-5.1772-.2374-1.0981-1.0304-1.6343-2.2324-1.5098-.7207.0746-1.3799.3654-1.7088.5321a5.6716 5.6716 0 0 0-.1958.1041c.0918-1.1064.4386-3.1741 1.7357-4.4823a4.0306 4.0306 0 0 1 .3033-.276.3532.3532 0 0 0 .1447-.0644c.7524-.5706 1.6945-.8506 2.802-.8325.4091.0067.8017.0339 1.1742.081 1.939.3544 3.2439 1.4468 4.0359 2.3827.8143.9623 1.2552 1.9315 1.4312 2.4543-1.3232-.1346-2.2234.1268-2.6797.779-.9926 1.4189.543 4.1729 1.2811 5.4964.1353.2426.2522.4522.2889.5413.2403.5825.5515.9713.7787 1.2552.0696.087.1372.1714.1885.245-.4008.1155-1.1208.3825-1.0552 1.717-.0123.1563-.0423.4469-.0834.8148-.0461.2077-.0702.4603-.0994.7662zm.8905-1.6211c-.0405-.8316.2691-.9185.5967-1.0105a2.8566 2.8566 0 0 0 .135-.0406 1.202 1.202 0 0 0 .1342.103c.5703.3765 1.5823.4213 3.0068.1344-.2016.1769-.5189.3994-.9533.6011-.4098.1903-1.0957.333-1.7473.3636-.7197.0336-1.0859-.0807-1.1721-.151zm.5695-9.2712c-.0059.3508-.0542.6692-.1054 1.0017-.055.3576-.112.7274-.1264 1.1762-.0142.4368.0404.8909.0932 1.3301.1066.887.216 1.8003-.2075 2.7014a3.5272 3.5272 0 0 1-.1876-.3856c-.0527-.1276-.1669-.3326-.3251-.6162-.6156-1.1041-2.0574-3.6896-1.3193-4.7446.3795-.5427 1.3408-.5661 2.1781-.463zm.2284 7.0137a12.3762 12.3762 0 0 0-.0853-.1074l-.0355-.0444c.7262-1.1995.5842-2.3862.4578-3.4385-.0519-.4318-.1009-.8396-.0885-1.2226.0129-.4061.0666-.7543.1185-1.0911.0639-.415.1288-.8443.1109-1.3505.0134-.0531.0188-.1158.0118-.1902-.0457-.4855-.5999-1.938-1.7294-3.253-.6076-.7073-1.4896-1.4972-2.6889-2.0395.5251-.1066 1.2328-.2035 2.0244-.1859 2.0515.0456 3.6746.8135 4.8242 2.2824a.908.908 0 0 1 .0667.1002c.7231 1.3556-.2762 6.2751-2.9867 10.5405zm-8.8166-6.1162c-.025.1794-.3089.4225-.6211.4225a.5821.5821 0 0 1-.0809-.0056c-.1873-.026-.3765-.144-.5059-.3156-.0458-.0605-.1203-.178-.1055-.2844.0055-.0401.0261-.0985.0925-.1488.1182-.0894.3518-.1226.6096-.0867.3163.0441.6426.1938.6113.4186zm7.9305-.4114c.0111.0792-.049.201-.1531.3102-.0683.0717-.212.1961-.4079.2232a.5456.5456 0 0 1-.075.0052c-.2935 0-.5414-.2344-.5607-.3717-.024-.1765.2641-.3106.5611-.352.297-.0414.6111.0088.6356.1851z"
+   },
+   {
+    "name": "Flyway",
+    "color": "#CC0200",
+    "path": "m3.02 21.055 1.12-.23c1.054-.219 2.114-.415 3.161-.66a4.955 4.952 0 0 0 3.696-3.915 6.06 6.057 0 0 0 .085-1.153l.366-.09a4.936 4.933 0 0 0 3.75-3.717 3.8 3.798 0 0 0 .128-1.06c-.002-.096 0-.193 0-.305.094-.023.18-.047.267-.067a4.552 4.549 0 0 0 2.68-1.755 5.772 5.769 0 0 0 1.005-4.854c-.021-.088-.035-.179-.061-.264a.63.629 0 0 0-.728-.432l-3.184.652-3.485.716-4.002.822q-2.186.449-4.373.893a1.125 1.125 0 0 1-.422.06c-.007-.074-.017-.14-.017-.204-.001-1.12.002-2.243-.005-3.364a.324.324 0 0 1 .174-.307 8.493 8.488 0 0 1 1.9-.86A17.205 17.194 0 0 1 7.827.315C8.373.23 8.922.181 9.47.12a26.795 26.777 0 0 1 3.526-.102c.496.01.992.051 1.487.097.542.051 1.085.11 1.623.192a14.482 14.472 0 0 1 4.007 1.124c.262.123.509.28.764.422a.215.215 0 0 1 .122.223c-.004.054 0 .11 0 .163v19.519c0 .347.045.28-.262.472a8.437 8.432 0 0 1-1.961.857 16.78 16.769 0 0 1-2.851.63c-.6.08-1.2.146-1.804.207-.277.03-.556.035-.835.043-.564.015-1.128.041-1.691.03-.636-.014-1.272-.059-1.907-.099a20.054 20.041 0 0 1-2.519-.332 13.423 13.415 0 0 1-3.224-.976c-.273-.13-.53-.29-.797-.435a.246.246 0 0 1-.144-.248c.008-.23 0-.46.003-.69 0-.049.01-.096.016-.163zm9.985-10.652a1.248 1.248 0 0 1-.09.55 2.624 2.622 0 0 1-2.045 1.84c-1.3.28-2.607.537-3.912.805l-.57.114a1.147 1.146 0 1 0 .403 2.256c.595-.11 1.186-.242 1.779-.363.064-.014.128-.022.209-.035a2.584 2.582 0 0 1-.55 1.41A2.801 2.8 0 0 1 6.516 18c-1.103.223-2.206.45-3.308.676-.052.01-.106.013-.156.02-.048-.146-.061-10.38-.014-10.63l14.048-2.883a1.523 1.522 0 0 1-.016.18 3.438 3.436 0 0 1-.738 1.502 2.399 2.397 0 0 1-1.426.804c-1.11.216-2.218.45-3.326.677l-.96.196a1.168 1.168 0 0 0-.953 1.057 1.147 1.147 0 0 0 .875 1.186 1.747 1.746 0 0 0 .807-.054c.492-.1.983-.203 1.475-.304.053-.01.108-.014.18-.023z"
+   }
+  ],
+  "mark": {
+   "key": "Node.js",
+   "hex": "#5FA04E",
+   "path": "M11.998,24c-0.321,0-0.641-0.084-0.922-0.247l-2.936-1.737c-0.438-0.245-0.224-0.332-0.08-0.383 c0.585-0.203,0.703-0.25,1.328-0.604c0.065-0.037,0.151-0.023,0.218,0.017l2.256,1.339c0.082,0.045,0.197,0.045,0.272,0l8.795-5.076 c0.082-0.047,0.134-0.141,0.134-0.238V6.921c0-0.099-0.053-0.192-0.137-0.242l-8.791-5.072c-0.081-0.047-0.189-0.047-0.271,0 L3.075,6.68C2.99,6.729,2.936,6.825,2.936,6.921v10.15c0,0.097,0.054,0.189,0.139,0.235l2.409,1.392 c1.307,0.654,2.108-0.116,2.108-0.89V7.787c0-0.142,0.114-0.253,0.256-0.253h1.115c0.139,0,0.255,0.112,0.255,0.253v10.021 c0,1.745-0.95,2.745-2.604,2.745c-0.508,0-0.909,0-2.026-0.551L2.28,18.675c-0.57-0.329-0.922-0.945-0.922-1.604V6.921 c0-0.659,0.353-1.275,0.922-1.603l8.795-5.082c0.557-0.315,1.296-0.315,1.848,0l8.794,5.082c0.57,0.329,0.924,0.944,0.924,1.603 v10.15c0,0.659-0.354,1.273-0.924,1.604l-8.794,5.078C12.643,23.916,12.324,24,11.998,24z M19.099,13.993 c0-1.9-1.284-2.406-3.987-2.763c-2.731-0.361-3.009-0.548-3.009-1.187c0-0.528,0.235-1.233,2.258-1.233 c1.807,0,2.473,0.389,2.747,1.607c0.024,0.115,0.129,0.199,0.247,0.199h1.141c0.071,0,0.138-0.031,0.186-0.081 c0.048-0.054,0.074-0.123,0.067-0.196c-0.177-2.098-1.571-3.076-4.388-3.076c-2.508,0-4.004,1.058-4.004,2.833 c0,1.925,1.488,2.457,3.895,2.695c2.88,0.282,3.103,0.703,3.103,1.269c0,0.983-0.789,1.402-2.642,1.402 c-2.327,0-2.839-0.584-3.011-1.742c-0.02-0.124-0.126-0.215-0.253-0.215h-1.137c-0.141,0-0.254,0.112-0.254,0.253 c0,1.482,0.806,3.248,4.655,3.248C17.501,17.007,19.099,15.91,19.099,13.993z"
+  },
+  "visual": {
+   "kind": "live",
+   "desc": "Type: 'Create a high priority task for Karim…' → then the task appearing on the board. The strongest 15 seconds in the deck.",
+   "ratio": "16/10",
+   "table": null,
+   "html": null
+  },
+  "next": null
+ },
+ {
+  "n": 18,
   "title": "The 2D Office: Why a Game Engine",
-  "who": "Nadine",
-  "initials": "NA",
-  "role": "Frontend · Real-Time & the 2D Office",
+  "who": "Sersawy",
+  "initials": "SE",
+  "role": "Backend · Workspace, AI & the 2D Office",
   "time": "~1m 30s",
   "bullets": [
    "<b>Phaser 3</b> — a floor plan <b>is</b> a game loop",
@@ -861,29 +1342,37 @@ const SLIDES = [
   "tech": [
    {
     "name": "Phaser",
-    "color": "#CC3333"
+    "color": "#CC3333",
+    "path": null
    },
    {
     "name": "Colyseus",
-    "color": "#8B5CF6"
+    "color": "#8B5CF6",
+    "path": null
    },
    {
     "name": "Tiled tilemap",
-    "color": "#8A9BA8"
+    "color": "#8A9BA8",
+    "path": null
    },
    {
     "name": "React",
-    "color": "#61DAFB"
+    "color": "#61DAFB",
+    "path": "M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.345-.034-.46 0-.915.01-1.36.034.44-.572.895-1.096 1.345-1.565zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.868.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.345.034.46 0 .915-.01 1.36-.034-.44.572-.895 1.095-1.345 1.565-.455-.47-.91-.993-1.36-1.565z"
    },
    {
     "name": "Redux",
-    "color": "#764ABC"
+    "color": "#764ABC",
+    "path": "M16.634 16.504c.87-.075 1.543-.84 1.5-1.754-.047-.914-.796-1.648-1.709-1.648h-.061a1.71 1.71 0 00-1.648 1.769c.03.479.226.869.494 1.153-1.048 2.038-2.621 3.536-5.005 4.795-1.603.838-3.296 1.154-4.944.93-1.378-.195-2.456-.81-3.116-1.799-.988-1.499-1.078-3.116-.255-4.734.6-1.17 1.499-2.023 2.099-2.443a9.96 9.96 0 01-.42-1.543C-.868 14.408-.416 18.752.932 20.805c1.004 1.498 3.057 2.456 5.304 2.456.6 0 1.23-.044 1.843-.194 3.897-.749 6.848-3.086 8.541-6.532zm5.348-3.746c-2.32-2.728-5.738-4.226-9.634-4.226h-.51c-.253-.554-.837-.899-1.498-.899h-.045c-.943 0-1.678.81-1.647 1.753.03.898.794 1.648 1.708 1.648h.074a1.69 1.69 0 001.499-1.049h.555c2.309 0 4.495.674 6.488 1.992 1.527 1.005 2.622 2.323 3.237 3.897.538 1.288.509 2.547-.045 3.597-.855 1.647-2.294 2.517-4.196 2.517-1.199 0-2.367-.375-2.967-.644-.36.298-.96.793-1.394 1.093 1.318.598 2.652.943 3.94.943 2.922 0 5.094-1.647 5.919-3.236.898-1.798.824-4.824-1.47-7.416zM6.49 17.042c.03.899.793 1.648 1.708 1.648h.06a1.688 1.688 0 001.648-1.768c0-.9-.779-1.647-1.693-1.647h-.06c-.06 0-.15 0-.226.029-1.243-2.098-1.768-4.347-1.572-6.772.12-1.828.72-3.417 1.797-4.735.9-1.124 2.593-1.68 3.747-1.708 3.236-.061 4.585 3.971 4.689 5.574l1.498.45C17.741 3.197 14.686.62 11.764.62 9.02.62 6.49 2.613 5.47 5.535 4.077 9.43 4.991 13.177 6.7 16.174c-.15.195-.24.539-.21.868z"
    }
   ],
+  "mark": {
+   "key": "Phaser"
+  },
   "visual": {
    "kind": "table",
    "desc": "The OfficeState schema — ten lines of @type decorators — beside the office. Say: 'this is the entire network protocol.'",
-   "ratio": "4/3",
+   "ratio": "1596/406",
    "table": {
     "head": [
      "",
@@ -920,306 +1409,6 @@ const SLIDES = [
    },
    "html": null
   },
-  "next": {
-   "name": "Khalwsh",
-   "initials": "KH",
-   "hint": "the backend"
-  }
- },
- {
-  "n": 14,
-  "title": "Microservices Architecture",
-  "who": "Khalwsh",
-  "initials": "KH",
-  "role": "Backend · Architecture & Chat",
-  "time": "~1m 30s",
-  "bullets": [
-   "Not one app — independent services",
-   "<b>Gateway</b> — one door, validates the JWT once",
-   "User · Workspace · Chat · Notif · Calendar · Tasks · Room · AI · +Office",
-   "Separate · deploy alone · scale alone · <b>fail alone</b>",
-   "~20 containers, one command"
-  ],
-  "notes": [
-   "Your biggest technical slide — don&#x27;t rush it",
-   "<b>Trace one request across the diagram out loud</b>",
-   "If asked <i>&quot;why not a monolith?&quot;</i> — honest answer: a monolith ships faster; we wanted independent deploys and per-service scaling, and the AI service later proved it (zero auth work)"
-  ],
-  "script": [
-   "Instead of one big application, the backend is a set of independent services, each owning one part of the system.",
-   "<b>API Gateway</b> — a single entry point for the web and mobile clients; it validates the JWT once at the edge, then routes each request to the right service.",
-   "The services: <b>User</b> (accounts + authentication), <b>Workspace</b>, <b>Chat</b>, <b>Notifications</b>, <b>Calendar</b>, <b>Tasks</b>, <b>Room</b>, <b>AI</b> — plus a realtime <b>Office server</b> for the 2D plane.",
-   "Why it was worth it: separate responsibilities, develop and deploy each independently, easier to test and maintain, scales per service, and one service failing doesn&#x27;t take the system down.",
-   "Mention the whole thing runs with <b>Docker Compose</b> — ~20 containers, one command."
-  ],
-  "tech": [
-   {
-    "name": "Spring Boot",
-    "color": "#6DB33F"
-   },
-   {
-    "name": "Spring Cloud Gateway",
-    "color": "#6DB33F"
-   },
-   {
-    "name": "Docker",
-    "color": "#2496ED"
-   },
-   {
-    "name": "MySQL",
-    "color": "#4479A1"
-   },
-   {
-    "name": "PostgreSQL",
-    "color": "#4169E1"
-   },
-   {
-    "name": "MongoDB",
-    "color": "#47A248"
-   },
-   {
-    "name": "Redis",
-    "color": "#DC382D"
-   },
-   {
-    "name": "RabbitMQ",
-    "color": "#FF6600"
-   }
-  ],
-  "visual": {
-   "kind": "diagram-built",
-   "desc": "THE ARCHITECTURE. Clients → Gateway → 9 services → datastores (MySQL · PostgreSQL · MongoDB · Redis · RabbitMQ). Colour-code by concern. Your most important slide.",
-   "ratio": "16/9",
-   "table": null,
-   "html": "<div class=\"dg dg-arch\">\n  <div class=\"dg-tier\"><span class=\"dg-tier-l\">clients</span><div class=\"dg-row\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#61DAFB\"></i><span>Web</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#02569B\"></i><span>Mobile</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#CC3333\"></i><span>2D Office</span></div></div></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-gate\"><div class=\"dg-box wide\"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>API Gateway</span></div><small>one door · validates the JWT once · injects identity</small></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-tier\"><span class=\"dg-tier-l\">services</span><div class=\"dg-grid\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>User</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Workspace</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Chat</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Notif</span></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Calendar</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Tasks</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Room</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#10A37F\"></i><span>AI</span></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#339933\"></i><span>Office</span></div></div></div>\n  <i class=\"dg-v\">↓</i>\n  <div class=\"dg-tier\"><span class=\"dg-tier-l\">data</span><div class=\"dg-row\">\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#4479A1\"></i><span>MySQL</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#4169E1\"></i><span>Postgres</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#47A248\"></i><span>Mongo</span></div>\n    <div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#DC382D\"></i><span>Redis</span></div><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#FF6600\"></i><span>RabbitMQ</span></div></div></div>\n  <div class=\"dg-cap\"><div class=\"dg-box dg-ghost\"><i class=\"dg-t\" style=\"--c:#2496ED\"></i><span>Docker Compose</span></div> ~20 containers · one command</div>\n</div>"
-  },
-  "next": {
-   "name": "Mousa",
-   "initials": "MO",
-   "hint": "identity, tasks and the calendar"
-  }
- },
- {
-  "n": 15,
-  "title": "Identity: Decided Once, at the Edge",
-  "who": "Mousa",
-  "initials": "MO",
-  "role": "Backend · Security & Services",
-  "time": "~1m",
-  "bullets": [
-   "BCrypt — we never store a password",
-   "JWT (HS256), shared only gateway ↔ user-service",
-   "<b>Strip</b> client <code>X-User-*</code> · <b>inject</b> trusted",
-   "Services never parse a JWT",
-   "Account role <b>vs</b> workspace role",
-   "OTP reset — no links to leak",
-   "<i>“Decided once, at the edge”</i>"
-  ],
-  "notes": [
-   "Strip-then-inject is the whole idea — say it once, clearly, and point at the diagram",
-   "<b>Don&#x27;t recite JWT internals</b> — nobody asked, and it invites a question you don&#x27;t want"
-  ],
-  "script": [
-   "Registration, login and identity live in <b>user-service</b>. Passwords are hashed with <b>BCrypt</b> — we never store a password, not even encrypted.",
-   "On login we issue a <b>JWT (HS256)</b>, signed with a secret shared only between user-service and the gateway.",
-   "<b>The gateway is the only place identity is decided.</b> On every request it:",
-   "Downstream services never parse a JWT. They trust those headers <i>precisely because only the gateway can set them</i>. That&#x27;s why there is no auth code duplicated across nine services — and why adding the AI service later cost us zero auth work.",
-   "<b>Two levels of authorization:</b>",
-   "Password reset is <b>OTP over email</b> — no reset links to leak or replay.",
-   "<b>The line:</b> <i>&quot;Identity is decided once, at the edge. Every service trusts the gateway and nothing else.&quot;</i>"
-  ],
-  "tech": [
-   {
-    "name": "JWT",
-    "color": "#D63AFF"
-   },
-   {
-    "name": "BCrypt",
-    "color": "#7A7A7A"
-   },
-   {
-    "name": "Spring Security",
-    "color": "#6DB33F"
-   }
-  ],
-  "visual": {
-   "kind": "diagram-built",
-   "desc": "Strip-then-inject: Client (X-User-Id: 1 ← spoofed ✗) → Gateway [verify JWT · strip · inject] → Service (X-User-Id: 64 ✓).",
-   "ratio": "16/9",
-   "table": null,
-   "html": "<div class=\"dg dg-auth\">\n  <div class=\"dg-row\">\n    <div class=\"dg-box bad\"><span>Client</span><code>X-User-Id: 1</code><small>spoofed</small></div>\n    <i class=\"dg-a\">→</i>\n    <div class=\"dg-gatebox\"><div class=\"dg-box \"><i class=\"dg-t\" style=\"--c:#6DB33F\"></i><span>Gateway</span></div>\n      <ol><li>verify JWT</li><li class=\"strike\">strip <code>X-User-*</code></li><li>inject trusted</li></ol></div>\n    <i class=\"dg-a\">→</i>\n    <div class=\"dg-box good\"><span>Service</span><code>X-User-Id: 64</code><small>trusted</small></div>\n  </div>\n  <div class=\"dg-cap\">Services never parse a JWT. They trust the gateway — because only it can set these.</div>\n</div>"
-  },
-  "next": null
- },
- {
-  "n": 16,
-  "title": "Tasks & Calendar: The Engineering",
-  "who": "Mousa",
-  "initials": "MO",
-  "role": "Backend · Security & Services",
-  "time": "~1m 15s",
-  "bullets": [
-   "Spring Data JPA on PostgreSQL",
-   "<b><code>#42</code>, not a UUID</b> — max+1 per workspace",
-   "Assign → RabbitMQ → Notification. <b>Never waits</b>",
-   "<code>@Scheduled</code> 60s — reminders + <b>auto-status</b>",
-   "Meeting starts → <i>“In a meeting ”</i> by itself",
-   "<b>Idempotent</b> — flags, never double-send",
-   "<b>Never clobber a human&#x27;s own status</b>"
-  ],
-  "notes": [
-   "<b>Skip the CRUD</b> — create/assign/deadline isn&#x27;t interesting, and the slide already says it",
-   "Go straight to auto-status and the idempotency flags",
-   "Your best line: <i>&quot;we only revert if the status still carries our marker&quot;</i>"
-  ],
-  "script": [
-   "Both are Spring Boot + <b>Spring Data JPA on PostgreSQL</b>, each with its own schema. Relational on purpose: tasks and events have real relationships and we query them by assignee, status and date range.",
-   "<b>Human task numbers.</b> Tasks are <code>#42</code>, not a UUID — <code>max(taskNumber) + 1</code> per workspace, so numbers are per-company and someone can say <i>&quot;take a look at 42&quot;</i> in chat and be understood. <i>(Honest trade-off: it&#x27;s a read-then-write, so under real concurrency it needs the transaction plus a unique constraint to stay safe.)</i>",
-   "<b>Event-driven, not blocking.</b> Assign a task → Task Service publishes an event to <b>RabbitMQ</b> → Notification Service consumes it and sends. Task Service never waits for an email. If notifications are down, tasks still work — that&#x27;s the whole point of the queue.",
-   "<b>Scheduled jobs</b> (<code>@Scheduled</code>, 60s tick) — this is where the calendar gets interesting:",
-   "<b>The two details worth stressing — examiners ask about exactly this:</b>",
-   "Plus the unglamorous parts that keep it honest: <code>@NotNull</code> / <code>@NotBlank</code> validation at each service edge, enums normalised on input, and space membership checked before you can put a task on someone&#x27;s board."
-  ],
-  "tech": [
-   {
-    "name": "Spring Data JPA",
-    "color": "#6DB33F"
-   },
-   {
-    "name": "PostgreSQL",
-    "color": "#4169E1"
-   },
-   {
-    "name": "RabbitMQ",
-    "color": "#FF6600"
-   }
-  ],
-  "visual": {
-   "kind": "shot",
-   "desc": "AutoStatusScheduler.sync() — ~15 lines. Plus the tasks board with Overdue / Today / upcoming bands.",
-   "ratio": "4/3",
-   "table": null,
-   "html": null
-  },
-  "next": {
-   "name": "Khalwsh",
-   "initials": "KH",
-   "hint": "chat, notifications and rooms"
-  }
- },
- {
-  "n": 17,
-  "title": "Chat, Notifications & Rooms",
-  "who": "Khalwsh",
-  "initials": "KH",
-  "role": "Backend · Architecture & Chat",
-  "time": "~1m 30s",
-  "bullets": [
-   "Workspace = the backbone",
-   "Members · teams · channels · roles · office layout",
-   "AI: summarise · decisions · create · answer",
-   "<b>The hard part was context</b>",
-   "Function calling — same APIs, <b>your</b> token"
-  ],
-  "notes": [
-   "Three services <i>and</i> encryption — budget it: ~30s chat/Redis/Mongo · ~20s RabbitMQ · ~40s encryption",
-   "<b>Run the Mongo ciphertext query live</b> — ten seconds, and it ends the argument"
-  ],
-  "script": [
-   "<b>Chat Service</b> — DMs, channels, threads, group conversations, delivered live.",
-   "<b>🔒 Direct messages are end-to-end encrypted — we can&#x27;t read them, and neither can our server.</b>",
-   "<b>Notification Service</b> — email, in-app pop-ups, and real-time.",
-   "<b>Room Service</b> — meeting and voice rooms, who&#x27;s inside, joining and leaving, and linking a room to a place in the virtual office. <b>Agora</b> provides the call transport; we own rooms and permissions."
-  ],
-  "tech": [
-   {
-    "name": "Node.js",
-    "color": "#339933"
-   },
-   {
-    "name": "Groq",
-    "color": "#F55036"
-   },
-   {
-    "name": "Function calling",
-    "color": "#10A37F"
-   }
-  ],
-  "visual": {
-   "kind": "live",
-   "desc": "Type: 'Create a high priority task for Karim…' → then the task appearing on the board. The strongest 15 seconds in the deck.",
-   "ratio": "16/10",
-   "table": null,
-   "html": null
-  },
-  "next": {
-   "name": "Sersawy",
-   "initials": "SE",
-   "hint": "the workspace and the AI bot"
-  }
- },
- {
-  "n": 18,
-  "title": "Workspace Service & the AI Bot",
-  "who": "Sersawy",
-  "initials": "SE",
-  "role": "Backend · Workspace, AI & Platform",
-  "time": "~1m 15s",
-  "bullets": [
-   "Chat: DMs · channels · threads, live",
-   "WebSocket · <b>Redis</b> presence · <b>Mongo</b> volume",
-   " <b>DMs are E2E — we can&#x27;t read them</b>",
-   "ECDH → AES-GCM <b>in the browser</b>",
-   "Server stores <code>vo1:&lt;iv&gt;:&lt;ct&gt;</code> and nothing else",
-   "<b>Trade-off: DMs only</b> — channels feed search + AI",
-   "Limits: one device · no forward secrecy · TOFU",
-   "Notif: <b>RabbitMQ</b> — Task never waits",
-   "Rooms: <b>Agora</b> transport, we own permissions"
-  ],
-  "notes": [
-   "<b>Create the task from a sentence, live</b>",
-   "While it runs, say the context + permissions point — that&#x27;s the actual content",
-   "The task appearing on the board is the applause moment"
-  ],
-  "script": [
-   "<b>Workspace Service</b> — the backbone. It creates the workspace, adds/removes members, splits people into <b>teams</b>, manages channels and rooms, sets roles and permissions, and connects people to their tasks, meetings and conversations. It also holds the virtual office layout.",
-   "One place instead of five apps — that&#x27;s this service&#x27;s job.",
-   "<b>AI Bot</b> — it can summarise a long conversation, pull out the decisions, tell you which tasks were mentioned, answer questions about the workspace, and create tasks and meetings from plain language.",
-   "<b>Say the hard part out loud (examiners like this):</b> the real challenge was <b>context</b> — giving the model only the data that belongs to this user and this conversation, so the answer is accurate and grounded. We solved it with <b>function calling</b>: the model doesn&#x27;t get a data dump, it calls the same APIs a user would, <b>using that user&#x27;s own token</b> — so it can never see anything the person couldn&#x27;t see themselves."
-  ],
-  "tech": [
-   {
-    "name": "MongoDB",
-    "color": "#47A248"
-   },
-   {
-    "name": "Redis",
-    "color": "#DC382D"
-   },
-   {
-    "name": "RabbitMQ",
-    "color": "#FF6600"
-   },
-   {
-    "name": "WebSocket",
-    "color": "#7A7A7A"
-   },
-   {
-    "name": "Agora",
-    "color": "#099DFD"
-   },
-   {
-    "name": "WebCrypto",
-    "color": "#2F6F4F"
-   }
-  ],
-  "visual": {
-   "kind": "live",
-   "desc": "Terminal: the Mongo query returning vo1:<iv>:<ciphertext>. Ten seconds, and it ends the argument. Plus the RabbitMQ event flow diagram.",
-   "ratio": "16/9",
-   "table": null,
-   "html": null
-  },
   "next": null
  },
  {
@@ -1227,7 +1416,7 @@ const SLIDES = [
   "title": "Observability: Knowing When It Breaks",
   "who": "Sersawy",
   "initials": "SE",
-  "role": "Backend · Workspace, AI & Platform",
+  "role": "Backend · Workspace, AI & the 2D Office",
   "time": "~1m",
   "bullets": [
    "20 containers, 9 services → nine <code>docker logs</code>?",
@@ -1236,7 +1425,8 @@ const SLIDES = [
    "<b>Paid off day one:</b> ~200 errors/hr nobody saw",
    "→ the WS handshake bug Khalwsh just described",
    "<i>“App looked fine. Logs didn&#x27;t.”</i>",
-   "Metrics next: logs = <i>what</i>, metrics = <i>how often</i>"
+   "<b>Prometheus</b> — 8 services scraped · p95 · error ratio",
+   "Logs say <i>what</i>. Metrics say <i>how often, how slow</i>"
   ],
   "notes": [
    "<b>Tell it as a story, not a feature</b>",
@@ -1253,23 +1443,36 @@ const SLIDES = [
   "tech": [
    {
     "name": "Loki",
-    "color": "#FBBF24"
+    "color": "#FBBF24",
+    "path": null
    },
    {
     "name": "Promtail",
-    "color": "#FBBF24"
+    "color": "#F46800",
+    "path": "M23.02 10.59a8.578 8.578 0 0 0-.862-3.034 8.911 8.911 0 0 0-1.789-2.445c.337-1.342-.413-2.505-.413-2.505-1.292-.08-2.113.4-2.416.62-.052-.02-.102-.044-.154-.064-.22-.089-.446-.172-.677-.247-.231-.073-.47-.14-.711-.197a9.867 9.867 0 0 0-.875-.161C14.557.753 12.94 0 12.94 0c-1.804 1.145-2.147 2.744-2.147 2.744l-.018.093c-.098.029-.2.057-.298.088-.138.042-.275.094-.413.143-.138.055-.275.107-.41.166a8.869 8.869 0 0 0-1.557.87l-.063-.029c-2.497-.955-4.716.195-4.716.195-.203 2.658.996 4.33 1.235 4.636a11.608 11.608 0 0 0-.607 2.635C1.636 12.677.953 15.014.953 15.014c1.926 2.214 4.171 2.351 4.171 2.351.003-.002.006-.002.006-.005.285.509.615.994.986 1.446.156.19.32.371.488.548-.704 2.009.099 3.68.099 3.68 2.144.08 3.553-.937 3.849-1.173a9.784 9.784 0 0 0 3.164.501h.08l.055-.003.107-.002.103-.005.003.002c1.01 1.44 2.788 1.646 2.788 1.646 1.264-1.332 1.337-2.653 1.337-2.94v-.058c0-.02-.003-.039-.003-.06.265-.187.52-.387.758-.6a7.875 7.875 0 0 0 1.415-1.7c1.43.083 2.437-.885 2.437-.885-.236-1.49-1.085-2.216-1.264-2.354l-.018-.013-.016-.013a.217.217 0 0 1-.031-.02c.008-.092.016-.18.02-.27.011-.162.016-.323.016-.48v-.253l-.005-.098-.008-.135a1.891 1.891 0 0 0-.01-.13c-.003-.042-.008-.083-.013-.125l-.016-.124-.018-.122a6.215 6.215 0 0 0-2.032-3.73 6.015 6.015 0 0 0-3.222-1.46 6.292 6.292 0 0 0-.85-.048l-.107.002h-.063l-.044.003-.104.008a4.777 4.777 0 0 0-3.335 1.695c-.332.4-.592.84-.768 1.297a4.594 4.594 0 0 0-.312 1.817l.003.091c.005.055.007.11.013.164a3.615 3.615 0 0 0 .698 1.82 3.53 3.53 0 0 0 1.827 1.282c.33.098.66.14.971.137.039 0 .078 0 .114-.002l.063-.003c.02 0 .041-.003.062-.003.034-.002.065-.007.099-.01.007 0 .018-.003.028-.003l.031-.005.06-.008a1.18 1.18 0 0 0 .112-.02c.036-.008.072-.013.109-.024a2.634 2.634 0 0 0 .914-.415c.028-.02.056-.041.085-.065a.248.248 0 0 0 .039-.35.244.244 0 0 0-.309-.06l-.078.042c-.09.044-.184.083-.283.116a2.476 2.476 0 0 1-.475.096c-.028.003-.054.006-.083.006l-.083.002c-.026 0-.054 0-.08-.002l-.102-.006h-.012l-.024.006c-.016-.003-.031-.003-.044-.006-.031-.002-.06-.007-.091-.01a2.59 2.59 0 0 1-.724-.213 2.557 2.557 0 0 1-.667-.438 2.52 2.52 0 0 1-.805-1.475 2.306 2.306 0 0 1-.029-.444l.006-.122v-.023l.002-.031c.003-.021.003-.04.005-.06a3.163 3.163 0 0 1 1.352-2.29 3.12 3.12 0 0 1 .937-.43 2.946 2.946 0 0 1 .776-.101h.06l.07.002.045.003h.026l.07.005a4.041 4.041 0 0 1 1.635.49 3.94 3.94 0 0 1 1.602 1.662 3.77 3.77 0 0 1 .397 1.414l.005.076.003.075c.002.026.002.05.002.075 0 .024.003.052 0 .07v.065l-.002.073-.008.174a6.195 6.195 0 0 1-.08.639 5.1 5.1 0 0 1-.267.927 5.31 5.31 0 0 1-.624 1.13 5.052 5.052 0 0 1-3.237 2.014 4.82 4.82 0 0 1-.649.066l-.039.003h-.287a6.607 6.607 0 0 1-1.716-.265 6.776 6.776 0 0 1-3.4-2.274 6.75 6.75 0 0 1-.746-1.15 6.616 6.616 0 0 1-.714-2.596l-.005-.083-.002-.02v-.056l-.003-.073v-.096l-.003-.104v-.07l.003-.163c.008-.22.026-.45.054-.678a8.707 8.707 0 0 1 .28-1.355c.128-.444.286-.872.473-1.277a7.04 7.04 0 0 1 1.456-2.1 5.925 5.925 0 0 1 .953-.763c.169-.111.343-.213.524-.306.089-.05.182-.091.273-.135.047-.02.093-.042.138-.062a7.177 7.177 0 0 1 .714-.267l.145-.045c.049-.015.098-.026.148-.041.098-.029.197-.052.296-.076.049-.013.1-.02.15-.033l.15-.032.151-.028.076-.013.075-.01.153-.024c.057-.01.114-.013.171-.023l.169-.021c.036-.003.073-.008.106-.01l.073-.008.036-.003.042-.002c.057-.003.114-.008.171-.01l.086-.006h.023l.037-.003.145-.007a7.999 7.999 0 0 1 1.708.125 7.917 7.917 0 0 1 2.048.68 8.253 8.253 0 0 1 1.672 1.09l.09.077.089.078c.06.052.114.107.171.159.057.052.112.106.166.16.052.055.107.107.159.164a8.671 8.671 0 0 1 1.41 1.978c.012.026.028.052.04.078l.04.078.075.156c.023.051.05.1.07.153l.065.15a8.848 8.848 0 0 1 .45 1.34.19.19 0 0 0 .201.142.186.186 0 0 0 .172-.184c.01-.246.002-.532-.024-.856z"
+   },
+   {
+    "name": "Prometheus",
+    "color": "#E6522C",
+    "path": "M12 0C5.373 0 0 5.372 0 12c0 6.627 5.373 12 12 12s12-5.373 12-12c0-6.628-5.373-12-12-12zm0 22.46c-1.885 0-3.414-1.26-3.414-2.814h6.828c0 1.553-1.528 2.813-3.414 2.813zm5.64-3.745H6.36v-2.046h11.28v2.046zm-.04-3.098H6.391c-.037-.043-.075-.086-.111-.13-1.155-1.401-1.427-2.133-1.69-2.879-.005-.025 1.4.287 2.395.511 0 0 .513.119 1.262.255-.72-.843-1.147-1.915-1.147-3.01 0-2.406 1.845-4.508 1.18-6.207.648.053 1.34 1.367 1.387 3.422.689-.951.977-2.69.977-3.755 0-1.103.727-2.385 1.454-2.429-.648 1.069.168 1.984.894 4.256.272.854.237 2.29.447 3.201.07-1.892.395-4.652 1.595-5.605-.529 1.2.079 2.702.494 3.424.671 1.164 1.078 2.047 1.078 3.716a4.642 4.642 0 01-1.11 2.996c.792-.149 1.34-.283 1.34-.283l2.573-.502s-.374 1.538-1.81 3.019z"
    },
    {
     "name": "Grafana",
-    "color": "#F46800"
+    "color": "#F46800",
+    "path": "M23.02 10.59a8.578 8.578 0 0 0-.862-3.034 8.911 8.911 0 0 0-1.789-2.445c.337-1.342-.413-2.505-.413-2.505-1.292-.08-2.113.4-2.416.62-.052-.02-.102-.044-.154-.064-.22-.089-.446-.172-.677-.247-.231-.073-.47-.14-.711-.197a9.867 9.867 0 0 0-.875-.161C14.557.753 12.94 0 12.94 0c-1.804 1.145-2.147 2.744-2.147 2.744l-.018.093c-.098.029-.2.057-.298.088-.138.042-.275.094-.413.143-.138.055-.275.107-.41.166a8.869 8.869 0 0 0-1.557.87l-.063-.029c-2.497-.955-4.716.195-4.716.195-.203 2.658.996 4.33 1.235 4.636a11.608 11.608 0 0 0-.607 2.635C1.636 12.677.953 15.014.953 15.014c1.926 2.214 4.171 2.351 4.171 2.351.003-.002.006-.002.006-.005.285.509.615.994.986 1.446.156.19.32.371.488.548-.704 2.009.099 3.68.099 3.68 2.144.08 3.553-.937 3.849-1.173a9.784 9.784 0 0 0 3.164.501h.08l.055-.003.107-.002.103-.005.003.002c1.01 1.44 2.788 1.646 2.788 1.646 1.264-1.332 1.337-2.653 1.337-2.94v-.058c0-.02-.003-.039-.003-.06.265-.187.52-.387.758-.6a7.875 7.875 0 0 0 1.415-1.7c1.43.083 2.437-.885 2.437-.885-.236-1.49-1.085-2.216-1.264-2.354l-.018-.013-.016-.013a.217.217 0 0 1-.031-.02c.008-.092.016-.18.02-.27.011-.162.016-.323.016-.48v-.253l-.005-.098-.008-.135a1.891 1.891 0 0 0-.01-.13c-.003-.042-.008-.083-.013-.125l-.016-.124-.018-.122a6.215 6.215 0 0 0-2.032-3.73 6.015 6.015 0 0 0-3.222-1.46 6.292 6.292 0 0 0-.85-.048l-.107.002h-.063l-.044.003-.104.008a4.777 4.777 0 0 0-3.335 1.695c-.332.4-.592.84-.768 1.297a4.594 4.594 0 0 0-.312 1.817l.003.091c.005.055.007.11.013.164a3.615 3.615 0 0 0 .698 1.82 3.53 3.53 0 0 0 1.827 1.282c.33.098.66.14.971.137.039 0 .078 0 .114-.002l.063-.003c.02 0 .041-.003.062-.003.034-.002.065-.007.099-.01.007 0 .018-.003.028-.003l.031-.005.06-.008a1.18 1.18 0 0 0 .112-.02c.036-.008.072-.013.109-.024a2.634 2.634 0 0 0 .914-.415c.028-.02.056-.041.085-.065a.248.248 0 0 0 .039-.35.244.244 0 0 0-.309-.06l-.078.042c-.09.044-.184.083-.283.116a2.476 2.476 0 0 1-.475.096c-.028.003-.054.006-.083.006l-.083.002c-.026 0-.054 0-.08-.002l-.102-.006h-.012l-.024.006c-.016-.003-.031-.003-.044-.006-.031-.002-.06-.007-.091-.01a2.59 2.59 0 0 1-.724-.213 2.557 2.557 0 0 1-.667-.438 2.52 2.52 0 0 1-.805-1.475 2.306 2.306 0 0 1-.029-.444l.006-.122v-.023l.002-.031c.003-.021.003-.04.005-.06a3.163 3.163 0 0 1 1.352-2.29 3.12 3.12 0 0 1 .937-.43 2.946 2.946 0 0 1 .776-.101h.06l.07.002.045.003h.026l.07.005a4.041 4.041 0 0 1 1.635.49 3.94 3.94 0 0 1 1.602 1.662 3.77 3.77 0 0 1 .397 1.414l.005.076.003.075c.002.026.002.05.002.075 0 .024.003.052 0 .07v.065l-.002.073-.008.174a6.195 6.195 0 0 1-.08.639 5.1 5.1 0 0 1-.267.927 5.31 5.31 0 0 1-.624 1.13 5.052 5.052 0 0 1-3.237 2.014 4.82 4.82 0 0 1-.649.066l-.039.003h-.287a6.607 6.607 0 0 1-1.716-.265 6.776 6.776 0 0 1-3.4-2.274 6.75 6.75 0 0 1-.746-1.15 6.616 6.616 0 0 1-.714-2.596l-.005-.083-.002-.02v-.056l-.003-.073v-.096l-.003-.104v-.07l.003-.163c.008-.22.026-.45.054-.678a8.707 8.707 0 0 1 .28-1.355c.128-.444.286-.872.473-1.277a7.04 7.04 0 0 1 1.456-2.1 5.925 5.925 0 0 1 .953-.763c.169-.111.343-.213.524-.306.089-.05.182-.091.273-.135.047-.02.093-.042.138-.062a7.177 7.177 0 0 1 .714-.267l.145-.045c.049-.015.098-.026.148-.041.098-.029.197-.052.296-.076.049-.013.1-.02.15-.033l.15-.032.151-.028.076-.013.075-.01.153-.024c.057-.01.114-.013.171-.023l.169-.021c.036-.003.073-.008.106-.01l.073-.008.036-.003.042-.002c.057-.003.114-.008.171-.01l.086-.006h.023l.037-.003.145-.007a7.999 7.999 0 0 1 1.708.125 7.917 7.917 0 0 1 2.048.68 8.253 8.253 0 0 1 1.672 1.09l.09.077.089.078c.06.052.114.107.171.159.057.052.112.106.166.16.052.055.107.107.159.164a8.671 8.671 0 0 1 1.41 1.978c.012.026.028.052.04.078l.04.078.075.156c.023.051.05.1.07.153l.065.15a8.848 8.848 0 0 1 .45 1.34.19.19 0 0 0 .201.142.186.186 0 0 0 .172-.184c.01-.246.002-.532-.024-.856z"
    }
   ],
+  "mark": {
+   "key": "Grafana",
+   "hex": "#F46800",
+   "path": "M23.02 10.59a8.578 8.578 0 0 0-.862-3.034 8.911 8.911 0 0 0-1.789-2.445c.337-1.342-.413-2.505-.413-2.505-1.292-.08-2.113.4-2.416.62-.052-.02-.102-.044-.154-.064-.22-.089-.446-.172-.677-.247-.231-.073-.47-.14-.711-.197a9.867 9.867 0 0 0-.875-.161C14.557.753 12.94 0 12.94 0c-1.804 1.145-2.147 2.744-2.147 2.744l-.018.093c-.098.029-.2.057-.298.088-.138.042-.275.094-.413.143-.138.055-.275.107-.41.166a8.869 8.869 0 0 0-1.557.87l-.063-.029c-2.497-.955-4.716.195-4.716.195-.203 2.658.996 4.33 1.235 4.636a11.608 11.608 0 0 0-.607 2.635C1.636 12.677.953 15.014.953 15.014c1.926 2.214 4.171 2.351 4.171 2.351.003-.002.006-.002.006-.005.285.509.615.994.986 1.446.156.19.32.371.488.548-.704 2.009.099 3.68.099 3.68 2.144.08 3.553-.937 3.849-1.173a9.784 9.784 0 0 0 3.164.501h.08l.055-.003.107-.002.103-.005.003.002c1.01 1.44 2.788 1.646 2.788 1.646 1.264-1.332 1.337-2.653 1.337-2.94v-.058c0-.02-.003-.039-.003-.06.265-.187.52-.387.758-.6a7.875 7.875 0 0 0 1.415-1.7c1.43.083 2.437-.885 2.437-.885-.236-1.49-1.085-2.216-1.264-2.354l-.018-.013-.016-.013a.217.217 0 0 1-.031-.02c.008-.092.016-.18.02-.27.011-.162.016-.323.016-.48v-.253l-.005-.098-.008-.135a1.891 1.891 0 0 0-.01-.13c-.003-.042-.008-.083-.013-.125l-.016-.124-.018-.122a6.215 6.215 0 0 0-2.032-3.73 6.015 6.015 0 0 0-3.222-1.46 6.292 6.292 0 0 0-.85-.048l-.107.002h-.063l-.044.003-.104.008a4.777 4.777 0 0 0-3.335 1.695c-.332.4-.592.84-.768 1.297a4.594 4.594 0 0 0-.312 1.817l.003.091c.005.055.007.11.013.164a3.615 3.615 0 0 0 .698 1.82 3.53 3.53 0 0 0 1.827 1.282c.33.098.66.14.971.137.039 0 .078 0 .114-.002l.063-.003c.02 0 .041-.003.062-.003.034-.002.065-.007.099-.01.007 0 .018-.003.028-.003l.031-.005.06-.008a1.18 1.18 0 0 0 .112-.02c.036-.008.072-.013.109-.024a2.634 2.634 0 0 0 .914-.415c.028-.02.056-.041.085-.065a.248.248 0 0 0 .039-.35.244.244 0 0 0-.309-.06l-.078.042c-.09.044-.184.083-.283.116a2.476 2.476 0 0 1-.475.096c-.028.003-.054.006-.083.006l-.083.002c-.026 0-.054 0-.08-.002l-.102-.006h-.012l-.024.006c-.016-.003-.031-.003-.044-.006-.031-.002-.06-.007-.091-.01a2.59 2.59 0 0 1-.724-.213 2.557 2.557 0 0 1-.667-.438 2.52 2.52 0 0 1-.805-1.475 2.306 2.306 0 0 1-.029-.444l.006-.122v-.023l.002-.031c.003-.021.003-.04.005-.06a3.163 3.163 0 0 1 1.352-2.29 3.12 3.12 0 0 1 .937-.43 2.946 2.946 0 0 1 .776-.101h.06l.07.002.045.003h.026l.07.005a4.041 4.041 0 0 1 1.635.49 3.94 3.94 0 0 1 1.602 1.662 3.77 3.77 0 0 1 .397 1.414l.005.076.003.075c.002.026.002.05.002.075 0 .024.003.052 0 .07v.065l-.002.073-.008.174a6.195 6.195 0 0 1-.08.639 5.1 5.1 0 0 1-.267.927 5.31 5.31 0 0 1-.624 1.13 5.052 5.052 0 0 1-3.237 2.014 4.82 4.82 0 0 1-.649.066l-.039.003h-.287a6.607 6.607 0 0 1-1.716-.265 6.776 6.776 0 0 1-3.4-2.274 6.75 6.75 0 0 1-.746-1.15 6.616 6.616 0 0 1-.714-2.596l-.005-.083-.002-.02v-.056l-.003-.073v-.096l-.003-.104v-.07l.003-.163c.008-.22.026-.45.054-.678a8.707 8.707 0 0 1 .28-1.355c.128-.444.286-.872.473-1.277a7.04 7.04 0 0 1 1.456-2.1 5.925 5.925 0 0 1 .953-.763c.169-.111.343-.213.524-.306.089-.05.182-.091.273-.135.047-.02.093-.042.138-.062a7.177 7.177 0 0 1 .714-.267l.145-.045c.049-.015.098-.026.148-.041.098-.029.197-.052.296-.076.049-.013.1-.02.15-.033l.15-.032.151-.028.076-.013.075-.01.153-.024c.057-.01.114-.013.171-.023l.169-.021c.036-.003.073-.008.106-.01l.073-.008.036-.003.042-.002c.057-.003.114-.008.171-.01l.086-.006h.023l.037-.003.145-.007a7.999 7.999 0 0 1 1.708.125 7.917 7.917 0 0 1 2.048.68 8.253 8.253 0 0 1 1.672 1.09l.09.077.089.078c.06.052.114.107.171.159.057.052.112.106.166.16.052.055.107.107.159.164a8.671 8.671 0 0 1 1.41 1.978c.012.026.028.052.04.078l.04.078.075.156c.023.051.05.1.07.153l.065.15a8.848 8.848 0 0 1 .45 1.34.19.19 0 0 0 .201.142.186.186 0 0 0 .172-.184c.01-.246.002-.532-.024-.856z"
+  },
   "visual": {
-   "kind": "shot",
+   "kind": "diagram-built",
    "desc": "The Grafana dashboard — Virtual Office — Logs & Errors. Filter to one service live so it's obviously real.",
    "ratio": "16/9",
    "table": null,
-   "html": null
+   "html": "<div class=\"dg dg-obs\">\n  <figure class=\"obs-shot\"><img src=\"shots/slide-19.png\" alt=\"\" onerror=\"this.closest('figure').remove()\">\n    <figcaption><b>Loki</b> — logs: <i>what happened</i></figcaption></figure>\n  <figure class=\"obs-shot\"><img src=\"shots/slide-19-metrics.png\" alt=\"\" onerror=\"this.closest('figure').remove()\">\n    <figcaption><b>Prometheus</b> — metrics: <i>how often, how slow</i></figcaption></figure>\n</div>"
   },
   "next": {
    "name": "Khaled Qenawy",
@@ -1304,17 +1507,24 @@ const SLIDES = [
   "tech": [
    {
     "name": "Flutter",
-    "color": "#02569B"
+    "color": "#02569B",
+    "path": "M14.314 0L2.3 12 6 15.7 21.684.013h-7.357zm.014 11.072L7.857 17.53l6.47 6.47H21.7l-6.46-6.468 6.46-6.46h-7.37z"
    },
    {
     "name": "Dart",
-    "color": "#0175C2"
+    "color": "#0175C2",
+    "path": "M4.105 4.105S9.158 1.58 11.684.316a3.079 3.079 0 0 1 1.481-.315c.766.047 1.677.788 1.677.788L24 9.948v9.789h-4.263V24H9.789l-9-9C.303 14.5 0 13.795 0 13.105c0-.319.18-.818.316-1.105l3.789-7.895zm.679.679v11.787c.002.543.021 1.024.498 1.508L10.204 23h8.533v-4.263L4.784 4.784zm12.055-.678c-.899-.896-1.809-1.78-2.74-2.643-.302-.267-.567-.468-1.07-.462-.37.014-.87.195-.87.195L6.341 4.105l10.498.001z"
    }
   ],
+  "mark": {
+   "key": "Flutter",
+   "hex": "#02569B",
+   "path": "M14.314 0L2.3 12 6 15.7 21.684.013h-7.357zm.014 11.072L7.857 17.53l6.47 6.47H21.7l-6.46-6.468 6.46-6.46h-7.37z"
+  },
   "visual": {
    "kind": "shot",
    "desc": "Phone frames: login · channels · chat. A real device beats an emulator.",
-   "ratio": "9/16",
+   "ratio": "1597/1172",
    "table": null,
    "html": null
   },
@@ -1347,17 +1557,25 @@ const SLIDES = [
   "tech": [
    {
     "name": "Flutter",
-    "color": "#02569B"
+    "color": "#02569B",
+    "path": "M14.314 0L2.3 12 6 15.7 21.684.013h-7.357zm.014 11.072L7.857 17.53l6.47 6.47H21.7l-6.46-6.468 6.46-6.46h-7.37z"
    },
    {
     "name": "Provider",
-    "color": "#02569B"
+    "color": "#02569B",
+    "path": null
    },
    {
     "name": "shared_preferences",
-    "color": "#02569B"
+    "color": "#02569B",
+    "path": null
    }
   ],
+  "mark": {
+   "key": "Flutter",
+   "hex": "#02569B",
+   "path": "M14.314 0L2.3 12 6 15.7 21.684.013h-7.357zm.014 11.072L7.857 17.53l6.47 6.47H21.7l-6.46-6.468 6.46-6.46h-7.37z"
+  },
   "visual": {
    "kind": "diagram-built",
    "desc": "The folder tree (lib/features/chat/...) beside: Screen → Provider → Repository → ApiClient → Gateway.",
@@ -1397,17 +1615,66 @@ const SLIDES = [
   "tech": [
    {
     "name": "stomp_dart_client",
-    "color": "#02569B"
+    "color": "#02569B",
+    "path": null
    },
    {
     "name": "awesome_notifications",
-    "color": "#02569B"
+    "color": "#02569B",
+    "path": null
    }
   ],
+  "mark": {
+   "key": "Flutter",
+   "hex": "#02569B",
+   "path": "M14.314 0L2.3 12 6 15.7 21.684.013h-7.357zm.014 11.072L7.857 17.53l6.47 6.47H21.7l-6.46-6.468 6.46-6.46h-7.37z"
+  },
   "visual": {
-   "kind": "live",
-   "desc": "Two devices. Send on one, land on the other, background it, show the notification arrive.",
-   "ratio": "16/10",
+   "kind": "shot",
+   "desc": "Channels · a live DM · creating a room — on the device.",
+   "ratio": "1597/1172",
+   "table": null,
+   "html": null
+  },
+  "next": null
+ },
+ {
+  "n": 23,
+  "title": "Mobile: The Whole Workspace, in a Pocket",
+  "who": "Khaled Qenawy",
+  "initials": "KQ",
+  "role": "Mobile · Flutter",
+  "time": "~45s",
+  "bullets": [
+   "Five tabs: Channels · DMs · <b>Rooms</b> · Workspace · Profile",
+   "Not a chat window — <b>the workspace</b>",
+   "Create a channel on the phone → it&#x27;s in the browser&#x27;s list",
+   "Join a voice room from your pocket",
+   "<b>No mobile backend</b> — same gateway, same JWT, same permissions"
+  ],
+  "notes": [
+   "This is the &quot;it&#x27;s a real app, not a demo&quot; slide — let the screens do the talking",
+   "Walk the bottom nav left to right: Channels → DMs → Rooms → Workspace → Profile",
+   "Don&#x27;t re-explain the architecture; it&#x27;s the same one from the last slide"
+  ],
+  "script": [
+   "The phone isn&#x27;t a chat window bolted on — it&#x27;s the workspace. Five tabs: <b>Channels, DMs, Rooms, Workspace, Profile</b>.",
+   "<b>Workspace</b> — you switch between workspaces and see your teams and people, the same membership and roles the web enforces.",
+   "<b>Channels</b> — browse them, and create one from the phone. It lands in the same channel list the browser is looking at, because it&#x27;s the same API.",
+   "<b>Rooms</b> — see who&#x27;s in a voice room and join it from your phone. A room created on mobile is the room the web client sees.",
+   "<b>Profile</b> — your identity and status, the presence everyone else reads.",
+   "The point to land: <b>there is no mobile backend.</b> Every screen here talks to the same gateway, with the same JWT and the same permissions. Mobile isn&#x27;t a port of the product — it&#x27;s another client of it."
+  ],
+  "tech": [],
+  "mark": {
+   "key": "Flutter",
+   "hex": "#02569B",
+   "path": "M14.314 0L2.3 12 6 15.7 21.684.013h-7.357zm.014 11.072L7.857 17.53l6.47 6.47H21.7l-6.46-6.468 6.46-6.46h-7.37z"
+  },
+  "visual": {
+   "kind": "shot",
+   "desc": "Four phones: Workspace · Create channel · Rooms (with Join) · Profile. The five-tab nav is the point.",
+   "ratio": "1597/1172",
    "table": null,
    "html": null
   },
@@ -1418,7 +1685,7 @@ const SLIDES = [
   }
  },
  {
-  "n": 23,
+  "n": 24,
   "title": "Live Demo & Close",
   "who": "All",
   "initials": "VO",
@@ -1444,6 +1711,7 @@ const SLIDES = [
    "Then: questions."
   ],
   "tech": [],
+  "mark": null,
   "visual": {
    "kind": "live",
    "desc": "LIVE DEMO. Log in → chat + thread → assistant catch-up → create a task → walk into the 2D office. Have the backup video ready.",
@@ -1460,7 +1728,23 @@ const slidesEl=$('#slides'), wipe=$('#wipe'), bar=$('#bar i'), notes=$('#notes')
 let i = Math.min(Math.max(parseInt(location.hash.slice(1))-1||0,0), SLIDES.length-1);
 let busy = false;
 
-const chip = t => `<span class="chip" style="--c:${t.color}"><i></i>${t.name}</span>`;
+/* Brand marks, drawn as SVG paths — not fetched logos (nothing external loads here,
+   and a squashed PNG logo looks worse than honest geometry). Ghosted at 5% and
+   turned 45°, so it signs the slide instead of competing with it. */
+const BRAND = {
+  react: `<svg viewBox="-12 -11 24 22" fill="none" stroke="#61DAFB" stroke-width=".9"><circle r="2.05" fill="#61DAFB" stroke="none"/><ellipse rx="11" ry="4.2"/><ellipse rx="11" ry="4.2" transform="rotate(60)"/><ellipse rx="11" ry="4.2" transform="rotate(120)"/></svg>`,
+  spring: `<svg viewBox="0 0 24 24" fill="#6DB33F"><path d="M20.2 3.3a10.6 10.6 0 0 1-1.2 2.1A11.9 11.9 0 1 0 4.3 20.5l.5.4a11.9 11.9 0 0 0 19.1-8.6c.3-3.1-.6-7-3.7-9zM5.4 20.5a1 1 0 1 1-.2-1.4 1 1 0 0 1 .2 1.4zm14.7-3.2c-2.7 3.6-8.5 2.4-12.2 2.6 0 0-.6 0-1.3.1 0 0 .2-.1.6-.2 2.9-1 4.3-1.2 6.1-2.1 3.3-1.7 6.6-5.4 7.3-9.3-1.3 3.7-5.1 6.9-8.6 8.2-2.4.9-6.7 1.7-6.7 1.7l-.2-.1c-2.9-1.4-3-7.7 2.3-9.7 2.3-.9 4.5-.4 7-1 2.7-.6 5.8-2.7 7-5.3 1.4 4.1 3.1 10.5-1.3 15.1z"/></svg>`,
+  mongo: `<svg viewBox="0 0 24 24" fill="#47A248"><path d="M12 .5S9.3 3.8 9.3 9.1c0 6.5 2 8.7 2 8.7l.3 4.3.5 1.4.4-1.4.3-4.3s2-2.2 2-8.7C14.8 3.8 12 .5 12 .5zm0 3.8s.9 1.6.9 4.9c0 4-1 6.6-1 6.6V4.3z"/></svg>`,
+  phaser: `<svg viewBox="0 0 24 24" fill="none" stroke="#CC3333" stroke-width="1.4"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M7 10.5v4M5 12.5h4" stroke-linecap="round"/><circle cx="16.2" cy="11.6" r="1.1" fill="#CC3333" stroke="none"/><circle cx="18.6" cy="14.2" r="1.1" fill="#CC3333" stroke="none"/></svg>`,
+  grafana: `<svg viewBox="0 0 24 24" fill="none" stroke="#F46800" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17l5-6 4 3.5L15 8l7 9"/><path d="M2 21h20"/></svg>`,
+  flutter: `<svg viewBox="0 0 24 24"><path d="M13.9 1.4 3.3 12l3.3 3.3L20.4 1.4z" fill="#02569B"/><path d="M13.9 12.6 8.2 18.3l3.3 3.3 8.9-9z" fill="#02569B" opacity=".75"/><path d="M8.2 18.3 11.5 15l3.3 3.3-3.3 3.3z" fill="#02569B" opacity=".5"/></svg>`,
+  stomp: `<svg viewBox="0 0 24 24" fill="none" stroke="#3f0e40" stroke-width="1.5" stroke-linecap="round"><path d="M2 12c2-4 3.5 4 5.5 0S11 8 13 12s3.5 4 5.5 0"/><circle cx="21" cy="12" r="1.4" fill="#3f0e40" stroke="none"/><circle cx="2" cy="12" r="1.4" fill="#3f0e40" stroke="none"/></svg>`,
+  ai: `<svg viewBox="0 0 24 24" fill="none" stroke="#10A37F" stroke-width="1.3"><rect x="5" y="7" width="14" height="11" rx="3.5"/><path d="M12 7V3.6M9.5 3h5" stroke-linecap="round"/><circle cx="9.4" cy="12.3" r="1.2" fill="#10A37F" stroke="none"/><circle cx="14.6" cy="12.3" r="1.2" fill="#10A37F" stroke="none"/><path d="M9.8 15.4h4.4" stroke-linecap="round"/><path d="M5 10.5H2.6M19 10.5h2.4" stroke-linecap="round"/></svg>`,
+  jwt: `<svg viewBox="0 0 24 24" fill="none" stroke="#D63AFF" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="9" width="8" height="6" rx="1.6"/><rect x="14" y="9" width="8" height="6" rx="1.6"/><path d="M10.6 12h2.8M12 5.5v2M12 16.5v2"/></svg>`,
+};
+const chip = t => `<span class="chip" style="--c:${t.color}">${t.path
+  ? `<svg class="chip-l" viewBox="0 0 24 24"><path d="${t.path}"/></svg>`
+  : '<i></i>'}${t.name}</span>`;
 const KIND = {shot:'screenshot', diagram:'diagram — draw this', live:'live on stage', table:''};
 const MARK = {y:['y','✓'], n:['n','—'], '~':['p','~']};
 function tableHTML(t){
@@ -1473,6 +1757,9 @@ function render(){
   slidesEl.innerHTML = SLIDES.map((s,idx)=>{
     const v = s.visual;
     return `<section class="slide" data-i="${idx}"${s.bullets.length>6?' data-dense':''}>
+      ${s.mark ? `<div class="mark">${s.mark.path
+        ? `<svg viewBox="0 0 24 24"><path d="${s.mark.path}" fill="${s.mark.hex}"/></svg>`
+        : (BRAND[s.mark.key.toLowerCase()] || '')}</div>` : ''}
       <div class="top">
         <div class="who">
           <span class="av">${s.initials}</span>
@@ -1546,6 +1833,7 @@ function show(n,instant){
 }
 function go(n){
   if(busy || n===i) return;
+  if(n < 0 || n >= SLIDES.length) return;   // the deck has two ends. Stop at them.
   busy = true;
   // brand-coloured wipe: four columns sweep up, the slide swaps behind them, they sweep away
   wipe.className='in';

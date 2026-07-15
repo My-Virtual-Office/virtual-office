@@ -15,8 +15,8 @@ MD = ROOT / "Presentation-17-Slides.md"
 PEOPLE = {
     "Mousa":         ("MO", "Backend · Security & Services"),
     "Rokaya":        ("RO", "Frontend · UI/UX"),
-    "Sersawy":       ("SE", "Backend · Workspace, AI & Platform"),
-    "Nadine":        ("NA", "Frontend · Real-Time & the 2D Office"),
+    "Sersawy":       ("SE", "Backend · Workspace, AI & the 2D Office"),
+    "Nadine":        ("NA", "Frontend · Real-Time"),
     "Khalwsh":       ("KH", "Backend · Architecture & Chat"),
     "Khaled Qenawy": ("KQ", "Mobile · Flutter"),
     "All":           ("VO", "The whole team"),
@@ -29,15 +29,25 @@ HANDOFF = {
     8:  "the gap nobody else has closed",
     9:  "how all of it got designed",   # 2D reveal -> Rokaya on Figma/UI
     11: "why HTTP wasn't enough",
-    13: "the backend",
-    14: "identity, tasks and the calendar",
-    16: "chat, notifications and rooms",
-    17: "the workspace and the AI bot",
+    12: "the backend",
+    13: "identity, tasks and the calendar",
+    15: "chat, notifications and rooms",
+    16: "the workspace and the AI bot",
     19: "the phone",
-    22: "the demo",
+    23: "the demo",
 }
 
-# ── tech chips (brand colours; no fake logos) ────────────────────────────────
+# ── tech logos ───────────────────────────────────────────────────────────────
+# Real brand marks (official paths, via simple-icons — CC0), inlined so nothing
+# is fetched at render time. Java, Slack, Groq, Phaser, Colyseus and Loki have no
+# icon in the set: those keep the plain colour dot rather than a logo we invented.
+LOGOS = json.loads((ROOT / "deck-logos.json").read_text())
+# Composites are laid out at whatever ratio their contents imply (see
+# scratchpad/compose.py). The figure slot adopts it, so object-fit: cover
+# has nothing to crop.
+SHOT_AR = json.loads((ROOT / "shot-ratios.json").read_text())
+
+# ── tech chips (brand colour when there's no logo) ───────────────────────────
 TECH_COLOR = {
     "React": "#61DAFB", "Redux": "#764ABC", "React Router": "#CA4245", "Axios": "#5A29E4",
     "Phaser": "#CC3333", "Colyseus": "#8B5CF6", "Tiled": "#8A9BA8",
@@ -46,17 +56,18 @@ TECH_COLOR = {
     "Docker": "#2496ED", "MySQL": "#4479A1", "PostgreSQL": "#4169E1", "MongoDB": "#47A248",
     "Redis": "#DC382D", "RabbitMQ": "#FF6600", "Node.js": "#339933",
     "Flutter": "#02569B", "Dart": "#0175C2", "Provider": "#02569B",
-    "Grafana": "#F46800", "Loki": "#FBBF24", "Promtail": "#FBBF24",
+    "Grafana": "#F46800", "Loki": "#FBBF24", "Promtail": "#FBBF24", "Prometheus": "#E6522C",
     "Agora": "#099DFD", "WebSocket": "#7A7A7A", "STOMP": "#7A7A7A", "WebRTC": "#333333",
     "JWT": "#D63AFF", "BCrypt": "#7A7A7A", "WebCrypto": "#2F6F4F",
     "Figma": "#F24E1E", "Slack": "#4A154B", "Discord": "#5865F2", "Microsoft Teams": "#6264A7",
     "OpenAI": "#10A37F", "Groq": "#F55036", "Function calling": "#10A37F",
     "Tiled tilemap": "#8A9BA8", "shared_preferences": "#02569B", "stomp_dart_client": "#02569B",
-    "awesome_notifications": "#02569B",
+    "awesome_notifications": "#02569B", "Flyway": "#CC0200",
 }
 # A big brand mark, rotated, ghosted into the corner — the slide's "signature".
-MARKS = {11: "react", 12: "stomp", 13: "spring", 15: "spring", 16: "mongo",
-         17: "ai", 18: "phaser", 19: "grafana", 20: "flutter", 21: "flutter", 22: "flutter"}
+MARKS = {5: "Figma", 10: "Figma", 11: "React", 12: "Agora", 13: "Spring Boot", 14: "JWT",
+         15: "Spring Boot", 16: "MongoDB", 17: "Node.js", 18: "Phaser", 19: "Grafana",
+         20: "Flutter", 21: "Flutter", 22: "Flutter", 23: "Flutter"}
 
 TECH = {
     3:  ["Slack", "Microsoft Teams", "Discord"],
@@ -65,13 +76,13 @@ TECH = {
     10: ["Figma"],
     11: ["React", "React Router", "Axios"],
     12: ["WebSocket", "STOMP", "Agora"],
-    13: ["Phaser", "Colyseus", "Tiled tilemap", "React", "Redux"],
-    14: ["Spring Boot", "Spring Cloud Gateway", "Docker", "MySQL", "PostgreSQL", "MongoDB", "Redis", "RabbitMQ"],
-    15: ["JWT", "BCrypt", "Spring Security"],
-    16: ["Spring Data JPA", "PostgreSQL", "RabbitMQ"],
-    17: ["Node.js", "Groq", "Function calling"],
-    18: ["MongoDB", "Redis", "RabbitMQ", "WebSocket", "Agora", "WebCrypto"],
-    19: ["Loki", "Promtail", "Grafana"],
+    18: ["Phaser", "Colyseus", "Tiled tilemap", "React", "Redux"],
+    13: ["Spring Boot", "Spring Cloud Gateway", "Docker", "MySQL", "PostgreSQL", "MongoDB", "Redis", "RabbitMQ"],
+    14: ["JWT", "BCrypt", "Spring Security"],
+    15: ["Spring Data JPA", "PostgreSQL", "Flyway", "RabbitMQ"],
+    17: ["Node.js", "Groq", "Function calling", "PostgreSQL", "Flyway"],
+    16: ["MongoDB", "Redis", "RabbitMQ", "WebSocket", "WebCrypto"],
+    19: ["Loki", "Promtail", "Prometheus", "Grafana"],
     20: ["Flutter", "Dart"],
     21: ["Flutter", "Provider", "shared_preferences"],
     22: ["stomp_dart_client", "awesome_notifications"],
@@ -80,9 +91,11 @@ TECH = {
 # Hand-built diagrams. Anything that isn't a real screenshot of the product is
 # drawn here in HTML/CSS — a dashed box saying "draw this" is a promise, not a
 # slide. Components carry their tech's brand colour.
-def box(label, tech=None, cls=""):
+def box(label, tech=None, cls="", port=None):
+    """port: the port the thing actually listens on (read off docker-compose.yml)."""
     t = f'<i class="dg-t" style="--c:{tech}"></i>' if tech else ""
-    return f'<div class="dg-box {cls}">{t}<span>{label}</span></div>'
+    pt = f'<code>:{port}</code>' if port else ""
+    return f'<div class="dg-box {cls}">{t}<span>{label}</span>{pt}</div>'
 
 C = dict(react="#61DAFB", flutter="#02569B", phaser="#CC3333", spring="#6DB33F", node="#339933",
          mysql="#4479A1", pg="#4169E1", mongo="#47A248", redis="#DC382D", rabbit="#FF6600",
@@ -91,21 +104,6 @@ C = dict(react="#61DAFB", flutter="#02569B", phaser="#CC3333", spring="#6DB33F",
 
 DIAGRAMS = {
 
-# ── 2 · the fragmentation ────────────────────────────────────────────────────
-2: f'''<div class="dg dg-hub">
-  <div class="hub-grid">
-    <span class="hub-n" style="--c:{C['slack']}">Slack</span>
-    <span class="hub-n" style="--c:{C['teams']}">Teams</span>
-    <span class="hub-n" style="--c:{C['zoom']}">Zoom</span>
-    <span class="hub-c bad">you<small>all day</small></span>
-    <div class="hub-row">
-      <span class="hub-n" style="--c:{C['jira']}">Jira</span>
-      <span class="hub-n" style="--c:{C['gcal']}">Calendar</span>
-      <span class="hub-n" style="--c:{C['discord']}">Discord</span>
-    </div>
-  </div>
-  <div class="dg-cap">Five tools. One job. No idea what the team is doing.</div>
-</div>''',
 
 # ── 4 · one place ────────────────────────────────────────────────────────────
 4: '''<div class="dg dg-hub">
@@ -129,17 +127,17 @@ DIAGRAMS = {
   <div class="dg-row dg-side">{box("Agora SDK", C['agora'])}<i class="dg-a">voice / video — we didn't rebuild WebRTC</i></div>
 </div>''',
 
-# ── 14 · the architecture ────────────────────────────────────────────────────
-14: f'''<div class="dg dg-arch">
+# ── 13 · the architecture ────────────────────────────────────────────────────
+13: f'''<div class="dg dg-arch">
   <div class="dg-tier"><span class="dg-tier-l">clients</span><div class="dg-row">
-    {box("Web", C['react'])}{box("Mobile", C['flutter'])}{box("2D Office", C['phaser'])}</div></div>
+    {box("Web", C['react'], port="3001")}{box("Mobile", C['flutter'])}{box("2D Office", C['phaser'], port="5000")}</div></div>
   <i class="dg-v">↓</i>
-  <div class="dg-gate">{box("API Gateway", C['spring'], "wide")}<small>one door · validates the JWT once · injects identity</small></div>
+  <div class="dg-gate">{box("API Gateway", C['spring'], "wide", port="8080")}<small>one door · validates the JWT once · injects identity</small></div>
   <i class="dg-v">↓</i>
   <div class="dg-tier"><span class="dg-tier-l">services</span><div class="dg-grid">
-    {box("User", C['spring'])}{box("Workspace", C['spring'])}{box("Chat", C['spring'])}{box("Notif", C['spring'])}
-    {box("Calendar", C['spring'])}{box("Tasks", C['spring'])}{box("Room", C['spring'])}{box("AI", C['ai'])}
-    {box("Office", C['node'])}</div></div>
+    {box("User", C['spring'], port="8091")}{box("Workspace", C['spring'], port="8087")}{box("Chat", C['spring'], port="8084")}{box("Notif", C['spring'], port="8082")}
+    {box("Calendar", C['spring'], port="8083")}{box("Tasks", C['spring'], port="8085")}{box("Room", C['spring'], port="8086")}{box("AI", C['ai'], port="8089")}
+    {box("Office", C['node'], port="2567")}</div></div>
   <i class="dg-v">↓</i>
   <div class="dg-tier"><span class="dg-tier-l">data</span><div class="dg-row">
     {box("MySQL", C['mysql'])}{box("Postgres", C['pg'])}{box("Mongo", C['mongo'])}
@@ -147,8 +145,8 @@ DIAGRAMS = {
   <div class="dg-cap">{box("Docker Compose", C['docker'], "dg-ghost")} ~20 containers · one command</div>
 </div>''',
 
-# ── 15 · identity at the edge ────────────────────────────────────────────────
-15: f'''<div class="dg dg-auth">
+# ── 14 · identity at the edge ────────────────────────────────────────────────
+14: f'''<div class="dg dg-auth">
   <div class="dg-row">
     <div class="dg-box bad"><span>Client</span><code>X-User-Id: 1</code><small>spoofed</small></div>
     <i class="dg-a">→</i>
@@ -178,6 +176,39 @@ DIAGRAMS = {
 </div>''',
 }
 
+# ── 1 · the title card is the product: six desks on a floor ──────────────────
+# A logo says nothing a title already said. The deck is about a 2D office, so
+# the title card IS one — the team, at their desks, grouped by what they built.
+TEAM = [("Rokaya Othman", "frontend"), ("Nadine Mohsen", "frontend"),
+        ("Abdelrahman Sersawy", "backend"), ("Ahmed Mousa", "backend"),
+        ("Khalid Labib", "backend"), ("Khaled Qenawy", "mobile")]
+ZONE = {"frontend": ("Frontend", C['react']), "backend": ("Backend", C['spring']),
+        "mobile": ("Mobile", C['flutter'])}
+
+def _desk(name, zone):
+    ini = "".join(w[0] for w in name.split()[:2]).upper()
+    return (f'<div class="tc-p" style="--c:{ZONE[zone][1]}"><span class="tc-av">{ini}</span>'
+            f'<span class="tc-n">{name}</span><i class="tc-desk"></i></div>')
+
+DIAGRAMS[1] = '<div class="dg dg-title"><div class="tc-floor">' + "".join(
+    f'<div class="tc-zone"><span class="tc-zl" style="--c:{ZONE[z][1]}">{ZONE[z][0]}</span>'
+    + "".join(_desk(n, zz) for n, zz in TEAM if zz == z) + '</div>'
+    for z in ("frontend", "backend", "mobile")
+) + '</div><p class="dg-cap">Six people · three clients · one workspace</p></div>'
+
+# ── 2 · the office gave you five things free. Remote took all five. ──────────
+# Framed as a loss, not a complaint — that's why the left column is struck out.
+GAVE = ["Faster communication", "Better collaboration", "Visible work status",
+        "Clear tasks & accountability", "Real interaction"]
+LEFT = ["Disconnected tools", "Constant context switching", "No spontaneous talk",
+        "Can't see who's available", "No shared place to be"]
+DIAGRAMS[2] = ('<div class="dg dg-ledger"><div class="led gone"><b class="led-h">onsite gave you</b><ul>'
+    + "".join(f"<li>{x}</li>" for x in GAVE)
+    + '</ul></div><i class="led-a"><span>remote</span>→</i>'
+    + '<div class="led bad"><b class="led-h">remote left you</b><ul>'
+    + "".join(f"<li>{x}</li>" for x in LEFT)
+    + '</ul></div><p class="dg-cap">Five tools. One job. No idea what the team is doing.</p></div>')
+
 # ── 11 · reusable components + the axios interceptor ─────────────────────────
 DIAGRAMS[11] = f'''<div class="dg dg-code">
   <div class="dg-tree">
@@ -193,20 +224,16 @@ axios.interceptors.request.use(cfg =&gt; {{
 }})</pre>
 </div>'''
 
-# ── 15 · the scheduler that moves your status + the board ────────────────────
-DIAGRAMS[15] = f'''<div class="dg dg-code">
+# ── 15 · the scheduler, and the board it drives ──────────────────────────────
+DIAGRAMS[15] = '''<div class="dg dg-code">
   <pre class="dg-pre"><b>@Scheduled</b>(fixedDelay = 60_000)
-void <b>sync</b>() {{
+void <b>sync</b>() {
   applyForStartedMeetings(now);  <span class="c">// -&gt; "In a meeting"</span>
   revertForEndedMeetings(now);   <span class="c">// only if our marker</span>
-}}
+}
 <span class="c">// fails? don't set the flag. next tick retries.</span></pre>
-  <div class="dg-bands">
-    <div class="band od"><span>Overdue</span><b>2</b></div>
-    <div class="band td"><span>Today</span><b>6</b></div>
-    <div class="band up"><span>Upcoming</span><b>13</b></div>
-  </div>
-  <div class="dg-cap">Your calendar moves your status. You never say "I'm busy".</div>
+  <figure class="obs-shot"><img src="shots/slide-15-tasks.png" alt="" onerror="this.closest('figure').remove()">
+    <figcaption>day bands · <b>#97</b>, <b>#94</b> — human numbers, not UUIDs</figcaption></figure>
 </div>'''
 
 # ── 16 · the ciphertext, and the queue ───────────────────────────────────────
@@ -222,18 +249,12 @@ DIAGRAMS[16] = f'''<div class="dg dg-code">
   <div class="dg-cap">Task Service never waits for an email.</div>
 </div>'''
 
-# ── 19 · logs today, metrics next ────────────────────────────────────────────
-DIAGRAMS[19] = f'''<div class="dg dg-obs">
-  <div class="dg-row">{box("every container", C['docker'])}<i class="dg-a">stdout →</i>
-    {box("Promtail", C['loki'])}<i class="dg-a">→</i>{box("Loki", C['loki'])}<i class="dg-a">→</i>
-    {box("Grafana", C['grafana'])}</div>
-  <div class="dg-stats">
-    <div class="st"><b>4,015,209</b><span>errors, range</span></div>
-    <div class="st"><b>19</b><span>services reporting</span></div>
-    <div class="st"><b>5.59</b><span>lines / sec</span></div>
-  </div>
-  <div class="dg-next"><span class="dg-next-l">next</span>
-    {box("Prometheus", "#E6522C")}<i class="dg-a">metrics — logs say <b>what</b>, metrics say <b>how often</b></i></div>
+# ── 19 · both dashboards, both real ─────────────────────────────────────────
+DIAGRAMS[19] = '''<div class="dg dg-obs">
+  <figure class="obs-shot"><img src="shots/slide-19.png" alt="" onerror="this.closest('figure').remove()">
+    <figcaption><b>Loki</b> — logs: <i>what happened</i></figcaption></figure>
+  <figure class="obs-shot"><img src="shots/slide-19-metrics.png" alt="" onerror="this.closest('figure').remove()">
+    <figcaption><b>Prometheus</b> — metrics: <i>how often, how slow</i></figcaption></figure>
 </div>'''
 
 # Two slides carry a table as their actual argument — render it, don't ask for a
@@ -243,7 +264,7 @@ TABLES = {
      "rows": [["Chat", "y", "y", "y", "y"], ["Threads", "y", "y", "~", "y"],
               ["Tasks", "n", "~", "n", "y"], ["Meetings", "n", "y", "y", "y"],
               ["Presence", "~", "~", "y", "y"], ["One place", "n", "~", "n", "y"]]},
- 13: {"head": ["", "Chat", "Movement"],
+ 18: {"head": ["", "Chat", "Movement"],
       "rows": [["Every event matters?", "Yes — never lose one", "No — a late one is garbage"],
                ["Order matters?", "Yes", "Only the newest"],
                ["Store it?", "Forever (MongoDB)", "Never"],
@@ -255,7 +276,8 @@ TABLES = {
 # and live behind the N key — a slide should jog your memory, not be read out.
 CUES = {
  1: ["Who we are — Frontend · Backend · Mobile", "Agenda: problem → what → how → demo"],
- 2: ["Remote broke what the office gave free", "Who's online? · app-switching · no presence · scattered",
+ 2: ["The office gave five things **free**", "Fast talk · collaboration · visible status · ownership · real interaction",
+     "**Remote took all five**", "Five disconnected tools in their place",
      "*“Five tools all day, still don't know what the team is doing”*"],
  3: ["Studied them honestly — they're good at their job", "**None give you a workplace.** They give you channels",
      "Presence is the missing piece"],
@@ -279,43 +301,47 @@ CUES = {
  12:["HTTP you *ask* · WebSocket it *arrives*", "STOMP via `@stomp/stompjs`",
      "Messages · presence · office activity", "Same pipe → real-time notifications",
      "Agora for voice/video — we didn't rebuild WebRTC"],
- 13:["**Phaser 3** — a floor plan **is** a game loop",
+ 18:["**Phaser 3** — a floor plan **is** a game loop",
      "**Colyseus** — authoritative, its own Node service", "*“Why two realtime stacks?”* → **opposite problems** →",
      "`@type` decorators = binary deltas = **the protocol**",
      "`filterBy(workspaceId)` → one room per company", "Phaser canvas + React HUD, one page",
      "Proximity → the call connects. You walk over", "Joystick for touch"],
- 14:["Not one app — independent services", "**Gateway** — one door, validates the JWT once",
+ 13:["Not one app — independent services", "**Gateway** — one door, validates the JWT once",
      "User · Workspace · Chat · Notif · Calendar · Tasks · Room · AI · +Office",
      "Separate · deploy alone · scale alone · **fail alone**", "~20 containers, one command"],
- 15:["BCrypt — we never store a password", "JWT (HS256), shared only gateway ↔ user-service",
+ 14:["BCrypt — we never store a password", "JWT (HS256), shared only gateway ↔ user-service",
      "**Strip** client `X-User-*` · **inject** trusted", "Services never parse a JWT",
-     "Account role **vs** workspace role", "OTP reset — no links to leak",
+     "Account role **vs** workspace role", "OTP reset — no links to leak", "Register → **RabbitMQ** → welcome. Never blocks signup",
      "*“Decided once, at the edge”*"],
- 16:["Spring Data JPA on PostgreSQL", "**`#42`, not a UUID** — max+1 per workspace",
+ 15:["Spring Data JPA on PostgreSQL", "**`#42`, not a UUID** — max+1 per workspace", "**Flyway** — schema is versioned, not hand-run SQL",
      "Assign → RabbitMQ → Notification. **Never waits**", "`@Scheduled` 60s — reminders + **auto-status**",
      "Meeting starts → *“In a meeting ”* by itself", "**Idempotent** — flags, never double-send",
      "**Never clobber a human's own status**"],
  17:["Workspace = the backbone", "Members · teams · channels · roles · office layout",
      "AI: summarise · decisions · create · answer", "**The hard part was context**",
      "Function calling — same APIs, **your** token"],
- 18:["Chat: DMs · channels · threads, live", "WebSocket · **Redis** presence · **Mongo** volume",
+ 16:["Chat: DMs · channels · threads, live", "WebSocket · **Redis** presence · **Mongo** volume",
      " **DMs are E2E — we can't read them**", "ECDH → AES-GCM **in the browser**",
      "Server stores `vo1:<iv>:<ct>` and nothing else", "**Trade-off: DMs only** — channels feed search + AI",
      "Limits: one device · no forward secrecy · TOFU", "Notif: **RabbitMQ** — Task never waits",
-     "Rooms: **Agora** transport, we own permissions"],
+     "Rooms: we own the permissions"],
  19:["20 containers, 9 services → nine `docker logs`?", "**Loki** ← Promtail ← every container",
      "One **Grafana** dashboard", "**Paid off day one:** ~200 errors/hr nobody saw",
      "→ the WS handshake bug Khalwsh just described", "*“App looked fine. Logs didn't.”*",
-     "Metrics next: logs = *what*, metrics = *how often*"],
+     "**Prometheus** — 8 services scraped · p95 · error ratio",
+     "Logs say *what*. Metrics say *how often, how slow*"],
  20:["One codebase → Android · iOS · web", "**Deep on chat, not shallow on everything**",
      "Nobody plans a sprint on a 6-inch screen", "Tasks/calendar/calls = screens, not architecture"],
  21:["Feature-first: `core/` + `features/chat/`", "Screen → Provider → Repository → ApiClient",
      "Provider **split by concern**, not one god-object", "`shared_preferences` holds the JWT",
      "**Same APIs as web. No mobile backend.**"],
+ 23:["Five tabs: Channels · DMs · **Rooms** · Workspace · Profile", "Not a chat window — **the workspace**",
+     "Create a channel on the phone → it's in the browser's list", "Join a voice room from your pocket",
+     "**No mobile backend** — same gateway, same JWT, same permissions"],
  22:["**Same STOMP contract as the browser**", "`stomp_dart_client` ↔ `@stomp/stompjs`",
      "We reused the realtime stack, didn't rebuild it", "`uuid` → clientMessageId → idempotent retries",
      "`awesome_notifications` on the device", "Calls next: Agora SDK — Rooms already handles it"],
- 23:["Login → the workspace is **alive**", "Chat + thread", "*“Catch me up”*",
+ 24:["Login → the workspace is **alive**", "Chat + thread", "*“Catch me up”*",
      "Create a task from a sentence", "**Walk into the 2D office**",
      "*“…one place you can actually walk into.”*"],
 }
@@ -333,19 +359,20 @@ VISUAL = {
  8:  ("shot", "My Desk — Today's Agenda with real meetings, tasks, sticky notes, whiteboard. Seed first; an empty desk proves the opposite of your point.", "16/10"),
  9:  ("live", "THE 2D OFFICE — go live. Several avatars, a meeting room, someone's status. Walk across the floor. Fallback screenshot: 1600×900.", "16/9"),
  10: ("shot", "Figma board: wireframe and the shipped screen side by side. The before → after is the whole story.", "16/10"),
- 11: ("shot", "Component tree or the reusable-components folder + one small Axios interceptor snippet (the auth token). Keep the code readable from the back row.", "4/3"),
+ 11: ("diagram", "Component tree or the reusable-components folder + one small Axios interceptor snippet (the auth token). Keep the code readable from the back row.", "4/3"),
  12: ("diagram", "Browser ⇄ WebSocket/STOMP ⇄ Gateway ⇄ Chat Service, with a second line for Agora. Or: two browsers, a message landing instantly.", "16/9"),
- 13: ("shot", "The OfficeState schema — ten lines of @type decorators — beside the office. Say: 'this is the entire network protocol.'", "4/3"),
- 14: ("diagram", "THE ARCHITECTURE. Clients → Gateway → 9 services → datastores (MySQL · PostgreSQL · MongoDB · Redis · RabbitMQ). Colour-code by concern. Your most important slide.", "16/9"),
- 15: ("diagram", "Strip-then-inject: Client (X-User-Id: 1 ← spoofed ✗) → Gateway [verify JWT · strip · inject] → Service (X-User-Id: 64 ✓).", "16/9"),
- 16: ("shot", "AutoStatusScheduler.sync() — ~15 lines. Plus the tasks board with Overdue / Today / upcoming bands.", "4/3"),
+ 18: ("shot", "The OfficeState schema — ten lines of @type decorators — beside the office. Say: 'this is the entire network protocol.'", "4/3"),
+ 13: ("diagram", "THE ARCHITECTURE. Clients → Gateway → 9 services → datastores (MySQL · PostgreSQL · MongoDB · Redis · RabbitMQ). Colour-code by concern. Your most important slide.", "16/9"),
+ 14: ("diagram", "Strip-then-inject: Client (X-User-Id: 1 ← spoofed ✗) → Gateway [verify JWT · strip · inject] → Service (X-User-Id: 64 ✓).", "16/9"),
+ 15: ("diagram", "AutoStatusScheduler.sync() — ~15 lines. Plus the tasks board with Overdue / Today / upcoming bands.", "4/3"),
  17: ("live", "Type: 'Create a high priority task for Karim…' → then the task appearing on the board. The strongest 15 seconds in the deck.", "16/10"),
- 18: ("live", "Terminal: the Mongo query returning vo1:<iv>:<ciphertext>. Ten seconds, and it ends the argument. Plus the RabbitMQ event flow diagram.", "16/9"),
+ 16: ("diagram", "Terminal: the Mongo query returning vo1:<iv>:<ciphertext>. Ten seconds, and it ends the argument. Plus the RabbitMQ event flow diagram.", "16/9"),
  19: ("shot", "The Grafana dashboard — Virtual Office — Logs & Errors. Filter to one service live so it's obviously real.", "16/9"),
  20: ("shot", "Phone frames: login · channels · chat. A real device beats an emulator.", "9/16"),
  21: ("diagram", "The folder tree (lib/features/chat/...) beside: Screen → Provider → Repository → ApiClient → Gateway.", "4/3"),
- 22: ("live", "Two devices. Send on one, land on the other, background it, show the notification arrive.", "16/10"),
- 23: ("live", "LIVE DEMO. Log in → chat + thread → assistant catch-up → create a task → walk into the 2D office. Have the backup video ready.", "16/9"),
+ 22: ("shot", "Channels · a live DM · creating a room — on the device.", "16/10"),
+ 23: ("shot", "Four phones: Workspace · Create channel · Rooms (with Join) · Profile. The five-tab nav is the point.", "16/10"),
+ 24: ("live", "LIVE DEMO. Log in → chat + thread → assistant catch-up → create a task → walk into the 2D office. Have the backup video ready.", "16/9"),
 }
 
 
@@ -375,13 +402,33 @@ def md(t: str) -> str:
     return t
 
 
+def lint_classes(tpl: str):
+    """Chrome classes are defined before the diagram kit and are positioned; a
+    diagram reusing one inherits that positioning and collapses. Catch it here,
+    not in a screenshot at 2am."""
+    chrome_css = tpl[: tpl.index("/* ── diagram kit")]
+    chrome = set(re.findall(r"^\.([a-z][\w-]*)\{", chrome_css, re.M))
+    used = set()
+    for html_ in DIAGRAMS.values():
+        for attr in re.findall(r'class="([^"]+)"', html_):
+            used |= set(attr.split())
+    clash = sorted(c for c in used & chrome if not c.startswith("dg"))
+    if clash:
+        raise SystemExit(
+            f"Diagram markup reuses chrome class(es) {clash}. The chrome is positioned — "
+            f"your boxes will stack on top of each other. Rename them (dg-*).")
+
+
 def build():
+    tpl = (ROOT / "deck-template.html").read_text()
+    lint_classes(tpl)
     slides = parse()
     data = []
     for i, sl in enumerate(slides):
         n = sl["n"]
         nxt = slides[i + 1]["who"] if i + 1 < len(slides) else None
         kind, desc, ratio = VISUAL.get(n, ("diagram", "", "16/9"))
+        ratio = SHOT_AR.get(str(n), ratio)
         if n in TABLES: kind = "table"
         if n in DIAGRAMS: kind = "diagram-built"
         data.append({
@@ -394,8 +441,10 @@ def build():
             "bullets": [md(b) for b in CUES.get(n, sl["say"])],
             "notes": [md(h) for h in sl["how"]],
             "script": [md(b) for b in sl["say"]],
-            "tech": [{"name": t, "color": TECH_COLOR.get(t, "#7A7A7A")} for t in TECH.get(n, [])],
-            "mark": MARKS.get(n),
+            "tech": [{"name": t,
+                      "color": LOGOS.get(t, {}).get("hex") or TECH_COLOR.get(t, "#7A7A7A"),
+                      "path": LOGOS.get(t, {}).get("path")} for t in TECH.get(n, [])],
+            "mark": ({"key": MARKS[n], **LOGOS.get(MARKS[n], {})} if n in MARKS else None),
             "visual": {"kind": kind, "desc": desc, "ratio": ratio, "table": TABLES.get(n),
                        "html": DIAGRAMS.get(n)},
             "next": None if not nxt or nxt == sl["who"] else {
@@ -409,7 +458,6 @@ def build():
             f"HANDOFF is missing a hint for slide(s) {missing}. Every hand-off must say what the "
             f"next person covers, or the card reads '…and now, <name>.' and dies.")
 
-    tpl = (ROOT / "deck-template.html").read_text()
     out = tpl.replace("/*__SLIDES__*/", json.dumps(data, ensure_ascii=False, indent=1))
     (ROOT / "Presentation.html").write_text(out)
     print(f"Presentation.html — {len(data)} slides, {len(out)//1024} KB")

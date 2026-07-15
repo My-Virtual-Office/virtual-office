@@ -24,10 +24,13 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 - The panel is deciding whether you're organised — brisk says yes
 **Say:**
 - Project name, one line of what it is: *"a virtual office that puts your people, chat, tasks and meetings in one place."*
-- Introduce the team and what each person owned: Frontend, Backend, Mobile.
--  the problem → what we built → how it works → demo.Say the agenda in one sentence:
+- Introduce the team by name, grouped by what they owned — six people, three clients:
+  - **Frontend** — Rokaya Othman · Nadine Mohsen
+  - **Backend** — Abdelrahman Sersawy · Ahmed Mousa · Khalid Labib
+  - **Mobile** — Khaled Qenawy
+- Say the agenda in one sentence: the problem → what we built → how it works → demo.
 
-**Show:** Title, team names + roles, university/supervisor. Keep it clean — no product screenshots yet.
+**Show:** The team as six desks on a floor plan, grouped Frontend / Backend / Mobile — the title card is the product. Keep it clean: no product screenshots yet.
 
 ---
 
@@ -40,14 +43,18 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 - Land the closing line, then **pause for a beat** — silence sells it
 **Say:**
 - Remote and hybrid work broke something that the office gave us for free.
-- Four concrete pains (from our research, not opinion):
-  1. You can't tell who is online or available right now.
-  2. Constant switching between apps to do one job.
-  3. No sense of *being somewhere* with your team.
-  4. Conversations, meetings and tasks scattered across different tools.
+- **First name what onsite gave you** — five things nobody ever thanks an office for:
+  faster communication · better collaboration · visible work status · clear tasks and accountability · real interaction.
+- **Then take all five away.** That's remote — and this is research, not opinion:
+  1. Multiple disconnected collaboration tools.
+  2. Constant context switching between applications.
+  3. Loss of spontaneous communication.
+  4. Reduced awareness of team availability.
+  5. No shared digital workspace that simulates a real office.
+- The mirror is the point: every problem on the right is a thing the office solved by simply *being a place*.
 - Land it with a human sentence: *"You can be in five tools all day and still not know what your team is doing."*
 
-**Show:** A simple visual of the fragmentation — one person surrounded by app logos (Slack, Teams, Zoom, Jira, Google Calendar) with arrows going everywhere.
+**Show:** The ledger — *onsite gave you* (five items, struck through) → **remote** → *remote left you* (the same five, inverted). The strike-through does the arguing for you.
 
 ---
 
@@ -449,7 +456,26 @@ Each slide: **Who** presents · **Say** (talking points) · **Show** (visuals).
 
 ---
 
-### Slide 23 — Live Demo & Close
+### Slide 23 — Mobile: The Whole Workspace, in a Pocket
+**Who:** Khaled Qenawy
+**Time:** ~45s
+**How:**
+- This is the "it's a real app, not a demo" slide — let the screens do the talking
+- Walk the bottom nav left to right: Channels → DMs → Rooms → Workspace → Profile
+- Don't re-explain the architecture; it's the same one from the last slide
+**Say:**
+- The phone isn't a chat window bolted on — it's the workspace. Five tabs: **Channels, DMs, Rooms, Workspace, Profile**.
+- **Workspace** — you switch between workspaces and see your teams and people, the same membership and roles the web enforces.
+- **Channels** — browse them, and create one from the phone. It lands in the same channel list the browser is looking at, because it's the same API.
+- **Rooms** — see who's in a voice room and join it from your phone. A room created on mobile is the room the web client sees.
+- **Profile** — your identity and status, the presence everyone else reads.
+- The point to land: **there is no mobile backend.** Every screen here talks to the same gateway, with the same JWT and the same permissions. Mobile isn't a port of the product — it's another client of it.
+
+**Show:** Four phones: Workspace · Create channel · Rooms (with Join) · Profile. Real device frames.
+
+---
+
+### Slide 24 — Live Demo & Close
 **Who:** All (one driver, one narrator)
 **Time:** ~3m
 **How:**
