@@ -1,0 +1,18 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/My-Virtual-Office/backend.git
+[submodule "website"]
+	path = website
+	url = https://github.com/My-Virtual-Office/website.git
+[submodule "SkyOffice"]
+	path = SkyOffice
+	url = https://github.com/My-Virtual-Office/SkyOffice.git
+[submodule "Mobile_application"]
+	path = Mobile_application
+	url = https://github.com/My-Virtual-Office/Mobile_application.git
+[submodule "Docs"]
+	path = Docs
+	url = https://github.com/My-Virtual-Office/Docs.git
+[submodule "doc"]
+	path = doc
+	url = https://github.com/My-Virtual-Office/My-Virtual-Office.github.io.git

@@ -22,13 +22,6 @@ build/
 dist/
 **/dist/
 
-# ── Sub-project repos (each is its own git repo, cloned alongside — not embedded) ──
-/website/
-/SkyOffice/
-/backend/
-# Same deal: its own repo + remote (My-Virtual-Office/Mobile_application). Committing it from here
-# would record a gitlink with no .gitmodules entry — a submodule reference nobody can clone.
-/Mobile_application/
 
 # ── Local data / logs ────────────────────────────────────────────────────────
 *.log
